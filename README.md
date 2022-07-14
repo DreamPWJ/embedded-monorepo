@@ -12,7 +12,7 @@
 
 ### MQTT服务器: EMQX
 
-#### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 是新一代嵌入式开发生态系统
+#### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 是新一代嵌入式开发生态系统  安装执行 python get-platformio.py
 
 #### 搭建参考文章
 
