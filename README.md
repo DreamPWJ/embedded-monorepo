@@ -19,6 +19,7 @@
 
 https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-development-part-iii/
 https://zhuanlan.zhihu.com/p/63672432
+https://zhuanlan.zhihu.com/p/145801160
 
 #### STM32CubeMX，用于配置 STM32 微控制器的图形工具
 
