@@ -1,10 +1,11 @@
-## STM32嵌入式单片机程序 Embedded Development
+## 嵌入式单片机程序monorepo单体式仓库 Embedded Development
 
 ### 开发工具: CLion
 
 ### 开发语言: C 、C++
 
-### MCU单片机类型: STM32或ESP32
+### MCU单片机类型: STM32(内核ARM)或ESP32(内核RISC-V)
+
 
 ### 嵌入式硬件平台: Arduino
 
