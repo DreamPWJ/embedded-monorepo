@@ -20,11 +20,15 @@
 
 ### MCU单片机类型: STM32(内核ARM)或ESP32(内核RISC-V)
 
+### 嵌入式实时操作系统: FreeRTOS
+
 ### 嵌入式硬件平台: Arduino
 
 ### 云平台: 阿里云IoT物联网平台
 
 ### MQTT服务器: EMQX
+
+### 硬件调试: DapLink、ST-Link/J-Link
 
 #### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 是新一代嵌入式开发生态系统  安装执行 python get-platformio.py
 
