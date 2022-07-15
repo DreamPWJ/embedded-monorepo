@@ -7,6 +7,6 @@ void setup() {
 
 void loop() {
 // write your code here
-    Serial.print("Hello World!");
+    Serial.print("Hello World Embedded!");
     delay(1000);
 }
