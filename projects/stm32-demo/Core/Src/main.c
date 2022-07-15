@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -91,7 +92,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+      HAL_Delay(1000);
+      printf("定时器执行：STM32嵌入式单片机C语言程序 \n");
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
