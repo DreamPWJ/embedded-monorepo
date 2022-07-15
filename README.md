@@ -63,3 +63,4 @@ https://www.mingw-w64.org/
 https://help.aliyun.com/document_detail/30522.html
 https://help.aliyun.com/document_detail/146228.html
 https://help.aliyun.com/document_detail/254820.html
+阿里云Link SDK: https://help.aliyun.com/document_detail/42648.html
