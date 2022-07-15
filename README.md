@@ -1,4 +1,4 @@
-## 嵌入式单片机程序monorepo单体式仓库 Embedded Development
+## 大统一嵌入式单片机程序monorepo单体式仓库 Embedded Development
 
 ### 项目代号: athena(雅典娜 智慧女神) 愿景: 使项目更易于复用迭代维护扩展、分离关注点并避免代码重复
 
@@ -31,7 +31,7 @@
 ### 硬件调试: DapLink、ST-Link/J-Link
 
 
-#### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 是新一代嵌入式开发生态系统  安装执行 python get-platformio.py
+#### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案  安装执行 python get-platformio.py
 https://www.jetbrains.com/help/clion/platformio.html
 
 #### 搭建参考文章
@@ -58,7 +58,7 @@ https://gnutoolchains.com/arm-eabi/openocd/
 
 https://www.mingw-w64.org/
 
-### 基于阿里云IoT物联网平台
+#### 基于阿里云IoT物联网平台
 
 https://help.aliyun.com/document_detail/30522.html
 https://help.aliyun.com/document_detail/146228.html
