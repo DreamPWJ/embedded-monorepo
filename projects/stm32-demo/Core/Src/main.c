@@ -95,6 +95,7 @@ int main(void)
 /*    GPIO_TypeDef *GPIO;
       HAL_GPIO_TogglePin(GPIO, GPIO_PIN_5); // 对GPIO口的电平进行反转 (地-高, 高-低)*/
       HAL_Delay(2000);
+      printf("Hello STM32! \n");
       printf("定时器执行：STM32嵌入式单片机C语言程序 \n");
     /* USER CODE BEGIN 3 */
   }
