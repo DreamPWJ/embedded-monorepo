@@ -12,11 +12,11 @@ void setup() {
 void loop() {
 // write your code here
     Serial.print("Hello World Embedded ESP32! \n");
-    delay(2000);
+    delay(1000);
 
     // 开发板LED 闪动的实现
     digitalWrite(LED_PIN, HIGH);
-    delay(2000);
+    delay(1000);
     digitalWrite(LED_PIN, LOW);
-    delay(2000);
+    delay(1000);
 }
