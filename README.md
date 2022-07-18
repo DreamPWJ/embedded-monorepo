@@ -18,7 +18,7 @@
 
 ### 开发语言: C 、C++
 
-### MCU单片机类型: STM32(内核ARM)或ESP32(内核RISC-V)
+### MCU单片机类型: STM32(内核ARM)或ESP32(内核RISC-V指令集)
 
 ### 嵌入式实时操作系统: FreeRTOS
 
@@ -30,8 +30,8 @@
 
 ### 硬件调试: DapLink、ST-Link/J-Link
 
-
 #### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案  安装执行 python get-platformio.py
+
 https://www.jetbrains.com/help/clion/platformio.html
 
 #### 搭建参考文章
