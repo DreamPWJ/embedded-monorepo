@@ -22,3 +22,6 @@ https://github.com/platformio/platform-espressif32
 https://docs.espressif.com/projects/espressif-esp-moonlight/zh_CN/latest/networkconfig.html
 
 #### HARDWARE: ESP32C3 160MHz, 320KB RAM, 4MB Flash
+
+#### CH340 COM驱动地址
+https://sparks.gogo.co.nz/ch340.html

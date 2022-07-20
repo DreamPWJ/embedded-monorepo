@@ -8,7 +8,7 @@
 
 void setup() {
 // write your initialization code here
-    Serial.begin(115200);
+    Serial.begin(115200); // 注意CMO串口, 请去Windows设备管理-> 端口 (COM 和 LPT)查看
     // 将 LED 数字引脚初始化为输出
     set_pin_mode();
     // 初始化蓝牙设置
