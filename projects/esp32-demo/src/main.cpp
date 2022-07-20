@@ -14,7 +14,7 @@ void setup() {
     // 初始化蓝牙设置
     // init_buletooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
-    init_wifi();
+    // init_wifi();
 }
 
 void loop() {
@@ -28,5 +28,5 @@ void loop() {
     // 监听蓝牙状态
     // buletooth_state();
     // 网络请求
-    http_get("https://www.google.com/");
+    //http_get("https://www.google.com/");
 }
