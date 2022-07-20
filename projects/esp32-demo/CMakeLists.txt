@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} lib/bluetooth/bluetooth.cpp lib/bluetooth/bluetooth.h lib/chip_info/chip_info.cpp lib/chip_info/chip_info.h lib/led_pin/led_pin.cpp lib/led_pin/led_pin.h lib/wifi-network/wifi-network.cpp lib/wifi-network/wifi-network.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} lib/bluetooth/bluetooth.cpp lib/bluetooth/bluetooth.h lib/chip_info/chip_info.cpp lib/chip_info/chip_info.h lib/led_pin/led_pin.cpp lib/led_pin/led_pin.h lib/wifi-network/wifi-network.cpp lib/wifi-network/wifi-network.h lib/http/http.cpp lib/http/http.h)

@@ -3,6 +3,7 @@
 #include "../lib/chip_info/chip_info.h"
 #include "../lib/led_pin/led_pin.h"
 #include "../lib/wifi-network/wifi-network.h"
+#include "../lib/http/http.h"
 
 
 void setup() {
@@ -13,7 +14,7 @@ void setup() {
     // 初始化蓝牙设置
     // init_buletooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
-    // init_wifi();
+    init_wifi();
 }
 
 void loop() {
@@ -26,4 +27,6 @@ void loop() {
     set_led();
     // 监听蓝牙状态
     // buletooth_state();
+    // 网络请求
+    http_get("https://www.google.com/");
 }
