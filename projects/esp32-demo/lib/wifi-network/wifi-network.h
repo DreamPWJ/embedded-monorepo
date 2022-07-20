@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_WIFI_H
-#define ESP32_DEMO_WIFI_H
+#ifndef ESP32_DEMO_WIFI_NETWORK_H
+#define ESP32_DEMO_WIFI_NETWORK_H
 
 /**
 * @author 潘维吉

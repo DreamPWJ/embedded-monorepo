@@ -52,7 +52,6 @@ class CharacteristicCallbacks : public BLECharacteristicCallbacks {
 
 /* 初始化设置蓝牙 */
 void init_buletooth(String bleName) {
-    delay(5000);
     // 参考文档: https://github.com/Nicklason/esp32-ble-server/blob/master/src/main.cpp
     Serial.println("开始初始化蓝牙模块...");
     Serial.println(bleName.c_str());

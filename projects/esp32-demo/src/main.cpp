@@ -2,7 +2,7 @@
 #include "../lib/bluetooth/bluetooth.h"
 #include "../lib/chip_info/chip_info.h"
 #include "../lib/led_pin/led_pin.h"
-#include "../lib/wifi/wifi.h"
+#include "../lib/wifi-network/wifi-network.h"
 
 
 void setup() {
