@@ -1,8 +1,17 @@
 #ifndef ESP32_DEMO_BLUETOOTH_LOW_ENERGY_H
 #define ESP32_DEMO_BLUETOOTH_LOW_ENERGY_H
 
+#include <WString.h>
 
-void initSetBLE(void);
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 低功耗蓝牙BLE模块
+  */
+
+void init_BLE(String bleName);
+
+void monitor_state();
 
 
 #endif

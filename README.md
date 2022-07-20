@@ -64,3 +64,12 @@ https://help.aliyun.com/document_detail/30522.html
 https://help.aliyun.com/document_detail/146228.html
 https://help.aliyun.com/document_detail/254820.html
 阿里云Link SDK: https://help.aliyun.com/document_detail/42648.html
+
+
+
+#### IDEA工具内File->Settings->File and Code Templates->Includes标签->File Header 添加如下注释信息，之后创建类会自动生成注释信息
+/**
+* @author 潘维吉
+* @date ${DATE} ${TIME}
+* @description 描述
+  */

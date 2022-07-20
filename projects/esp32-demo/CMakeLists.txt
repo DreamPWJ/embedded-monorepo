@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} lib/bluetooth_low_energy/bluetooth_low_energy.cpp lib/bluetooth_low_energy/bluetooth_low_energy.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} lib/bluetooth_low_energy/bluetooth_low_energy.cpp lib/bluetooth_low_energy/bluetooth_low_energy.h lib/chip_info/chip_info.cpp lib/chip_info/chip_info.h lib/led_pin/led_pin.cpp lib/led_pin/led_pin.h)
