@@ -1,4 +1,4 @@
-## PlatformIO新一代嵌入式平台开发esp32单片机和Adruino框架示例
+## PlatformIO新一代嵌入式平台开发esp32单片机和Arduino框架示例
 
 #### 参考文档
 
