@@ -4,6 +4,7 @@
 #include <BLE2902.h>
 #include "esp_system.h"
 #include "esp_spi_flash.h"
+#include "../lib/bluetooth_low_energy/bluetooth_low_energy.h"
 
 // LED等引脚名称数字 开发板有标注 如果不是 Arduino 框架定义的，则设置
 #ifndef LED_PIN
@@ -112,10 +113,11 @@ void loop() {
     delay(1000);
 
     // 开发板LED 闪动的实现
-/*  digitalWrite(LED_PIN, HIGH);
+    digitalWrite(LED_PIN, HIGH);
     delay(1000);
     digitalWrite(LED_PIN, LOW);
-    delay(1000);*/
+    delay(1000);
+    initSetBLE();
 
 //  蓝牙设置
 /*    if (devicesConnected > 0) {

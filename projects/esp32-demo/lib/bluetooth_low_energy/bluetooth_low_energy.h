@@ -1,0 +1,8 @@
+#ifndef ESP32_DEMO_BLUETOOTH_LOW_ENERGY_H
+#define ESP32_DEMO_BLUETOOTH_LOW_ENERGY_H
+
+
+void initSetBLE(void);
+
+
+#endif

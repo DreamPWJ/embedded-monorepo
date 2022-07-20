@@ -20,3 +20,5 @@ https://github.com/platformio/platform-espressif32
 #### ESP单片机SoftAP 配网和 Bluetooth Low Energy 配网
 
 https://docs.espressif.com/projects/espressif-esp-moonlight/zh_CN/latest/networkconfig.html
+
+#### HARDWARE: ESP32C3 160MHz, 320KB RAM, 4MB Flash
