@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} lib/bluetooth/bluetooth.cpp lib/bluetooth/bluetooth.h lib/chip_info/chip_info.cpp lib/chip_info/chip_info.h lib/led_pin/led_pin.cpp lib/led_pin/led_pin.h lib/wifi_network/wifi_network.cpp lib/wifi_network/wifi_network.h lib/http/http.cpp lib/http/http.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} ../../packages/athena-common/bluetooth/bluetooth.cpp ../../packages/athena-common/bluetooth/bluetooth.h ../../packages/athena-common/chip_info/chip_info.cpp ../../packages/athena-common/chip_info/chip_info.h ../../packages/athena-common/led_pin/led_pin.cpp ../../packages/athena-common/led_pin/led_pin.h ../../packages/athena-common/wifi_network/wifi_network.cpp ../../packages/athena-common/wifi_network/wifi_network.h ../../packages/athena-common/http/http.cpp ../../packages/athena-common/http/http.h)

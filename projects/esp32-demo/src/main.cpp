@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "../lib/bluetooth/bluetooth.h"
-#include "../lib/chip_info/chip_info.h"
-#include "../lib/led_pin/led_pin.h"
-#include "../lib/wifi_network/wifi_network.h"
-#include "../lib/http/http.h"
+#include "../../../packages/athena-common/bluetooth/bluetooth.h"
+#include "../../../packages/athena-common/chip_info/chip_info.h"
+#include "../../../packages/athena-common/led_pin/led_pin.h"
+#include "../../../packages/athena-common/wifi_network/wifi_network.h"
+#include "../../../packages/athena-common/http/http.h"
 
 
 void setup() {
