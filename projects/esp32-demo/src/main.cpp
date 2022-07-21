@@ -9,12 +9,12 @@
 void setup() {
 // write your initialization code here
     Serial.begin(115200);
-    // 初始化Wifi无线网络
-    //init_wifi();
     // 将 LED 数字引脚初始化为输出
     set_pin_mode();
     // 初始化蓝牙设置
     // init_buletooth("ESP32-PanWeiJi");
+    // 初始化Wifi无线网络
+    // init_wifi();
 }
 
 void loop() {
