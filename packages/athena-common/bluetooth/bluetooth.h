@@ -9,9 +9,9 @@
 * @description 低功耗蓝牙BLE模块
   */
 
-void init_buletooth(String bleName);
+void init_bluetooth(String bleName);
 
-void buletooth_state();
+void bluetooth_state();
 
 
 #endif

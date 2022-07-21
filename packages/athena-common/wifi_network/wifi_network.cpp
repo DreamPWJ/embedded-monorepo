@@ -41,6 +41,10 @@ void init_wifi() {
     // WiFi.disconnect();
 }
 
+void init_wifi_multi_thread(void*pvParameters) {
+    init_wifi();
+}
+
 /*定时检测重新连接WiFi*/
 void reconnect_wifi() {
     unsigned long currentMillis = millis();
