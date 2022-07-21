@@ -9,5 +9,7 @@
 
 void init_wifi(void);
 
+void reconnect_wifi(void);
+
 
 #endif

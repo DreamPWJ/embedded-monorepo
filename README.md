@@ -1,4 +1,4 @@
-## 大统一嵌入式单片机程序monorepo单体式仓库 Embedded Development
+## 大统一嵌入式MCU单片机程序monorepo单体式仓库 Embedded Development
 
 ### 项目代号: athena(雅典娜 智慧女神) 愿景: 使项目更易于复用迭代维护扩展、分离关注点并避免代码重复
 
@@ -65,7 +65,7 @@ https://help.aliyun.com/document_detail/146228.html
 https://help.aliyun.com/document_detail/254820.html
 阿里云Link SDK: https://help.aliyun.com/document_detail/42648.html
 
-#### 如果固件损坏 长按Boot键重新烧录固件
+#### 如果固件损坏 长按Boot键重新上传烧录固件 可能的表现形式为CMO串口不识别显示, 请去Windows设备管理-> 端口 (COM 和 LPT)查看
 
 #### IDEA工具内File->Settings->File and Code Templates->Includes标签->File Header 添加如下注释信息，之后创建类会自动生成注释信息
 
