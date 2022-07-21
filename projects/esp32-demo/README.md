@@ -23,5 +23,8 @@ https://docs.espressif.com/projects/espressif-esp-moonlight/zh_CN/latest/network
 
 #### HARDWARE: ESP32C3 160MHz, 320KB RAM, 4MB Flash
 
+#### ESP乐鑫工具esptool是ROM Bootloader一级bootloader通讯，从而实现的 固件烧录，flash 擦除，flash 读取，读 MAC 地址，读 flash id ，elf 文件转 bin 等常用功能
+python -m pip install esptool
+
 #### CH340 COM驱动问题
 https://sparks.gogo.co.nz/ch340.html
