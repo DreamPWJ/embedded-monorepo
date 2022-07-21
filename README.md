@@ -1,8 +1,9 @@
-## 大统一嵌入式MCU单片机程序monorepo单体式仓库 Embedded Development
+## 基于PlatformIO大统一嵌入式MCU单片机程序MonoRepo单体式仓库 Embedded Development
 
 ### 项目代号: athena(雅典娜 智慧女神) 愿景: 使项目更易于复用迭代维护扩展、分离关注点并避免代码重复
 
 ### monorepo 最主要的好处是统一的工作流和共享代码, 兼顾通用性和独立性之间的最佳平衡点, 统一最佳实战只需搭建一套脚手架, 统一管理(规范、配置、开发、联调、构建、测试、发布等)多个包
+#### 基于 PlatformIO搭建MonoRepo单体式仓库(单仓多包) https://docs.platformio.org/en/latest/projectconf/section_env_library.html#id3
 
 ### 目录结构
 
