@@ -23,6 +23,7 @@ void init_wifi() {
     delay(1000);
     Serial.println("开始初始化WiFi模块...");
     Serial.println(WiFi.getMode());
+    WiFi.useStaticBuffers(true);
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
     Serial.println("开始初始化WiFi模块1...");

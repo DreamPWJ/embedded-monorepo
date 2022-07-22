@@ -30,7 +30,7 @@ void loop() {
     // 监听蓝牙状态
     // bluetooth_state();
     // 定时检测重新连接WiFi
-    reconnect_wifi();
+    // reconnect_wifi();
     // 网络请求
     // http_get("https://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302"); // https://www.google.com/
 }
