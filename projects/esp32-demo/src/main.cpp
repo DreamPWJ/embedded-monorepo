@@ -14,7 +14,7 @@ void setup() {
     // 初始化蓝牙设置
     // init_bluetooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
-    init_wifi();
+    // init_wifi();
     // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
     // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
 }
