@@ -1,7 +1,9 @@
 #include "wifi_network.h"
 #include <Arduino.h>
 #include <WiFi.h>
-#include <phy.h>
+
+//there's an include for this but it doesn't define the function if it doesn't think it needs it, so manually declare the function
+extern "C" void phy_bbpll_en_usb(bool en);
 
 /**
 * @author 潘维吉
@@ -20,13 +22,22 @@ unsigned long interval = 30000;
 void init_wifi() {
     delay(1000);
     Serial.println("开始初始化WiFi模块...");
+    Serial.println(WiFi.getMode());
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
+    Serial.println("开始初始化WiFi模块1...");
     WiFi.mode(WIFI_STA);
-    phy_bbpll_en_usb(true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
+    Serial.println("开始初始化WiFi模块2...");
+    // 解决ESP32-C3 原生 USB CDC 在使用 Wifi 时停止工作
+    phy_bbpll_en_usb(
+            true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
+    Serial.println("开始初始化WiFi模块3...");
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
+    Serial.println("开始初始化WiFi模块4...");
     WiFi.disconnect();
+    Serial.println("开始初始化WiFi模块5...");
     WiFi.begin(ssid, password);
+    Serial.println("开始初始化WiFi模块6...");
     // 阻塞程序，直到连接成功
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print(".");

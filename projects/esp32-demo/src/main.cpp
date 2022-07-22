@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include "../../../packages/athena-common/bluetooth/bluetooth.h"
-#include "../../../packages/athena-common/chip_info/chip_info.h"
 #include "../../../packages/athena-common/led_pin/led_pin.h"
-#include "../../../packages/athena-common/wifi_network/wifi_network.h"
+#include "../../../packages/athena-common/chip_info/chip_info.h"
+#include "../lib/bluetooth/bluetooth.h"
+#include "../lib/wifi_network/wifi_network.h"
 #include "../../../packages/athena-common/http/http.h"
 
 
@@ -14,8 +14,8 @@ void setup() {
     // 初始化蓝牙设置
     // init_bluetooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
-    init_wifi();
-    // FreeRTOS多线程处理  Create a connection task with 8kB stack on core 0
+    // init_wifi();
+    // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
     // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
 }
 
@@ -32,5 +32,5 @@ void loop() {
     // 定时检测重新连接WiFi
     reconnect_wifi();
     // 网络请求
-    // http_get("https://www.google.com/");
+    // http_get("https://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302"); // https://www.google.com/
 }
