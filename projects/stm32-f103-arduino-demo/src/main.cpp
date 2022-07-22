@@ -6,4 +6,5 @@ void setup() {
 
 void loop() {
 // write your code here
+    Serial.print("Hello World Embedded STM32! \n");
 }
