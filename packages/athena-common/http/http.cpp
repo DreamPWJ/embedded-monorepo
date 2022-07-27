@@ -21,9 +21,9 @@ void http_get(String url) {
             String resBuff = http.getString();
             Serial.println(resBuff);
             digitalWrite(18, HIGH);
-            delay(100);
+            delay(1000);
             digitalWrite(18, LOW);
-            delay(100);
+            delay(1000);
         }
     }
 }

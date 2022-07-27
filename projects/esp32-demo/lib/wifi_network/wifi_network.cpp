@@ -20,7 +20,6 @@ unsigned long interval = 30000;
 /* 设置Wifi */
 // 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
 void init_wifi() {
-    delay(1000);
     Serial.println("开始初始化WiFi模块...");
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
@@ -40,6 +39,8 @@ void init_wifi() {
     // 开发板LED 闪动的实现
     digitalWrite(18, HIGH);
     delay(10000);
+    digitalWrite(18, LOW);
+    delay(1000);
 
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
