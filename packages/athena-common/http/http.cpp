@@ -20,6 +20,10 @@ void http_get(String url) {
         {
             String resBuff = http.getString();
             Serial.println(resBuff);
+            digitalWrite(18, HIGH);
+            delay(100);
+            digitalWrite(18, LOW);
+            delay(100);
         }
     }
 }
