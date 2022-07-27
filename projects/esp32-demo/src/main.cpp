@@ -9,17 +9,17 @@
 void setup() {
 // write your initialization code here
     Serial.begin(115200);
-    //while (!Serial) {  // 等待串口连接成功
-        Serial.println("串口连接成功");
-        // 将 LED 数字引脚初始化为输出
-        set_pin_mode();
-        // 初始化蓝牙设置
-        // init_bluetooth("ESP32-PanWeiJi");
-        // 初始化Wifi无线网络
-        init_wifi();
-        // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
-        // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
-    //}
+    // while (Serial.available()) {  // 等待串口连接成功
+    Serial.println("串口连接成功");
+    // 将 LED 数字引脚初始化为输出
+    set_pin_mode();
+    // 初始化蓝牙设置
+    // init_bluetooth("ESP32-PanWeiJi");
+    // 初始化Wifi无线网络
+    // init_wifi();
+    // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
+    // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
+    // }
 }
 
 void loop() {
