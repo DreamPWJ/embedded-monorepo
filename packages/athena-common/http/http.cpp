@@ -49,11 +49,11 @@ void http_post(String url, String data) {
     // Serialize JSON document
     serializeJson(doc, jsonData);
 
-    //WiFiClient client;  // or WiFiClientSecure for HTTPS
+    WiFiClient client;  // or WiFiClientSecure for HTTPS
     HTTPClient http;
     // Send request
     http.addHeader("Content-Type", "application/json");
-    http.begin(url);
+    http.begin(client, url);
     digitalWrite(18, HIGH);
     delay(1000);
     digitalWrite(18, LOW);
@@ -64,10 +64,6 @@ void http_post(String url, String data) {
         digitalWrite(18, LOW);
         // Read response
         Serial.print(http.getString());
-    } else {
-        digitalWrite(18, HIGH);
-        delay(5000);
-        digitalWrite(18, LOW);
     }
     // Disconnect
     http.end();

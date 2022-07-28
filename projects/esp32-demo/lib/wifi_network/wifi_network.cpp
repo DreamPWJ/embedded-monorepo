@@ -41,7 +41,7 @@ void init_wifi() {
         Serial.println("WiFi 连接成功！");
         // 开发板LED 闪动的实现
         digitalWrite(18, HIGH);
-        delay(10000);
+        delay(6000);
         digitalWrite(18, LOW);
         delay(1000);
     }
