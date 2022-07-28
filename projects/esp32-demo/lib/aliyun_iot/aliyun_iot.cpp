@@ -4,6 +4,7 @@
 * @author 潘维吉
 * @date 2022/7/28 11:31
 * @description 阿里云物联网IOT平台
+* Arduino SDK地址: https://github.com/0xYootou/arduino-aliyun-iot-sdk
 */
 
 // 设置产品和设备的信息，从阿里云设备信息里查看
