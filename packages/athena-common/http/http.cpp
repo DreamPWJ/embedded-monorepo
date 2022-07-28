@@ -65,6 +65,10 @@ void http_post(String url, String data) {
         delay(1000);
         digitalWrite(18, LOW);
         int httpCode = http.POST(dataJSON);
+        Serial.printf("HTTP POST Code: %d\r\n", httpCode);
+        digitalWrite(18, HIGH);
+        delay(1000);
+        digitalWrite(18, LOW);
         if (httpCode == HTTP_CODE_OK) {
             digitalWrite(18, HIGH);
             delay(2000);
