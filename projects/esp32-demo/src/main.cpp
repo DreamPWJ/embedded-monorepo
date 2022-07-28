@@ -4,6 +4,7 @@
 #include "../lib/bluetooth/bluetooth.h"
 #include "../lib/wifi_network/wifi_network.h"
 #include "../../../packages/athena-common/http/http.h"
+#include "../lib/aliyun_iot/aliyun_iot.h"
 
 
 void setup() {
@@ -20,7 +21,8 @@ void setup() {
     // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
     // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
     // 网络请求
-    // http_post("https://oapi.dingtalk.com/robot/send?access_token=383391980b120c38f0f9a4a398349739fa67a623f9cfa834df9c5374e81b2081","");
+    http_post("https://oapi.dingtalk.com/robot/send?access_token=383391980b120c38f0f9a4a398349739fa67a623f9cfa834df9c5374e81b2081","");
+    // init_aliyun_iot_sdk();
     // }
 }
 

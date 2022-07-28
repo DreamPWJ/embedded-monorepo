@@ -7,5 +7,6 @@
 * @description 阿里云物联网IOT平台
 */
 
+void init_aliyun_iot_sdk();
 
 #endif

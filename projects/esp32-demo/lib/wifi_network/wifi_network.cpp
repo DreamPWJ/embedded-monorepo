@@ -26,7 +26,8 @@ void init_wifi() {
     // WiFi.useStaticBuffers(true);
     WiFi.mode(WIFI_STA);
     // 解决ESP32-C3 原生 USB CDC 在使用 WiFi 时停止工作
-    phy_bbpll_en_usb(true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
+    phy_bbpll_en_usb(
+            true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
     WiFi.disconnect();
     WiFi.begin(ssid, password);
@@ -35,12 +36,15 @@ void init_wifi() {
         Serial.print(".");
         delay(1000);
     }
-    Serial.println("WiFi 连接成功！");
-    // 开发板LED 闪动的实现
-    digitalWrite(18, HIGH);
-    delay(10000);
-    digitalWrite(18, LOW);
-    delay(1000);
+
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("WiFi 连接成功！");
+        // 开发板LED 闪动的实现
+        digitalWrite(18, HIGH);
+        delay(10000);
+        digitalWrite(18, LOW);
+        delay(1000);
+    }
 
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
