@@ -8,7 +8,7 @@
 * @author 潘维吉
 * @date 2022/7/20 9:41
 * @description 低功耗蓝牙BLE模块
-  */
+*/
 
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/

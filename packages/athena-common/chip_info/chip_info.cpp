@@ -7,7 +7,7 @@
 * @author 潘维吉
 * @date 2022/7/20 9:41
 * @description 芯片信息模块
-  */
+*/
 
 /* 获取芯片信息 */
 void get_chip_info() {
