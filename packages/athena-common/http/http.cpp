@@ -43,24 +43,24 @@ void http_get(String url) {
 void http_post(String url, String data) {
     // ArduinoJson文档地址: https://github.com/bblanchon/ArduinoJson.git
     // Prepare JSON document
-    char jsonData[] = "{\n"
-                      "    \"text\": {\n"
-                      "        \"content\":\"我是ESP32嵌入式单片机发送的消息！\"\n"
-                      "    },\n"
-                      "    \"msgtype\":\"text\"\n"
-                      "}";
+    char jsonData[] = "{\"msgtype\":\"text\",\"text\": {\"content\":\"我是ESP32嵌入式MCU单片机发送的消息!\"}}";
     DynamicJsonDocument doc(2048);
-    doc["hello"] = "world";
-
     // Serialize JSON document
     serializeJson(doc, jsonData);
-
+    digitalWrite(18, HIGH);
+    delay(1000);
+    digitalWrite(18, LOW);
+    delay(1000);
     WiFiClient client;  // or WiFiClientSecure for HTTPS
     HTTPClient http;
 
     // Send request
     http.begin(client, url);
     http.POST(jsonData);
+    digitalWrite(18, HIGH);
+    delay(2000);
+    digitalWrite(18, LOW);
+    delay(2000);
     // Read response
     Serial.print(http.getString());
     // Disconnect
