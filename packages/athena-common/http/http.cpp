@@ -43,27 +43,35 @@ void http_get(String url) {
 void http_post(String url, String data) {
     // ArduinoJson文档地址: https://github.com/bblanchon/ArduinoJson.git
     // Prepare JSON document
+    DynamicJsonDocument doc(1024);
+    JsonObject object = doc.to<JsonObject>();
+    JsonObject objectItem = doc.to<JsonObject>();
+    object["msgtype"] = "text";
+    objectItem["content"] = "蓝能科技：我是ESP32嵌入式MCU单片机发送的消息!";
+    object["text"] = objectItem;
     // 钉钉通知注意要添加设置关键字
-    String jsonData = "{\"msgtype\":\"text\",\"text\": \"{\"content\":\"蓝能科技：我是ESP32嵌入式MCU单片机发送的消息!\"}\"}";
-    DynamicJsonDocument doc(2048);
+    // char jsonData[] = "{\"msgtype\":\"text\",\"text\": \"{\"content\":\"蓝能科技：我是ESP32嵌入式MCU单片机发送的消息!\"}\"}";
+    String dataJSON;
     // Serialize JSON document
-    serializeJson(doc, jsonData);
+    serializeJson(object, dataJSON);
 
     WiFiClient client;  // or WiFiClientSecure for HTTPS
     HTTPClient http;
-    // Send request
-    http.addHeader("Content-Type", "application/json");
-    http.begin(client, url);
-    digitalWrite(18, HIGH);
-    delay(1000);
-    digitalWrite(18, LOW);
-    int httpCode = http.POST(jsonData);
-    if (httpCode > 0) {
+    if (WiFi.status() == WL_CONNECTED) {
+        // Send request
+        http.begin(client, url);
+        http.addHeader("Content-Type", "application/json; charset=UTF-8");
         digitalWrite(18, HIGH);
-        delay(2000);
+        delay(1000);
         digitalWrite(18, LOW);
-        // Read response
-        Serial.print(http.getString());
+        int httpCode = http.POST(dataJSON);
+        if (httpCode == HTTP_CODE_OK) {
+            digitalWrite(18, HIGH);
+            delay(2000);
+            digitalWrite(18, LOW);
+            // Read response
+            Serial.print(http.getString());
+        }
     }
     // Disconnect
     http.end();
