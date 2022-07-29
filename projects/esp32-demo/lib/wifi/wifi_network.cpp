@@ -3,7 +3,7 @@
 #include <WiFi.h>
 
 //there's an include for this but it doesn't define the function if it doesn't think it needs it, so manually declare the function
-extern "C" void phy_bbpll_en_usb(bool en);
+//extern "C" void phy_bbpll_en_usb(bool en);
 
 /**
 * @author 潘维吉
@@ -26,8 +26,7 @@ void init_wifi() {
     // WiFi.useStaticBuffers(true);
     WiFi.mode(WIFI_STA);
     // 解决ESP32-C3 原生 USB CDC 在使用 WiFi 时停止工作
-    phy_bbpll_en_usb(
-            true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
+    // phy_bbpll_en_usb(true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
     //WiFi.disconnect();
     WiFi.begin(ssid, password);
