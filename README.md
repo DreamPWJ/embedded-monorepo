@@ -66,7 +66,8 @@ https://help.aliyun.com/document_detail/146228.html
 https://help.aliyun.com/document_detail/254820.html
 阿里云Link SDK: https://help.aliyun.com/document_detail/42648.html
 
-#### 如果固件损坏 长按Boot键重新上传烧录固件 可能的表现形式为CMO串口不识别显示, 请去Windows设备管理-> 端口 (COM 和 LPT)查看
+#### USB线的质量直接影响波特率传输速度, 可能导致程序日志无法输出, 直接影响调试和判断, 中高端手机传统USB线即可 ！！！
+#### 如果固件损坏 按Boot和Reset键重新上传烧录固件 可能的表现形式为CMO串口不识别显示, 请去Windows设备管理-> 端口 (COM 和 LPT)查看
 
 #### IDEA工具内File->Settings->File and Code Templates->Includes标签->File Header 添加如下注释信息，之后创建类会自动生成注释信息
 

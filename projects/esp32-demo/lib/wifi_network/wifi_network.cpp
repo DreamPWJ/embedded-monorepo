@@ -20,7 +20,7 @@ unsigned long interval = 30000;
 /* 设置Wifi */
 // 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
 void init_wifi() {
-    Serial.println("开始初始化WiFi模块...");
+    Serial.println("开始初始化WiFi模块");
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
     // WiFi.useStaticBuffers(true);
@@ -29,28 +29,26 @@ void init_wifi() {
     phy_bbpll_en_usb(
             true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
-    WiFi.disconnect();
+    //WiFi.disconnect();
     WiFi.begin(ssid, password);
     // 阻塞程序，直到连接成功
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print(".");
         delay(1000);
     }
-
+    Serial.println("");
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("WiFi 连接成功！");
         // 开发板LED 闪动的实现
         digitalWrite(18, HIGH);
-        delay(6000);
+        delay(2000);
         digitalWrite(18, LOW);
         delay(1000);
+        Serial.println("IP Address: ");
+        Serial.println(WiFi.localIP());
+        Serial.print("WiFi连接强度RRSI: ");
+        Serial.println(WiFi.RSSI());
     }
-
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-
-    Serial.print("WiFi连接强度RRSI: ");
-    Serial.println(WiFi.RSSI());
 
     // 断开与 Wi-Fi 网络的连接
     // WiFi.disconnect();

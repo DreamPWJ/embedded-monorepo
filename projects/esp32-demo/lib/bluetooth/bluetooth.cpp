@@ -77,10 +77,6 @@ void init_bluetooth(String bleName) {
     server->getAdvertising()->start(); // 蓝牙服务器开始广播
 
     Serial.println("蓝牙已就绪, 等待一个客户端连接...");
-    // 开发板LED 闪动的实现
-    digitalWrite(18, HIGH);
-    delay(5000);
-    digitalWrite(18, LOW);
 }
 
 /* 监听蓝牙状态 */
