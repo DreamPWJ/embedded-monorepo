@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
-#include "../lib/bluetooth/bluetooth.h"
+#include "../lib/bluetooth_connect/bluetooth_connect.h"
 #include "../lib/wifi_network/wifi_network.h"
 #include "../../../packages/athena-common/http/http.h"
 #include "../lib/aliyun_iot/aliyun_iot.h"
