@@ -4,9 +4,9 @@
 /**
 * @author 潘维吉
 * @date 2022/7/29 15:51
-* @description MQTT消息队列
+* @description MQTT消息协议
 */
 
-
+void init_mqtt();
 
 #endif

@@ -38,7 +38,7 @@ void loop() {
     // 开发板LED 闪动的实现
     set_led();
     // 监听蓝牙状态
-    bluetooth_state();
+    // bluetooth_state();
     // 定时检测重新连接WiFi
     reconnect_wifi();
 }

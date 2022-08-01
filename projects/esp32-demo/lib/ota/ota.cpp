@@ -53,7 +53,7 @@ String getHeaderValue(String header, String headerName) {
 
 
 // OTA Logic
-void execOTA() {
+void exec_OTA() {
     Serial.println("Connecting to: " + String(host));
     // Connect to S3
     if (client.connect(host.c_str(), port)) {
