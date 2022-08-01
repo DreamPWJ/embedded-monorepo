@@ -18,13 +18,12 @@
 #define CHARACTERISTIC_UUID_RX "e0f94878-332a-4b77-ab82-67fcb8f31186"
 #define CHARACTERISTIC_UUID_TX "a39e356f-31b8-49c4-a19c-f2228e024d40"
 
-uint8_t txValue = 0;
-BLEServer *pServer = NULL;                   //BLEServer指针 pServer
-BLECharacteristic *pTxCharacteristic = NULL; //BLECharacteristic指针 pTxCharacteristic
-bool deviceConnected = false;                //本次连接状态
-bool oldDeviceConnected = false;             //上次连接状态
+static uint8_t txValue = 0;
+static BLEServer *pServer = NULL;                   //BLEServer指针 pServer
+static BLECharacteristic *pTxCharacteristic = NULL; //BLECharacteristic指针 pTxCharacteristic
+static bool deviceConnected = false;                //本次连接状态
+static bool oldDeviceConnected = false;             //上次连接状态
 
-uint8_t devicesConnected = 0;
 
 // 服务器回调
 class MyServerCallbacks : public BLEServerCallbacks {
@@ -57,7 +56,7 @@ class MyCallbacks : public BLECharacteristicCallbacks {
 void init_bluetooth(String bleName) {
     // 参考文档: https://github.com/Homepea7/ESP32_Code
     Serial.println("开始初始化蓝牙模块");
-    // Serial.println(bleName.c_str());
+    Serial.println(bleName.c_str());
     // 创建一个 BLE 设备
     BLEDevice::init(bleName.c_str());
     // 创建一个 BLE 服务
@@ -73,7 +72,7 @@ void init_bluetooth(String bleName) {
     pRxCharacteristic->setCallbacks(new MyCallbacks()); //设置回调
     pService->start();                  // 开始服务
     pServer->getAdvertising()->start(); // 开始广播
-    Serial.println(" 等待一个客户端连接，且发送通知... ");
+    Serial.println("等待一个客户端连接，且发送通知...");
 }
 
 /* 监听蓝牙状态 */
