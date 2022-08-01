@@ -7,6 +7,6 @@ void setup() {
 
 void loop() {
 // write your code here
-    Serial.print("Platform And Arduino For Embedded STM32! \n");
+    Serial.println("PlatformIO And Arduino For Embedded STM32! \n");
     delay(1000);
 }

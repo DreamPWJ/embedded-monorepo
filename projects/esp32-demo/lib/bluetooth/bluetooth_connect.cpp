@@ -14,7 +14,7 @@
 
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
-#define SERVICE_UUID        "e57997fe-066f-11ed-b939-0242ac120002"
+#define SERVICE_UUID           "e57997fe-066f-11ed-b939-0242ac120002"
 #define CHARACTERISTIC_UUID_RX "e0f94878-332a-4b77-ab82-67fcb8f31186"
 #define CHARACTERISTIC_UUID_TX "a39e356f-31b8-49c4-a19c-f2228e024d40"
 
@@ -89,7 +89,7 @@ void bluetooth_state() {
     if (!deviceConnected && oldDeviceConnected) {
         delay(500);                  // 留时间给蓝牙缓冲
         pServer->startAdvertising(); // 重新广播
-        Serial.println(" 开始广播 ");
+        Serial.println("开始广播");
         oldDeviceConnected = deviceConnected;
     }
 

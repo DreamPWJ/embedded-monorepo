@@ -32,7 +32,7 @@ void init_wifi() {
     WiFi.begin(ssid, password);
     // 阻塞程序，直到连接成功
     while (WiFi.status() != WL_CONNECTED) {
-        Serial.print(".");
+        // Serial.print(".");
         delay(1000);
     }
     Serial.println("");
@@ -63,7 +63,7 @@ void reconnect_wifi() {
     //如果 WiFi 已关闭，请尝试每隔 CHECK_WIFI_TIME 秒重新连接一次
     if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
         Serial.print(millis());
-        Serial.println("Reconnecting to WiFi...");
+        Serial.println("重新连接WiFi...");
         WiFi.disconnect();
         WiFi.reconnect();
     }

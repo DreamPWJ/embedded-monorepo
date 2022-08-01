@@ -10,7 +10,7 @@ void setup() {
 
 void loop() {
 // write your code here
-    Serial.print("Hello World Embedded ESP8266! \n");
+    Serial.println("PlatformIO And Arduino For Embedded ESP32! \n");
     delay(1000);
     // 开发板LED 闪动的实现
     // set_led();

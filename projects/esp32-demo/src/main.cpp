@@ -31,14 +31,14 @@ void setup() {
 
 void loop() {
 // write your code here
-    Serial.print("Platform And Arduino For Embedded ESP32! \n");
+    Serial.println("PlatformIO And Arduino For Embedded ESP32! \n");
     // 获取硬件信息
-    // get_chip_info();
+    get_chip_info();
     delay(2000);
     // 开发板LED 闪动的实现
-    // set_led();
+    set_led();
     // 监听蓝牙状态
     bluetooth_state();
     // 定时检测重新连接WiFi
-    // reconnect_wifi();
+    reconnect_wifi();
 }
