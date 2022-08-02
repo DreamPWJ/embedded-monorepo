@@ -3,6 +3,7 @@
 ### 项目代号: athena(雅典娜 智慧女神) 愿景: 使项目更易于复用迭代维护扩展、分离关注点并避免代码重复
 
 ### monorepo 最主要的好处是统一的工作流和共享代码, 兼顾通用性和独立性之间的最佳平衡点, 统一最佳实战只需搭建一套脚手架, 统一管理(规范、配置、开发、联调、构建、测试、发布等)多个包
+
 #### 基于 PlatformIO搭建MonoRepo单体式仓库(单仓多包) https://docs.platformio.org/en/latest/projectconf/section_env_library.html#id3
 
 ### 目录结构
@@ -19,9 +20,13 @@
 
 ### 开发语言: C 、C++
 
-### MCU单片机类型: ESP32(内核RISC-V指令集)或STM32(内核ARM)
+### MCU单片机类型: ESP32(RISC-V精简指令集)或STM32(内核ARM)
 
 ### 嵌入式实时操作系统: FreeRTOS
+
+### 开发平台：PlatformIO
+
+- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 安装执行 python get-platformio.py
 
 ### 嵌入式硬件框架: Arduino
 
@@ -29,9 +34,7 @@
 
 ### MQTT服务器: EMQX
 
-### 硬件调试: DapLink、ST-Link/J-Link、EspTool
-
-#### 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案  安装执行 python get-platformio.py
+### 硬件调试烧录工具: DapLink、ST-Link/J-Link、EspTool
 
 https://www.jetbrains.com/help/clion/platformio.html
 
@@ -67,6 +70,7 @@ https://help.aliyun.com/document_detail/254820.html
 阿里云Link SDK: https://help.aliyun.com/document_detail/42648.html
 
 #### USB线的质量直接影响波特率传输速度, 可能导致程序日志无法输出, 直接影响调试和判断, 中高端手机传统USB线即可 ！！！
+
 #### 如果固件损坏 按Boot和Reset键重新上传烧录固件 可能的表现形式为CMO串口不识别显示, 请去Windows设备管理-> 端口 (COM 和 LPT)查看
 
 #### IDEA工具内File->Settings->File and Code Templates->Includes标签->File Header 添加如下注释信息，之后创建类会自动生成注释信息
