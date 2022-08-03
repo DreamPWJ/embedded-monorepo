@@ -52,7 +52,9 @@ class MyCallbacks : public BLECharacteristicCallbacks {
     }
 };
 
-/* 初始化设置蓝牙 */
+/**
+ * 初始化设置蓝牙
+ */
 void init_bluetooth(String bleName) {
     // 参考文档: https://github.com/Homepea7/ESP32_Code
     Serial.println("开始初始化蓝牙模块");
@@ -75,7 +77,9 @@ void init_bluetooth(String bleName) {
     Serial.println("等待一个客户端连接，且发送通知...");
 }
 
-/* 监听蓝牙状态 */
+/**
+ * 监听蓝牙状态
+ */
 void bluetooth_state() {
     // deviceConnected 已连接
     if (deviceConnected) {

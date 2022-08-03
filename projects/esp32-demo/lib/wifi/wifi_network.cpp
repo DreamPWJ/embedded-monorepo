@@ -17,8 +17,10 @@ const char *password = "a123456789";  // WiFi密码 最少 8 个字符
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
-/* 设置Wifi */
-// 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
+/**
+ * 初始化WiFi
+ * 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
+ */
 void init_wifi() {
     Serial.println("开始初始化WiFi模块");
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
@@ -53,11 +55,16 @@ void init_wifi() {
     // WiFi.disconnect();
 }
 
+/**
+ * 多线程处理
+ */
 void init_wifi_multi_thread(void *pvParameters) {
     init_wifi();
 }
 
-/* 定时检测重新连接WiFi */
+/**
+ * 定时检测重新连接WiFi
+ */
 void reconnect_wifi() {
     unsigned long currentMillis = millis();
     //如果 WiFi 已关闭，请尝试每隔 CHECK_WIFI_TIME 秒重新连接一次
