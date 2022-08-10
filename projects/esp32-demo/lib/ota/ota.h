@@ -7,6 +7,6 @@
 * @description 固件OTA空中升级
 */
 
-void exec_OTA();
+void exec_ota();
 
 #endif

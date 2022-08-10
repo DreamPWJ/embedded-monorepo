@@ -5,6 +5,7 @@
 #include "../lib/wifi/wifi_network.h"
 #include "../../../packages/athena-common/http/http.h"
 #include "../lib/aliyun/aliyun_iot.h"
+#include "../lib/ota/ota.h"
 
 
 void setup() {
@@ -27,6 +28,8 @@ void setup() {
              "");*/
     // init_aliyun_iot_sdk();
     // }
+    // OTA空中升级
+    exec_ota();
 }
 
 void loop() {
