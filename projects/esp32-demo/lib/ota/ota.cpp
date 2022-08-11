@@ -20,33 +20,10 @@
 // WebServer server(80);
 
 static const char *url = "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
-
-// 提供 OTA 服务器证书以通过 HTTPS 进行身份验证  新pem证书地址：https://github.com/espressif/esp-idf/blob/master/examples/system/ota/advanced_https_ota/server_certs/ca_cert.pem
-static const char *server_certificate = "-----BEGIN CERTIFICATE-----\n"
-                                        "MIIDWDCCAkACCQCbF4+gVh/MLjANBgkqhkiG9w0BAQsFADBuMQswCQYDVQQGEwJJ\n"
-                                        "TjELMAkGA1UECAwCTUgxDDAKBgNVBAcMA1BVTjEMMAoGA1UECgwDRVNQMQwwCgYD\n"
-                                        "VQQLDANFU1AxDDAKBgNVBAMMA0VTUDEaMBgGCSqGSIb3DQEJARYLZXNwQGVzcC5j\n"
-                                        "b20wHhcNMjEwNzEyMTIzNjI3WhcNNDEwNzA3MTIzNjI3WjBuMQswCQYDVQQGEwJJ\n"
-                                        "TjELMAkGA1UECAwCTUgxDDAKBgNVBAcMA1BVTjEMMAoGA1UECgwDRVNQMQwwCgYD\n"
-                                        "VQQLDANFU1AxDDAKBgNVBAMMA0VTUDEaMBgGCSqGSIb3DQEJARYLZXNwQGVzcC5j\n"
-                                        "b20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDhxF/y7bygndxPwiWL\n"
-                                        "SwS9LY3uBMaJgup0ufNKVhx+FhGQOu44SghuJAaH3KkPUnt6SOM8jC97/yQuc32W\n"
-                                        "ukI7eBZoA12kargSnzdv5m5rZZpd+NznSSpoDArOAONKVlzr25A1+aZbix2mKRbQ\n"
-                                        "S5w9o1N2BriQuSzd8gL0Y0zEk3VkOWXEL+0yFUT144HnErnD+xnJtHe11yPO2fEz\n"
-                                        "YaGiilh0ddL26PXTugXMZN/8fRVHP50P2OG0SvFpC7vghlLp4VFM1/r3UJnvL6Oz\n"
-                                        "3ALc6dhxZEKQucqlpj8l1UegszQToopemtIj0qXTHw2+uUnkUyWIPjPC+wdOAoap\n"
-                                        "rFTRAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAItw24y565k3C/zENZlxyzto44ud\n"
-                                        "IYPQXN8Fa2pBlLe1zlSIyuaA/rWQ+i1daS8nPotkCbWZyf5N8DYaTE4B0OfvoUPk\n"
-                                        "B5uGDmbuk6akvlB5BGiYLfQjWHRsK9/4xjtIqN1H58yf3QNROuKsPAeywWS3Fn32\n"
-                                        "3//OpbWaClQePx6udRYMqAitKR+QxL7/BKZQsX+UyShuq8hjphvXvk0BW8ONzuw9\n"
-                                        "RcoORxM0FzySYjeQvm4LhzC/P3ZBhEq0xs55aL2a76SJhq5hJy7T/Xz6NFByvlrN\n"
-                                        "lFJJey33KFrAf5vnV9qcyWFIo7PYy2VsaaEjFeefr7q3sTFSMlJeadexW2Y=\n"
-                                        "-----END CERTIFICATE-----";
-
 #define FIRMWARE_VERSION       0.1
 #define UPDATE_JSON_URL        "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // https://esp32tutorial.netsons.org/https_ota/firmware.json
 
-// server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
+// 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://cloud.google.com/iot/docs/how-tos/credentials/keys?hl=en_US&_ga=2.68918870.-659521568.1569360154
 extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
@@ -173,9 +150,9 @@ void check_update_task(void *pvParameter) {
  */
 void exec_ota() {
     Serial.println("开始执行OTA空中升级");
-/*  HttpsOTA.onHttpEvent(HttpEvent);
-    HttpsOTA.begin(url, server_certificate);
-    Serial.println("Please Wait it takes some time ..."); */
+    /* HttpsOTA.onHttpEvent(HttpEvent);
+       HttpsOTA.begin(url, server_cert_pem_start);
+       Serial.println("Please Wait it takes some time ..."); */
 
     // start the check update task
     xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
