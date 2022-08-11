@@ -9,4 +9,6 @@
 
 void exec_ota();
 
+void check_ota();
+
 #endif
