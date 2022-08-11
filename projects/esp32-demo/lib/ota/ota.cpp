@@ -5,7 +5,6 @@
 #include <cJSON.h>
 #include "esp_system.h"
 #include <esp_https_ota.h>
-#include "esp_crt_bundle.h"
 #include "HttpsOTAUpdate.h"
 
 /**
@@ -44,10 +43,11 @@ static const char *server_certificate = "-----BEGIN CERTIFICATE-----\n"
                                         "lFJJey33KFrAf5vnV9qcyWFIo7PYy2VsaaEjFeefr7q3sTFSMlJeadexW2Y=\n"
                                         "-----END CERTIFICATE-----";
 
-#define FIRMWARE_VERSION       1.0
-#define UPDATE_JSON_URL        "https://esp32tutorial.netsons.org/https_ota/firmware.json"
+#define FIRMWARE_VERSION       0.1
+#define UPDATE_JSON_URL        "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // https://esp32tutorial.netsons.org/https_ota/firmware.json
 
 // server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
+// 生成pem证书文档: https://cloud.google.com/iot/docs/how-tos/credentials/keys?hl=en_US&_ga=2.68918870.-659521568.1569360154
 extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
 
@@ -110,6 +110,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 // downloads every 30sec the json file with the latest firmware
 void check_update_task(void *pvParameter) {
     printf("Looking for a new firmware...\n");
+    printf(server_cert_pem_start);
 
     // configure the esp_http_client
     esp_http_client_config_t config = {

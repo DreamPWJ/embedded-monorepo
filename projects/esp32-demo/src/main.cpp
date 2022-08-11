@@ -34,9 +34,9 @@ void setup() {
 
 void loop() {
 // write your code here
-    Serial.println("PlatformIO And Arduino For Embedded ESP32! \n");
+    // Serial.println("PlatformIO And Arduino For Embedded ESP32! \n");
     // 获取硬件信息
-    get_chip_info();
+    // get_chip_info();
     delay(2000);
     // 开发板LED 闪动的实现
     set_led();
