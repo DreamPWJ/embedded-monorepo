@@ -45,5 +45,5 @@ void loop() {
     // 定时检测重新连接WiFi
     reconnect_wifi();
     // 检测OTA
-    check_ota();
+    // check_ota();
 }
