@@ -5,6 +5,7 @@
 #include <cJSON.h>
 #include "esp_system.h"
 #include <esp_https_ota.h>
+#include <esp_crt_bundle.h>
 #include "HttpsOTAUpdate.h"
 
 /**
@@ -25,8 +26,8 @@ static const char *url = "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://cloud.google.com/iot/docs/how-tos/credentials/keys?hl=en_US&_ga=2.68918870.-659521568.1569360154
-extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
-extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
+//extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
+//extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
 
 static HttpsOTAStatus_t otaStatus;
 
@@ -87,13 +88,15 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 // downloads every 30sec the json file with the latest firmware
 void check_update_task(void *pvParameter) {
     printf("Looking for a new firmware...\n");
-    printf(server_cert_pem_start);
+    //printf(server_cert_pem_start);
 
     // configure the esp_http_client
     esp_http_client_config_t config = {
             .url = UPDATE_JSON_URL,
             .event_handler = _http_event_handler,
+            //.crt_bundle_attach =  esp_crt_bundle_attach,
     };
+    esp_crt_bundle_attach(&config);
     esp_http_client_handle_t client = esp_http_client_init(&config);
 
     // downloading the json file
@@ -121,7 +124,8 @@ void check_update_task(void *pvParameter) {
 
                         esp_http_client_config_t ota_client_config = {
                                 .url = file->valuestring,
-                                .cert_pem = server_cert_pem_start,
+                                //.crt_bundle_attach =  esp_crt_bundle_attach,
+                                //.cert_pem = server_cert_pem_start,
                         };
                         esp_err_t ret = esp_https_ota(&ota_client_config);
                         if (ret == ESP_OK) {
