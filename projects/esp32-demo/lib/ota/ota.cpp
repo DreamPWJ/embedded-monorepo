@@ -25,9 +25,10 @@ static const char *url = "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com
 #define UPDATE_JSON_URL        "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // https://esp32tutorial.netsons.org/https_ota/firmware.json
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
-// 生成pem证书文档: https://cloud.google.com/iot/docs/how-tos/credentials/keys?hl=en_US&_ga=2.68918870.-659521568.1569360154
-//extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
-//extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
+// 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
+// 证书生成命令(Windows系统在Git Bash执行): openssl req -x509 -newkey rsa:2048 -keyout ca_key.pem -out ca_cert.pem -days 3650 -nodes
+extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
+extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
 
 static HttpsOTAStatus_t otaStatus;
 
@@ -125,7 +126,7 @@ void check_update_task(void *pvParameter) {
                         esp_http_client_config_t ota_client_config = {
                                 .url = file->valuestring,
                                 //.crt_bundle_attach =  esp_crt_bundle_attach,
-                                //.cert_pem = server_cert_pem_start,
+                                .cert_pem = server_cert_pem_start,
                         };
                         esp_err_t ret = esp_https_ota(&ota_client_config);
                         if (ret == ESP_OK) {
