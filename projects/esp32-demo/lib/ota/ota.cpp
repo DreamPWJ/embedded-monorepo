@@ -10,6 +10,7 @@
 #include <esp_crt_bundle.h>
 #include <WiFiType.h>
 #include <WiFi.h>
+#include <http.h>
 #include "HttpsOTAUpdate.h"
 
 /**
@@ -23,10 +24,10 @@
 */
 
 // WebServer server(80);
-// 固件文件地址 可存储到公有云OSS或者GitLab代码管理中用于访问
+// 固件文件地址 可存储到公有云OSS或者GitLab代码管理中用于访问  如果https证书有问题 可以使用http协议
 static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
 #define FIRMWARE_VERSION       0.1
-#define UPDATE_JSON_URL        "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // https://esp32tutorial.netsons.org/https_ota/firmware.json
+#define UPDATE_JSON_URL        "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
@@ -62,7 +63,7 @@ void HttpEvent(HttpEvent_t *event) {
 }
 
 // receive buffer
-char rcv_buffer[200];
+char rcv_buffer[300];
 
 // esp_http_client event handler
 esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
@@ -89,7 +90,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-// Check update task
+// 参考: https://github.com/lucadentella/esp32-tutorial/blob/master/30_https_ota/main/main.c
 // downloads every 30sec the json file with the latest firmware
 void check_update_task(void *pvParameter) {
     printf("Looking for a new firmware...\n");
@@ -109,7 +110,6 @@ void check_update_task(void *pvParameter) {
     esp_err_t err = esp_http_client_perform(client);
 
     if (err == ESP_OK) {
-
         // parse the json file
         cJSON *json = cJSON_Parse(rcv_buffer);
         if (json == NULL) printf("downloaded file is not a valid json, aborting...\n");
@@ -120,10 +120,8 @@ void check_update_task(void *pvParameter) {
             // check the version
             if (!cJSON_IsNumber(version)) printf("unable to read new version, aborting...\n");
             else {
-
                 double new_version = version->valuedouble;
                 if (new_version > FIRMWARE_VERSION) {
-
                     printf("current firmware version (%.1f) is lower than the available one (%.1f), upgrading...\n",
                            FIRMWARE_VERSION, new_version);
                     if (cJSON_IsString(file) && (file->valuestring != NULL)) {
@@ -138,7 +136,7 @@ void check_update_task(void *pvParameter) {
                         };
                         esp_err_t ret = esp_https_ota(&ota_client_config);
                         if (ret == ESP_OK) {
-                            printf("OTA OK, restarting...\n");
+                            Serial.println("执行OTA空中升级成功了, 准备重启单片机....");
                             esp_restart();
                         } else {
                             printf("OTA failed...\n");
@@ -163,6 +161,8 @@ void check_update_task(void *pvParameter) {
  */
 esp_err_t do_firmware_upgrade() {
     printf(CONFIG_FIRMWARE_UPGRADE_URL);
+    http_get(UPDATE_JSON_URL);
+
     esp_http_client_config_t config = {
             .url = CONFIG_FIRMWARE_UPGRADE_URL,
             .cert_pem = (char *) server_cert_pem_start,
@@ -190,14 +190,14 @@ esp_err_t do_firmware_upgrade() {
 void exec_ota() {
     Serial.println("开始执行OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
-    do_firmware_upgrade();
+    // do_firmware_upgrade();
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */
 
     // start the check update task
-    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
+    xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
 }
 
 /**
