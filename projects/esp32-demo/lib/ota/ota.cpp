@@ -1,11 +1,15 @@
 #include "ota.h"
 #include <Arduino.h>
+#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <cJSON.h>
 #include "esp_system.h"
+#include "esp_http_client.h"
 #include <esp_https_ota.h>
 #include <esp_crt_bundle.h>
+#include <WiFiType.h>
+#include <WiFi.h>
 #include "HttpsOTAUpdate.h"
 
 /**
@@ -19,16 +23,16 @@
 */
 
 // WebServer server(80);
-
-static const char *url = "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
+// 固件文件地址 可存储到公有云OSS或者GitLab代码管理中用于访问
+static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
 #define FIRMWARE_VERSION       0.1
 #define UPDATE_JSON_URL        "https://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // https://esp32tutorial.netsons.org/https_ota/firmware.json
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
 // 证书生成命令(Windows系统在Git Bash执行): openssl req -x509 -newkey rsa:2048 -keyout ca_key.pem -out ca_cert.pem -days 3650 -nodes
-extern const char server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
-extern const char server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
+extern const uint8_t server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
+extern const uint8_t server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
 
 static HttpsOTAStatus_t otaStatus;
 
@@ -94,14 +98,16 @@ void check_update_task(void *pvParameter) {
     // configure the esp_http_client
     esp_http_client_config_t config = {
             .url = UPDATE_JSON_URL,
+            .cert_pem =  (char *) server_cert_pem_start,
+            .timeout_ms = 8000,
             .event_handler = _http_event_handler,
+            .keep_alive_enable = true,
             //.crt_bundle_attach =  esp_crt_bundle_attach,
     };
-    esp_crt_bundle_attach(&config);
     esp_http_client_handle_t client = esp_http_client_init(&config);
-
     // downloading the json file
     esp_err_t err = esp_http_client_perform(client);
+
     if (err == ESP_OK) {
 
         // parse the json file
@@ -126,7 +132,9 @@ void check_update_task(void *pvParameter) {
                         esp_http_client_config_t ota_client_config = {
                                 .url = file->valuestring,
                                 //.crt_bundle_attach =  esp_crt_bundle_attach,
-                                .cert_pem = server_cert_pem_start,
+                                .cert_pem =  (char *) server_cert_pem_start,
+                                .timeout_ms = 8000,
+                                .keep_alive_enable = true,
                         };
                         esp_err_t ret = esp_https_ota(&ota_client_config);
                         if (ret == ESP_OK) {
@@ -151,16 +159,45 @@ void check_update_task(void *pvParameter) {
 }
 
 /**
+ * 执行固件升级
+ */
+esp_err_t do_firmware_upgrade() {
+    printf(CONFIG_FIRMWARE_UPGRADE_URL);
+    esp_http_client_config_t config = {
+            .url = CONFIG_FIRMWARE_UPGRADE_URL,
+            .cert_pem = (char *) server_cert_pem_start,
+            .timeout_ms = 600000,
+            //.crt_bundle_attach =  esp_crt_bundle_attach,
+            .keep_alive_enable = true,
+    };
+/*    esp_https_ota_config_t ota_config = {
+            .http_config = &config,
+            .partial_http_download=true
+    }; */
+    esp_err_t ret = esp_https_ota(&config);
+    if (ret == ESP_OK) {
+        Serial.println("执行OTA空中升级成功了");
+        esp_restart();
+    } else {
+        return ESP_FAIL;
+    }
+    return ESP_OK;
+}
+
+/**
  * 执行OTA空中升级
  */
 void exec_ota() {
-    Serial.println("开始执行OTA空中升级");
+    Serial.println("开始执行OTA空中升级...");
+    //if (WiFi.status() == WL_CONNECTED) {
+    do_firmware_upgrade();
+    //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */
 
     // start the check update task
-    xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
+    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
 }
 
 /**
