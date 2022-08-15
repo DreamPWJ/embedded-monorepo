@@ -24,7 +24,7 @@
 */
 
 // WebServer server(80);
-// 固件文件地址 可存储到公有云OSS或者GitLab代码管理中用于访问  如果https证书有问题 可以使用http协议
+// 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
 #define FIRMWARE_VERSION       0.1
 #define UPDATE_JSON_URL        "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // 如果https证书有问题 可以使用http协议
@@ -63,7 +63,7 @@ void HttpEvent(HttpEvent_t *event) {
 }
 
 // receive buffer
-char rcv_buffer[300];
+char rcv_buffer[600];
 
 // esp_http_client event handler
 esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
@@ -110,6 +110,7 @@ void check_update_task(void *pvParameter) {
     esp_err_t err = esp_http_client_perform(client);
 
     if (err == ESP_OK) {
+        printf(rcv_buffer);
         // parse the json file
         cJSON *json = cJSON_Parse(rcv_buffer);
         if (json == NULL) printf("downloaded file is not a valid json, aborting...\n");
