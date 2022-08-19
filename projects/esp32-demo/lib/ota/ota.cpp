@@ -14,6 +14,9 @@
 #include <HTTPClient.h>
 #include "HttpsOTAUpdate.h"
 #include <ArduinoJson.h>
+#include <bits/stdc++.h>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -28,7 +31,7 @@
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       0.1
+#define FIRMWARE_VERSION       "0.1.0"
 #define UPDATE_JSON_URL        "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
@@ -95,7 +98,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
 
 // 参考: https://github.com/lucadentella/esp32-tutorial/blob/master/30_https_ota/main/main.c
 // downloads every 30sec the json file with the latest firmware
-void check_update_task(void *pvParameter) {
+/*void check_update_task(void *pvParameter) {
     printf("Looking for a new firmware...\n");
     //printf(server_cert_pem_start);
 
@@ -160,6 +163,45 @@ void check_update_task(void *pvParameter) {
 
     printf("\n");
     vTaskDelay(30000 / portTICK_PERIOD_MS);
+}*/
+
+// Method to compare two versions.
+// Returns 1 if v2 is smaller, -1 if v1 is smaller, 0 if equal
+int version_compare(string v1, string v2) {
+    // vnum stores each numeric
+    // part of version
+    int vnum1 = 0, vnum2 = 0;
+
+    // loop until both string are
+    // processed
+    for (int i = 0, j = 0; (i < v1.length()
+                            || j < v2.length());) {
+        // storing numeric part of
+        // version 1 in vnum1
+        while (i < v1.length() && v1[i] != '.') {
+            vnum1 = vnum1 * 10 + (v1[i] - '0');
+            i++;
+        }
+
+        // storing numeric part of
+        // version 2 in vnum2
+        while (j < v2.length() && v2[j] != '.') {
+            vnum2 = vnum2 * 10 + (v2[j] - '0');
+            j++;
+        }
+
+        if (vnum1 > vnum2)
+            return 1;
+        if (vnum2 > vnum1)
+            return -1;
+
+        // if equal, reset variables and
+        // go for next numeric part
+        vnum1 = vnum2 = 0;
+        i++;
+        j++;
+    }
+    return 0;
 }
 
 /**
@@ -176,9 +218,10 @@ esp_err_t do_firmware_upgrade() {
     Serial.println(new_version);
     Serial.println(file_url);
 
-    if (new_version > FIRMWARE_VERSION) {
+    if (version_compare(to_string(new_version), FIRMWARE_VERSION) == 1) {
+        Serial.println("有OTA新版本");
         esp_http_client_config_t config = {
-                .url = "",
+                .url = file_url.c_str(),
                 .cert_pem = (char *) server_cert_pem_start,
                 .timeout_ms = 600000,
                 //.crt_bundle_attach =  esp_crt_bundle_attach,
