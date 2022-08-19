@@ -166,32 +166,41 @@ void check_update_task(void *pvParameter) {
  * 执行固件升级
  */
 esp_err_t do_firmware_upgrade() {
-    printf(CONFIG_FIRMWARE_UPGRADE_URL);
+    // printf(CONFIG_FIRMWARE_UPGRADE_URL);
     DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
+    // 读取JSON数据
+    Serial.println("OTA响应数据:");
+    double new_version = json["version"].as<double>();
+    String file_url = json["file"].as<String>();
+    //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
+    Serial.println(new_version);
+    Serial.println(file_url);
 
-    // Read values
-    Serial.println("响应数据:");
-    Serial.println(json["version"].as<double>());
-    Serial.println(json["file"].as<String>());
-
-/*    esp_http_client_config_t config = {
-            .url = CONFIG_FIRMWARE_UPGRADE_URL,
-            .cert_pem = (char *) server_cert_pem_start,
-            .timeout_ms = 600000,
-            //.crt_bundle_attach =  esp_crt_bundle_attach,
-            .keep_alive_enable = true,
-    };
-*//*    esp_https_ota_config_t ota_config = {
-            .http_config = &config,
-            .partial_http_download=true
-    }; *//*
-    esp_err_t ret = esp_https_ota(&config);
-    if (ret == ESP_OK) {
-        Serial.println("执行OTA空中升级成功了");
-        esp_restart();
+    if (new_version > FIRMWARE_VERSION) {
+        esp_http_client_config_t config = {
+                .url = "",
+                .cert_pem = (char *) server_cert_pem_start,
+                .timeout_ms = 600000,
+                //.crt_bundle_attach =  esp_crt_bundle_attach,
+                .keep_alive_enable = true,
+        };
+/*        esp_https_ota_config_t ota_config = {
+                .http_config = &config,
+                .partial_http_download=true
+        };*/
+        esp_err_t ret = esp_https_ota(&config);
+        if (ret == ESP_OK) {
+            Serial.println("执行OTA空中升级成功");
+            esp_restart();
+        } else {
+            Serial.println("执行OTA空中升级失败");
+            return ESP_FAIL;
+        }
     } else {
-        return ESP_FAIL;
-    }*/
+        Serial.println("没有新版本OTA固件, 跳过升级");
+    }
+    printf("\n");
+    // vTaskDelay(30000 / portTICK_PERIOD_MS);
     return ESP_OK;
 }
 
@@ -202,6 +211,8 @@ void exec_ota() {
     Serial.println("开始执行OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
     do_firmware_upgrade();
+    // 开启多线程OTA任务
+    //xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);

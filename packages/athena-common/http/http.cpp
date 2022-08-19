@@ -23,14 +23,15 @@ DynamicJsonDocument http_get(String url) {
         Serial.printf("HTTP Get Code: %d\r\n", httpCode);
         if (httpCode == HTTP_CODE_OK) // 收到正确的内容
         {
-            String resBuff = http.getString();
-            Serial.println(resBuff);
             // Parse response
             deserializeJson(doc, http.getStream());
 
             // Read values
-            /*      Serial.println(doc["version"].as<double>());
-                    Serial.println(doc["file"].as<String>()); */
+       /*     Serial.println(doc["version"].as<double>());
+            Serial.println(doc["file"].as<String>()); */
+
+/*          String resBuff = http.getString();
+            Serial.println(resBuff); */
         }
     }
     return doc;
