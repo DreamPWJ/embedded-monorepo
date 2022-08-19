@@ -212,14 +212,14 @@ esp_err_t do_firmware_upgrade() {
     DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
     // 读取JSON数据
     Serial.println("OTA响应数据:");
-    double new_version = json["version"].as<double>();
+    string new_version = json["version"].as<string>();
     String file_url = json["file"].as<String>();
     //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
-    Serial.println(new_version);
+    // Serial.println(new_version);
     Serial.println(file_url);
 
-    if (version_compare(to_string(new_version), FIRMWARE_VERSION) == 1) {
-        Serial.println("有OTA新版本");
+    if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
+        Serial.println("有OTA固件新版本");
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
                 .cert_pem = (char *) server_cert_pem_start,
