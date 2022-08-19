@@ -13,8 +13,9 @@
 */
 
 /* GET请求 */
-void http_get(String url) {
+DynamicJsonDocument http_get(String url) {
     HTTPClient http;
+    DynamicJsonDocument doc(2048);
     http.begin(url); //HTTP begin
     int httpCode = http.GET();
     if (httpCode > 0) {
@@ -22,17 +23,17 @@ void http_get(String url) {
         Serial.printf("HTTP Get Code: %d\r\n", httpCode);
         if (httpCode == HTTP_CODE_OK) // 收到正确的内容
         {
-            // Parse response
-            //DynamicJsonDocument doc(2048);
-            //deserializeJson(doc, http.getStream());
-
-            // Read values
-            //Serial.println(doc["time"].as<long>());
-
             String resBuff = http.getString();
             Serial.println(resBuff);
+            // Parse response
+            deserializeJson(doc, http.getStream());
+
+            // Read values
+            /*      Serial.println(doc["version"].as<double>());
+                    Serial.println(doc["file"].as<String>()); */
         }
     }
+    return doc;
     // Disconnect
     http.end();
 }

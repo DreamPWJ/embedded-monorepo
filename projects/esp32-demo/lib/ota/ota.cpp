@@ -11,7 +11,9 @@
 #include <WiFiType.h>
 #include <WiFi.h>
 #include <http.h>
+#include <HTTPClient.h>
 #include "HttpsOTAUpdate.h"
+#include <ArduinoJson.h>
 
 /**
 * @author 潘维吉
@@ -79,6 +81,7 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
             break;
         case HTTP_EVENT_ON_DATA:
             if (!esp_http_client_is_chunked_response(evt->client)) {
+                //printf("响应数据: %.*s", evt->data_len, (char *) evt->data);
                 strncpy(rcv_buffer, (char *) evt->data, evt->data_len);
             }
             break;
@@ -111,6 +114,7 @@ void check_update_task(void *pvParameter) {
 
     if (err == ESP_OK) {
         printf(rcv_buffer);
+        printf("\n");
         // parse the json file
         cJSON *json = cJSON_Parse(rcv_buffer);
         if (json == NULL) printf("downloaded file is not a valid json, aborting...\n");
@@ -148,6 +152,7 @@ void check_update_task(void *pvParameter) {
                            FIRMWARE_VERSION, new_version);
             }
         }
+        cJSON_Delete(json);
     } else printf("unable to download the json file, aborting...\n");
 
     // cleanup
@@ -162,26 +167,31 @@ void check_update_task(void *pvParameter) {
  */
 esp_err_t do_firmware_upgrade() {
     printf(CONFIG_FIRMWARE_UPGRADE_URL);
-    http_get(UPDATE_JSON_URL);
+    DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
 
-    esp_http_client_config_t config = {
+    // Read values
+    Serial.println("响应数据:");
+    Serial.println(json["version"].as<double>());
+    Serial.println(json["file"].as<String>());
+
+/*    esp_http_client_config_t config = {
             .url = CONFIG_FIRMWARE_UPGRADE_URL,
             .cert_pem = (char *) server_cert_pem_start,
             .timeout_ms = 600000,
             //.crt_bundle_attach =  esp_crt_bundle_attach,
             .keep_alive_enable = true,
     };
-/*    esp_https_ota_config_t ota_config = {
+*//*    esp_https_ota_config_t ota_config = {
             .http_config = &config,
             .partial_http_download=true
-    }; */
+    }; *//*
     esp_err_t ret = esp_https_ota(&config);
     if (ret == ESP_OK) {
         Serial.println("执行OTA空中升级成功了");
         esp_restart();
     } else {
         return ESP_FAIL;
-    }
+    }*/
     return ESP_OK;
 }
 
@@ -191,14 +201,14 @@ esp_err_t do_firmware_upgrade() {
 void exec_ota() {
     Serial.println("开始执行OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
-    // do_firmware_upgrade();
+    do_firmware_upgrade();
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */
 
     // start the check update task
-    xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
+    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
 }
 
 /**
