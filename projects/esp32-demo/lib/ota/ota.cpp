@@ -207,7 +207,7 @@ int version_compare(string v1, string v2) {
 /**
  * 执行固件升级
  */
-esp_err_t do_firmware_upgrade() {
+void do_firmware_upgrade(void *pvParameter) {
     // printf(CONFIG_FIRMWARE_UPGRADE_URL);
     DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
     // 读取JSON数据
@@ -237,14 +237,14 @@ esp_err_t do_firmware_upgrade() {
             esp_restart();
         } else {
             Serial.println("执行OTA空中升级失败");
-            return ESP_FAIL;
+            // return ESP_FAIL;
         }
     } else {
         Serial.println("没有新版本OTA固件, 跳过升级");
     }
     printf("\n");
-    // vTaskDelay(30000 / portTICK_PERIOD_MS);
-    return ESP_OK;
+    vTaskDelay(30000 / portTICK_PERIOD_MS);
+    // return ESP_OK; // esp_err_t类型
 }
 
 /**
@@ -253,9 +253,9 @@ esp_err_t do_firmware_upgrade() {
 void exec_ota() {
     Serial.println("开始执行OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
-    do_firmware_upgrade();
+    //do_firmware_upgrade();
     // 开启多线程OTA任务
-    //xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
+    xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
