@@ -1,4 +1,5 @@
 #include "mqtt.h"
+#include <Arduino.h>
 #include <PubSubClient.h>
 #include <WiFiClient.h>
 
@@ -22,6 +23,6 @@ PubSubClient client(espClient);
 /**
  * 初始化MQTT协议
  */
-init_mqtt() {
+void init_mqtt() {
 
 }
