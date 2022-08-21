@@ -48,7 +48,7 @@ void setup() {
 
 #if PWM_EN
     init_motor();
-#endif
+
     //	函数名称：timerBegin()
     //	函数功能：Timer初始化，分别有三个参数
     //	函数输入：1. 定时器编号（0到3，对应全部4个硬件定时器）
@@ -73,6 +73,9 @@ void setup() {
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
     timerAlarmEnable(timer); //	使能定时器
+
+#endif
+
 }
 
 void loop() {

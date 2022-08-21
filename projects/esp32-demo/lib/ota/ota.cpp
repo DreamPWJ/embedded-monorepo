@@ -30,8 +30,8 @@ using namespace std;
 
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
-static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.0"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+// static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
+#define FIRMWARE_VERSION       "0.2.1"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
@@ -41,6 +41,123 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_server_certs_ca_cert_p
 extern const uint8_t server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
 
 static HttpsOTAStatus_t otaStatus;
+
+
+// Method to compare two versions.
+// Returns 1 if v2 is smaller, -1 if v1 is smaller, 0 if equal
+int version_compare(string v1, string v2) {
+    // vnum stores each numeric
+    // part of version
+    int vnum1 = 0, vnum2 = 0;
+
+    // loop until both string are
+    // processed
+    for (int i = 0, j = 0; (i < v1.length()
+                            || j < v2.length());) {
+        // storing numeric part of
+        // version 1 in vnum1
+        while (i < v1.length() && v1[i] != '.') {
+            vnum1 = vnum1 * 10 + (v1[i] - '0');
+            i++;
+        }
+
+        // storing numeric part of
+        // version 2 in vnum2
+        while (j < v2.length() && v2[j] != '.') {
+            vnum2 = vnum2 * 10 + (v2[j] - '0');
+            j++;
+        }
+
+        if (vnum1 > vnum2)
+            return 1;
+        if (vnum2 > vnum1)
+            return -1;
+
+        // if equal, reset variables and
+        // go for next numeric part
+        vnum1 = vnum2 = 0;
+        i++;
+        j++;
+    }
+    return 0;
+}
+
+/**
+ * 执行固件升级
+ */
+esp_err_t do_firmware_upgrade() {
+    // printf(CONFIG_FIRMWARE_UPGRADE_URL);
+    DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
+    // 读取JSON数据
+    // Serial.println("OTA响应数据:");
+    string new_version = json["version"].as<string>();
+    String file_url = json["file"].as<String>();
+    //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
+    // Serial.println(new_version);
+    //Serial.println(file_url);
+
+    if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
+        Serial.println("有新版本OTA固件, 正在下载...");
+        esp_http_client_config_t config = {
+                .url = file_url.c_str(),
+                .cert_pem = (char *) server_cert_pem_start,
+                .timeout_ms = 600000,
+                //.crt_bundle_attach =  esp_crt_bundle_attach,
+                .keep_alive_enable = true,
+        };
+/*        esp_https_ota_config_t ota_config = {
+                .http_config = &config,
+                .partial_http_download=true
+        };*/
+        esp_err_t ret = esp_https_ota(&config);
+        if (ret == ESP_OK) {
+            Serial.println("执行OTA空中升级成功了, 准备重启单片机...");
+            esp_restart();
+        } else {
+            Serial.println("执行OTA空中升级失败");
+            return ESP_FAIL;
+        }
+    } else {
+        Serial.println("没有新版本OTA固件, 跳过升级");
+    }
+    printf("\n");
+    //  vTaskDelay(30000 / portTICK_PERIOD_MS);
+    return ESP_OK; // esp_err_t 类型
+}
+
+/**
+ * 执行OTA空中升级
+ */
+void exec_ota() {
+    Serial.println("开始执行OTA空中升级...");
+    //if (WiFi.status() == WL_CONNECTED) {
+    do_firmware_upgrade();
+    // 开启多线程OTA任务
+    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
+    //}
+    /* HttpsOTA.onHttpEvent(HttpEvent);
+       HttpsOTA.begin(url, server_cert_pem_start);
+       Serial.println("Please Wait it takes some time ..."); */
+
+    // start the check update task
+    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
+}
+
+/**
+ * 检查OTA空中升级
+ */
+void check_ota() {
+    otaStatus = HttpsOTA.status();
+    if (otaStatus == HTTPS_OTA_SUCCESS) {
+        Serial.println(
+                "Firmware written successfully. To reboot device, call API ESP.restart() or PUSH restart button on device");
+        // fflush(stdout);
+        esp_restart();
+    } else if (otaStatus == HTTPS_OTA_FAIL) {
+        Serial.println("Firmware Upgrade Fail");
+    }
+    delay(1000);
+}
 
 void HttpEvent(HttpEvent_t *event) {
     switch (event->event_id) {
@@ -164,119 +281,3 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     printf("\n");
     vTaskDelay(30000 / portTICK_PERIOD_MS);
 }*/
-
-// Method to compare two versions.
-// Returns 1 if v2 is smaller, -1 if v1 is smaller, 0 if equal
-int version_compare(string v1, string v2) {
-    // vnum stores each numeric
-    // part of version
-    int vnum1 = 0, vnum2 = 0;
-
-    // loop until both string are
-    // processed
-    for (int i = 0, j = 0; (i < v1.length()
-                            || j < v2.length());) {
-        // storing numeric part of
-        // version 1 in vnum1
-        while (i < v1.length() && v1[i] != '.') {
-            vnum1 = vnum1 * 10 + (v1[i] - '0');
-            i++;
-        }
-
-        // storing numeric part of
-        // version 2 in vnum2
-        while (j < v2.length() && v2[j] != '.') {
-            vnum2 = vnum2 * 10 + (v2[j] - '0');
-            j++;
-        }
-
-        if (vnum1 > vnum2)
-            return 1;
-        if (vnum2 > vnum1)
-            return -1;
-
-        // if equal, reset variables and
-        // go for next numeric part
-        vnum1 = vnum2 = 0;
-        i++;
-        j++;
-    }
-    return 0;
-}
-
-/**
- * 执行固件升级
- */
-esp_err_t do_firmware_upgrade() {
-    // printf(CONFIG_FIRMWARE_UPGRADE_URL);
-    DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
-    // 读取JSON数据
-    Serial.println("OTA响应数据:");
-    string new_version = json["version"].as<string>();
-    String file_url = json["file"].as<String>();
-    //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
-    // Serial.println(new_version);
-    Serial.println(file_url);
-
-    if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
-        Serial.println("有OTA固件新版本");
-        esp_http_client_config_t config = {
-                .url = file_url.c_str(),
-                .cert_pem = (char *) server_cert_pem_start,
-                .timeout_ms = 600000,
-                //.crt_bundle_attach =  esp_crt_bundle_attach,
-                .keep_alive_enable = true,
-        };
-/*        esp_https_ota_config_t ota_config = {
-                .http_config = &config,
-                .partial_http_download=true
-        };*/
-        esp_err_t ret = esp_https_ota(&config);
-        if (ret == ESP_OK) {
-            Serial.println("执行OTA空中升级成功");
-            esp_restart();
-        } else {
-            Serial.println("执行OTA空中升级失败");
-             return ESP_FAIL;
-        }
-    } else {
-        Serial.println("没有新版本OTA固件, 跳过升级");
-    }
-    printf("\n");
-    //  vTaskDelay(30000 / portTICK_PERIOD_MS);
-    return ESP_OK; // esp_err_t 类型
-}
-
-/**
- * 执行OTA空中升级
- */
-void exec_ota() {
-    Serial.println("开始执行OTA空中升级...");
-    //if (WiFi.status() == WL_CONNECTED) {
-    do_firmware_upgrade();
-    // 开启多线程OTA任务
-    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
-    //}
-    /* HttpsOTA.onHttpEvent(HttpEvent);
-       HttpsOTA.begin(url, server_cert_pem_start);
-       Serial.println("Please Wait it takes some time ..."); */
-
-    // start the check update task
-    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
-}
-
-/**
- * 检查OTA空中升级
- */
-void check_ota() {
-    otaStatus = HttpsOTA.status();
-    if (otaStatus == HTTPS_OTA_SUCCESS) {
-        Serial.println(
-                "Firmware written successfully. To reboot device, call API ESP.restart() or PUSH restart button on device");
-        // fflush(stdout);
-        esp_restart();
-    } else if (otaStatus == HTTPS_OTA_FAIL) {
-        Serial.println("Firmware Upgrade Fail");
-    }
-    delay(1000);
-}
