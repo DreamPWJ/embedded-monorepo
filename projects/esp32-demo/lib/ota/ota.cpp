@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.1"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.3"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
@@ -105,10 +105,6 @@ esp_err_t do_firmware_upgrade() {
                 //.crt_bundle_attach =  esp_crt_bundle_attach,
                 .keep_alive_enable = true,
         };
-/*        esp_https_ota_config_t ota_config = {
-                .http_config = &config,
-                .partial_http_download=true
-        };*/
         esp_err_t ret = esp_https_ota(&config);
         if (ret == ESP_OK) {
             Serial.println("执行OTA空中升级成功了, 准备重启单片机...");
@@ -120,8 +116,8 @@ esp_err_t do_firmware_upgrade() {
     } else {
         Serial.println("没有新版本OTA固件, 跳过升级");
     }
-    printf("\n");
-    //  vTaskDelay(30000 / portTICK_PERIOD_MS);
+ /*   printf("OTA定时检测任务延迟中...\n");
+    vTaskDelay(30000 / portTICK_PERIOD_MS);*/
     return ESP_OK; // esp_err_t 类型
 }
 
@@ -133,7 +129,8 @@ void exec_ota() {
     //if (WiFi.status() == WL_CONNECTED) {
     do_firmware_upgrade();
     // 开启多线程OTA任务
-    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
+    //xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 32192, NULL, 5, NULL);
+    // xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 3, NULL, 0);
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
