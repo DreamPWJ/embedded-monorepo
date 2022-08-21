@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.1.0"
+#define FIRMWARE_VERSION       "0.2.0"
 #define UPDATE_JSON_URL        "http://lanneng-epark-test.oss-cn-qingdao.aliyuncs.com/ota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
@@ -207,7 +207,7 @@ int version_compare(string v1, string v2) {
 /**
  * 执行固件升级
  */
-void do_firmware_upgrade(void *pvParameter) {
+esp_err_t do_firmware_upgrade() {
     // printf(CONFIG_FIRMWARE_UPGRADE_URL);
     DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
     // 读取JSON数据
@@ -237,14 +237,14 @@ void do_firmware_upgrade(void *pvParameter) {
             esp_restart();
         } else {
             Serial.println("执行OTA空中升级失败");
-            // return ESP_FAIL;
+             return ESP_FAIL;
         }
     } else {
         Serial.println("没有新版本OTA固件, 跳过升级");
     }
     printf("\n");
-    vTaskDelay(30000 / portTICK_PERIOD_MS);
-    // return ESP_OK; // esp_err_t类型
+    //  vTaskDelay(30000 / portTICK_PERIOD_MS);
+    return ESP_OK; // esp_err_t 类型
 }
 
 /**
@@ -253,9 +253,9 @@ void do_firmware_upgrade(void *pvParameter) {
 void exec_ota() {
     Serial.println("开始执行OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
-    //do_firmware_upgrade();
+    do_firmware_upgrade();
     // 开启多线程OTA任务
-    xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
+    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
     //}
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
