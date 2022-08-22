@@ -36,6 +36,8 @@
 
 ### 硬件调试烧录工具: DapLink、ST-Link/J-Link、EspTool
 
+### Logic 2借助让您爱不释手的逻辑分析仪
+
 https://www.jetbrains.com/help/clion/platformio.html
 
 #### 搭建参考文章

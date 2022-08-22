@@ -11,7 +11,7 @@
 
 void exec_ota();
 
-esp_err_t do_firmware_upgrade(void *pvParameter);
+// esp_err_t do_firmware_upgrade(void *pvParameter);
 
 void check_ota();
 

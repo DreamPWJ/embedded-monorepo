@@ -125,7 +125,7 @@ esp_err_t do_firmware_upgrade() {
  * 执行OTA空中升级
  */
 void exec_ota() {
-    Serial.println("开始执行OTA空中升级...");
+    Serial.println("开始检测OTA空中升级...");
     //if (WiFi.status() == WL_CONNECTED) {
     do_firmware_upgrade();
     // 开启多线程OTA任务

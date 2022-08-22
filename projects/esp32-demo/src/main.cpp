@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <nb_iot.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
 #include "../lib/bluetooth/bluetooth_connect.h"
@@ -8,7 +9,7 @@
 #include "../lib/ota/ota.h"
 #include "../lib/pwm/pwm.h"
 
-#define PWM_EN 0 // 是否开启PWM脉冲宽度调制
+#define PWM_EN 1 // 是否开启PWM脉冲宽度调制
 int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 
@@ -28,8 +29,12 @@ void setup() {
     Serial.begin(115200);
     // while (Serial.available()) {  // 等待串口连接成功
     Serial.println("串口连接成功");
+    // 初始化日志上报
+    // init_insights();
     // 将 LED 数字引脚初始化为输出
     set_pin_mode();
+    // 初始化NB-IoT网络协议
+    init_NB();
     // 初始化蓝牙设置
     // init_bluetooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
@@ -38,9 +43,9 @@ void setup() {
     // xTaskCreatePinnedToCore(init_wifi_multi_thread, "WiFiTask", 8192, NULL, 3, NULL, 0);
     // 网络请求
     //  http_get("https://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
-    /* http_post(
-             "https://oapi.dingtalk.com/robot/send?access_token=383391980b120c38f0f9a4a398349739fa67a623f9cfa834df9c5374e81b2081",
-             "");*/
+/*    http_post(
+            "https://oapi.dingtalk.com/robot/send?access_token=383391980b120c38f0f9a4a398349739fa67a623f9cfa834df9c5374e81b2081",
+            "");*/
     // init_aliyun_iot_sdk();
     // }
     // OTA空中升级
@@ -48,6 +53,7 @@ void setup() {
 
 #if PWM_EN
     init_motor();
+#endif
 
     //	函数名称：timerBegin()
     //	函数功能：Timer初始化，分别有三个参数
@@ -73,9 +79,6 @@ void setup() {
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
     timerAlarmEnable(timer); //	使能定时器
-
-#endif
-
 }
 
 void loop() {

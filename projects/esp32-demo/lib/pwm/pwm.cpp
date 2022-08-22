@@ -30,12 +30,12 @@
 
 
 // 绑定的IO
-const int Motor_PWM_PinA = 5;
-const int Motor_PWM_PinB = 4;
-const int Motor_INA1 = 19;
+const int Motor_PWM_PinA = 16;
+const int Motor_PWM_PinB = 15;
+/*const int Motor_INA1 = 19;
 const int Motor_INA2 = 18;
 const int Motor_INB1 = 16;
-const int Motor_INB2 = 17;
+const int Motor_INB2 = 17;*/
 
 // PWM的通道，共16个(0-15)，分为高低速两组，
 // 高速通道(0-7): 80MHz时钟，低速通道(8-15): 1MHz时钟
@@ -52,13 +52,13 @@ int Motor_freq_PWM = 1000;
 int Motor_resolution_PWM = 10;
 
 /**
- * 初始化电平马达
+ * 初始化电机马达
  */
 void init_motor() {
-    pinMode(Motor_INA1, OUTPUT);
+/*  pinMode(Motor_INA1, OUTPUT);
     pinMode(Motor_INA2, OUTPUT);
     pinMode(Motor_INB1, OUTPUT);
-    pinMode(Motor_INB2, OUTPUT);
+    pinMode(Motor_INB2, OUTPUT)*/;
     ledcSetup(Motor_channel_PWMA, Motor_freq_PWM, Motor_resolution_PWM); // 设置通道
     ledcSetup(Motor_channel_PWMB, Motor_freq_PWM, Motor_resolution_PWM); // 设置通道
     ledcAttachPin(Motor_PWM_PinA, Motor_channel_PWMA);                   //将 LEDC 通道绑定到指定 IO 口上以实现输出
@@ -68,11 +68,12 @@ void init_motor() {
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB)
 {
     ledcWrite(Motor_channel_PWMA, DutyA);
+    // delay(1000);
     ledcWrite(Motor_channel_PWMB, DutyB);
 }
 
 // 电机的控制程序，分别是左右两个轮子的占空比（0-1024）
-void motor_control(int Cnt_L, int Cnt_R)
+/*void motor_control(int Cnt_L, int Cnt_R)
 {
     if (Cnt_L >= 0) // 左轮正向转
     {
@@ -99,4 +100,4 @@ void motor_control(int Cnt_L, int Cnt_R)
         digitalWrite(Motor_INB2, HIGH);
         ledcWrite(Motor_channel_PWMB, -Cnt_R);
     }
-}
+}*/
