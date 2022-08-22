@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.6"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.7"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
