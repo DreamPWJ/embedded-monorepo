@@ -92,7 +92,7 @@ void loop() {
     // 监听蓝牙状态
     // bluetooth_state();
     // 定时检测重新连接WiFi
-    // reconnect_wifi();
+    reconnect_wifi();
     // 检测OTA
     // check_ota();
 
