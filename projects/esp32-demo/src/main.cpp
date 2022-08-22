@@ -9,7 +9,7 @@
 #include "../lib/ota/ota.h"
 #include "../lib/pwm/pwm.h"
 
-#define PWM_EN 1 // 是否开启PWM脉冲宽度调制
+#define PWM_EN 0 // 是否开启PWM脉冲宽度调制
 int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 
