@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.14"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.16"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
@@ -88,7 +88,6 @@ int version_compare(string v1, string v2) {
  */
 void do_firmware_upgrade() {
     // while (1) {  // 多线程需要不断的任务执行
-    // printf(CONFIG_FIRMWARE_UPGRADE_URL);
     DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
     // 读取JSON数据
     // Serial.println("OTA响应数据:");
@@ -96,7 +95,7 @@ void do_firmware_upgrade() {
     String file_url = json["file"].as<String>();
     //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
     //Serial.println(new_version);
-    //Serial.println(file_url);
+    Serial.println(file_url);
 
     if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
         Serial.println("有新版本OTA固件, 正在下载...");
