@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.11"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.12"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
@@ -102,10 +102,10 @@ void do_firmware_upgrade(void *xTask) {
             Serial.println("有新版本OTA固件, 正在下载...");
             esp_http_client_config_t config = {
                     .url = file_url.c_str(),
-                    //.cert_pem = (char *) server_cert_pem_start,
+                    .cert_pem = (char *) server_cert_pem_start,
                     .timeout_ms = 600000,
                     //.crt_bundle_attach =  esp_crt_bundle_attach,
-                    //.keep_alive_enable = true,
+                    .keep_alive_enable = true,
             };
             esp_err_t ret = esp_https_ota(&config);
             if (ret == ESP_OK) {
