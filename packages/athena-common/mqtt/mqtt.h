@@ -4,7 +4,7 @@
 /**
 * @author 潘维吉
 * @date 2022/7/29 15:51
-* @description MQTT消息协议
+* @description MQTT消息队列遥测传输协议
 */
 
 void init_mqtt();
