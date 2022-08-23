@@ -31,8 +31,9 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.7"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.8"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
+#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
@@ -85,40 +86,43 @@ int version_compare(string v1, string v2) {
 /**
  * 执行固件升级
  */
-esp_err_t do_firmware_upgrade() {
-    // printf(CONFIG_FIRMWARE_UPGRADE_URL);
-    DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
-    // 读取JSON数据
-    // Serial.println("OTA响应数据:");
-    string new_version = json["version"].as<string>();
-    String file_url = json["file"].as<String>();
-    //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
-    // Serial.println(new_version);
-    //Serial.println(file_url);
+void do_firmware_upgrade(void *xTask) {
+    while (1) {  // 多线程需要不断的任务执行
+        // printf(CONFIG_FIRMWARE_UPGRADE_URL);
+        DynamicJsonDocument json = http_get(UPDATE_JSON_URL);
+        // 读取JSON数据
+        // Serial.println("OTA响应数据:");
+        string new_version = json["version"].as<string>();
+        String file_url = json["file"].as<String>();
+        //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
+        // Serial.println(new_version);
+        //Serial.println(file_url);
 
-    if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
-        Serial.println("有新版本OTA固件, 正在下载...");
-        esp_http_client_config_t config = {
-                .url = file_url.c_str(),
-                .cert_pem = (char *) server_cert_pem_start,
-                .timeout_ms = 600000,
-                //.crt_bundle_attach =  esp_crt_bundle_attach,
-                .keep_alive_enable = true,
-        };
-        esp_err_t ret = esp_https_ota(&config);
-        if (ret == ESP_OK) {
-            Serial.println("执行OTA空中升级成功了, 准备重启单片机...");
-            esp_restart();
+        if (version_compare(new_version, FIRMWARE_VERSION) == 1) {
+            Serial.println("有新版本OTA固件, 正在下载...");
+            esp_http_client_config_t config = {
+                    .url = file_url.c_str(),
+                    .cert_pem = (char *) server_cert_pem_start,
+                    .timeout_ms = 600000,
+                    //.crt_bundle_attach =  esp_crt_bundle_attach,
+                    .keep_alive_enable = true,
+            };
+            esp_err_t ret = esp_https_ota(&config);
+            if (ret == ESP_OK) {
+                Serial.println("执行OTA空中升级成功了, 准备重启单片机...");
+                esp_restart();
+            } else {
+                Serial.println("执行OTA空中升级失败");
+                // return ESP_FAIL;
+            }
         } else {
-            Serial.println("执行OTA空中升级失败");
-            return ESP_FAIL;
+            Serial.println("没有新版本OTA固件, 跳过升级");
         }
-    } else {
-        Serial.println("没有新版本OTA固件, 跳过升级");
+        printf("OTA定时检测任务延迟中...\n");
+        // 每多少时间执行一次
+        vTaskDelay(30000 / portTICK_PERIOD_MS);
+        // return ESP_OK; // esp_err_t 类型
     }
- /*   printf("OTA定时检测任务延迟中...\n");
-    vTaskDelay(30000 / portTICK_PERIOD_MS);*/
-    return ESP_OK; // esp_err_t 类型
 }
 
 /**
@@ -126,12 +130,25 @@ esp_err_t do_firmware_upgrade() {
  */
 void exec_ota() {
     Serial.println("开始检测OTA空中升级...");
-    //if (WiFi.status() == WL_CONNECTED) {
-    do_firmware_upgrade();
+    // do_firmware_upgrade();
+
+#if !USE_MULTI_CORE
+    xTaskCreate(
+            do_firmware_upgrade,  /* Task function. */
+            "do_firmware_upgrade", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            NULL,      /* Parameter passed as input of the task */
+            1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 4096, NULL, 1, NULL, 0);
+#endif
+
     // 开启多线程OTA任务
-    //xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 32192, NULL, 5, NULL);
+    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
     // xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 3, NULL, 0);
-    //}
+
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */

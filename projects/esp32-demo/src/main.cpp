@@ -30,7 +30,7 @@ void setup() {
     // while (Serial.available()) {  // 等待串口连接成功
     Serial.println("串口连接成功");
     // 初始化日志上报
-    // init_insights();
+   // init_insights();
     // 将 LED 数字引脚初始化为输出
     set_pin_mode();
     // 初始化NB-IoT网络协议
