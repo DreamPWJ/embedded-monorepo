@@ -31,7 +31,7 @@ using namespace std;
 // WebServer server(80);
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
 // static const char *CONFIG_FIRMWARE_UPGRADE_URL = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/firmware.bin"; // state url of your firmware image
-#define FIRMWARE_VERSION       "0.2.8"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
+#define FIRMWARE_VERSION       "0.2.9"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候手动更改设置
 #define UPDATE_JSON_URL        "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
@@ -138,7 +138,7 @@ void exec_ota() {
             "do_firmware_upgrade", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             NULL,      /* Parameter passed as input of the task */
-            1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            5,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
