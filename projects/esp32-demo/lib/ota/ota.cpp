@@ -123,7 +123,7 @@ void do_firmware_upgrade() {
     }
     //printf("OTA定时检测任务延迟中...\n");
     // 每多少时间执行一次
-    delay(30000);
+    // delay(30000);
     //vTaskDelay(30000 / portTICK_PERIOD_MS);
     // return ESP_OK; // esp_err_t 类型
     //}

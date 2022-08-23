@@ -50,6 +50,9 @@ void setup() {
     // init_aliyun_iot_sdk();
     // }
 
+    // OTA空中升级
+    exec_ota();
+
 #if PWM_EN
     init_motor();
 
@@ -81,10 +84,10 @@ void setup() {
 #endif
 
     // OTA空中升级
-/*    timer1 = timerBegin(1, 80, true);
+/*  timer1 = timerBegin(1, 80, true);
     timerAttachInterrupt(timer1, &exec_ota, true);
     timerAlarmWrite(timer1, 30000000, true);
-    timerAlarmEnable(timer1); //	使能定时器*/
+    timerAlarmEnable(timer1); // 使能定时器 */
 }
 
 void loop() {
@@ -100,7 +103,7 @@ void loop() {
     // 定时检测重新连接WiFi
     reconnect_wifi();
     // OTA空中升级
-    exec_ota();
+    // exec_ota();
     // 检测OTA
     // check_ota();
 
