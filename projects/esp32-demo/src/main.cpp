@@ -52,7 +52,6 @@ void setup() {
 
 #if PWM_EN
     init_motor();
-#endif
 
     //	函数名称：timerBegin()
     //	函数功能：Timer初始化，分别有三个参数
@@ -78,6 +77,8 @@ void setup() {
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
     timerAlarmEnable(timer); //	使能定时器
+
+#endif
 
     // OTA空中升级
 /*    timer1 = timerBegin(1, 80, true);
