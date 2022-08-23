@@ -1,7 +1,6 @@
 #include "mqtt.h"
 #include <Arduino.h>
 #include <PubSubClient.h>
-#include <WiFiClient.h>
 #include <WiFi.h>
 
 /**
@@ -12,8 +11,8 @@
 */
 
 // MQTT Broker  EMQX服务器
-const char *mqtt_broker = "192.168.1.200";
-const char *topic = "esp32/test"; // 需要在EMQX服务器设置
+const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
+const char *topic = "esp32/test"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
@@ -22,7 +21,10 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 
 
-void callback(char *topic, byte *payload, unsigned int length) {
+/**
+ * MQTT接受的消息回调
+ */
+void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.print("Message arrived in topic: ");
     Serial.println(topic);
     Serial.print("Message:");
@@ -40,7 +42,7 @@ void init_mqtt() {
     Serial.println("初始化MQTT协议");
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
-    client.setCallback(callback);
+    client.setCallback(mqtt_callback);
     while (!client.connected()) {
         String client_id = "esp32-client-";
         client_id += String(WiFi.macAddress());
