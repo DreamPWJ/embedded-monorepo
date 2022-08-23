@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <nb_iot.h>
+#include <mqtt.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
 #include "../lib/bluetooth/bluetooth_connect.h"
@@ -8,6 +9,7 @@
 #include "../lib/aliyun/aliyun_iot.h"
 #include "../lib/ota/ota.h"
 #include "../lib/pwm/pwm.h"
+
 
 #define PWM_EN 0 // 是否开启PWM脉冲宽度调制
 int interruptCounter = 0;
@@ -49,6 +51,9 @@ void setup() {
             "");*/
     // init_aliyun_iot_sdk();
     // }
+
+    // 初始化MQTT消息协议
+    init_mqtt();
 
     // OTA空中升级
     exec_ota();
@@ -106,6 +111,8 @@ void loop() {
     // exec_ota();
     // 检测OTA
     // check_ota();
+    // MQTT消息服务
+    mqtt_loop();
 
 #if PWM_EN
     pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);

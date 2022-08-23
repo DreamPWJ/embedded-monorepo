@@ -9,4 +9,6 @@
 
 void init_mqtt();
 
+void mqtt_loop();
+
 #endif
