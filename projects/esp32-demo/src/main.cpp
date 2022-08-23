@@ -12,6 +12,7 @@
 #define PWM_EN 0 // 是否开启PWM脉冲宽度调制
 int interruptCounter = 0;
 hw_timer_t *timer = NULL;
+hw_timer_t *timer1 = NULL;
 
 //	函数名称：onTimer()
 //	函数功能：中断服务的功能，它必须是一个返回void（空）且没有输入参数的函数
@@ -30,7 +31,7 @@ void setup() {
     // while (Serial.available()) {  // 等待串口连接成功
     Serial.println("串口连接成功");
     // 初始化日志上报
-   // init_insights();
+    // init_insights();
     // 将 LED 数字引脚初始化为输出
     set_pin_mode();
     // 初始化NB-IoT网络协议
@@ -48,8 +49,6 @@ void setup() {
             "");*/
     // init_aliyun_iot_sdk();
     // }
-    // OTA空中升级
-    exec_ota();
 
 #if PWM_EN
     init_motor();
@@ -79,6 +78,12 @@ void setup() {
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
     timerAlarmEnable(timer); //	使能定时器
+
+    // OTA空中升级
+/*    timer1 = timerBegin(1, 80, true);
+    timerAttachInterrupt(timer1, &exec_ota, true);
+    timerAlarmWrite(timer1, 30000000, true);
+    timerAlarmEnable(timer1); //	使能定时器*/
 }
 
 void loop() {
@@ -93,6 +98,8 @@ void loop() {
     // bluetooth_state();
     // 定时检测重新连接WiFi
     reconnect_wifi();
+    // OTA空中升级
+    exec_ota();
     // 检测OTA
     // check_ota();
 
