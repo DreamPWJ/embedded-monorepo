@@ -55,9 +55,6 @@ void setup() {
     // 初始化MQTT消息协议
     init_mqtt();
 
-    // OTA空中升级
-    exec_ota();
-
 #if PWM_EN
     init_motor();
 
@@ -93,6 +90,9 @@ void setup() {
     timerAttachInterrupt(timer1, &exec_ota, true);
     timerAlarmWrite(timer1, 30000000, true);
     timerAlarmEnable(timer1); // 使能定时器 */
+
+    // OTA空中升级
+    exec_ota();
 }
 
 void loop() {
