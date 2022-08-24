@@ -12,6 +12,7 @@
 
 
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
+char rev;
 /*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 hw_timer_t *timer1 = NULL;*/
@@ -116,7 +117,16 @@ void loop() {
 
 #if PWM_EN
     set_pwm();
-   // pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
+    // pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
 #endif
+
+    /**
+     * 读取串口数据
+     */
+    if (Serial.available()) {
+        rev = Serial.read();
+        Serial.print("读取串口数据: ");
+        Serial.println(rev);
+    }
 
 }

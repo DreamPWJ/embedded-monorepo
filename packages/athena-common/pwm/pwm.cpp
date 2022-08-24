@@ -28,13 +28,14 @@
 */
 
 
-// 绑定的GPIO
+// PWM控制引脚GPIO
 const int PWM_PinA = 4;
 const int PWM_PinB = 5;
-/*const int Motor_INA1 = 19;
-const int Motor_INA2 = 18;
-const int Motor_INB1 = 16;
-const int Motor_INB2 = 17;*/
+// 电机驱动模块控制信号
+/*const int Motor_INA1 = 2;
+const int Motor_INA2 = 3;*/
+/*const int Motor_INB1 = 17;
+const int Motor_INB2 = 18;*/
 
 // PWM的通道，共16个(0-15)，分为高低速两组，
 // 高速通道(0-7): 80MHz时钟，低速通道(8-15): 1MHz时钟
@@ -43,11 +44,11 @@ const int Motor_INB2 = 17;*/
 const int channel_PWMA = 2;
 const int channel_PWMB = 3;
 
-// PWM频率，直接设置即可
+// PWM波形频率KHZ
 int freq_PWM = 50;
 
-// PWM分辨率，取值为 0-20 之间，这里填写为10，那么后面的ledcWrite
-// 这个里面填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
+// PWM占空比的分辨率，控制精度，取值为 0-20 之间
+// 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
 /**
@@ -55,28 +56,29 @@ int resolution_PWM = 10;
  */
 void init_motor() {
     Serial.println("初始化PWM电机马达");
-/*  pinMode(Motor_INA1, OUTPUT);
-    pinMode(Motor_INA2, OUTPUT);
-    pinMode(Motor_INB1, OUTPUT);
-    pinMode(Motor_INB2, OUTPUT)*/;
+/*    pinMode(Motor_INA1, OUTPUT);
+    pinMode(Motor_INA2, OUTPUT);*/
+    /*  pinMode(Motor_INB1, OUTPUT);
+      pinMode(Motor_INB2, OUTPUT); */
 
     ledcSetup(channel_PWMA, freq_PWM, resolution_PWM); // 设置通道
-    ledcAttachPin(PWM_PinA, channel_PWMA); //将 LEDC 通道绑定到指定 IO 口上以实现输出
+    ledcAttachPin(PWM_PinA, channel_PWMA); // 将 LEDC 通道绑定到指定 IO 口上以实现输出
     ledcSetup(channel_PWMB, freq_PWM, resolution_PWM); // 设置通道
     ledcAttachPin(PWM_PinB, channel_PWMB);
 }
 
 void set_pwm() {
+
     Serial.println("开始启动控制电机A");
-    ledcWrite(channel_PWMA, freq_PWM);
+/*    digitalWrite(Motor_INA1, HIGH);
+    digitalWrite(Motor_INA2, LOW);*/
+    ledcWrite(channel_PWMA, 512);
     ledcWrite(channel_PWMB, 0);
-    delay(2000);
-    ledcWrite(channel_PWMA, 0);
 
     Serial.println("开始启动控制电机B");
-    ledcWrite(channel_PWMB, freq_PWM);
+    ledcWrite(channel_PWMB, 512);
     ledcWrite(channel_PWMA, 0);
-    delay(2000);
+
 }
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
