@@ -3,13 +3,13 @@
 #include <mqtt.h>
 #include <pwm.h>
 #include <ground_feeling.h>
+#include <ota.h>
+#include <wifi_network.h>
+#include <bluetooth_connect.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
-#include "../lib/bluetooth/bluetooth_connect.h"
-#include "../lib/wifi/wifi_network.h"
 #include "../../../packages/athena-common/http/http.h"
 #include "../lib/aliyun/aliyun_iot.h"
-#include "../lib/ota/ota.h"
 
 
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
