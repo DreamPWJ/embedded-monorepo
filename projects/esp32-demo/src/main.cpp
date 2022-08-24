@@ -2,6 +2,7 @@
 #include <nb_iot.h>
 #include <mqtt.h>
 #include <pwm.h>
+#include <ground_feeling.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
 #include "../lib/bluetooth/bluetooth_connect.h"
@@ -92,6 +93,8 @@ void setup() {
     timerAlarmWrite(timer1, 30000000, true);
     timerAlarmEnable(timer1); // 使能定时器 */
 
+    // 初始化地感
+    init_ground_feeling();
     // OTA空中升级
     exec_ota();
 }
@@ -119,6 +122,8 @@ void loop() {
     set_pwm();
     // pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
 #endif
+    // 地感状态检测  判断是否有车
+    ground_feeling_status();
 
     /**
      * 读取串口数据

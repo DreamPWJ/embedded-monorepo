@@ -61,8 +61,8 @@ int resolution_PWM = 10;
 void init_motor() {
     Serial.println("初始化PWM电机马达");
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
-    pinMode(motor_upper_limit, INPUT);
-    pinMode(motor_lower_limit, INPUT);
+    pinMode(motor_upper_limit, INPUT_PULLUP);
+    pinMode(motor_lower_limit, INPUT_PULLUP);
 /*    pinMode(Motor_INA1, OUTPUT);
     pinMode(Motor_INA2, OUTPUT);*/
     /*  pinMode(Motor_INB1, OUTPUT);
@@ -78,10 +78,8 @@ void set_pwm() {
     // 读取后电平为0/1
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
-    printf("GPIO(%.1f) 电平信号值: ", motor_upper_limit);
-    Serial.println(upper_limit);
-    printf("GPIO(%.1f) 电平信号值: ", motor_lower_limit);
-    Serial.println(lower_limit);
+    printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
+    printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
     if (upper_limit == 0 && lower_limit == 1) {
         Serial.println("电机上限位状态触发");
     } else if (upper_limit == 1 && lower_limit == 0) {
