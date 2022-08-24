@@ -12,20 +12,20 @@
 
 
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
-int interruptCounter = 0;
+/*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
-hw_timer_t *timer1 = NULL;
+hw_timer_t *timer1 = NULL;*/
 
 //	函数名称：onTimer()
 //	函数功能：中断服务的功能，它必须是一个返回void（空）且没有输入参数的函数
 //  为使编译器将代码分配到IRAM内，中断处理程序应该具有 IRAM_ATTR 属性
 //  https://docs.espressif.com/projects/esp-idf/zh_CN/release-v4.3/esp32/api-reference/storage/spi_flash_concurrency.html
-void IRAM_ATTR TimerEvent() {
+/*void IRAM_ATTR TimerEvent() {
     Serial.println(interruptCounter++);
     if (interruptCounter > 5) {
         interruptCounter = 1;
     }
-}
+}*/
 
 void setup() {
 // write your initialization code here
@@ -61,7 +61,7 @@ void setup() {
 #if PWM_EN
     init_motor();
 
-    //	函数名称：timerBegin()
+/*    //	函数名称：timerBegin()
     //	函数功能：Timer初始化，分别有三个参数
     //	函数输入：1. 定时器编号（0到3，对应全部4个硬件定时器）
     //			 2. 预分频器数值（ESP32计数器基频为80M，80分频单位是微秒）
@@ -84,7 +84,7 @@ void setup() {
     //			 3. 定时器在产生中断时是否重新加载的标志
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
-    timerAlarmEnable(timer); //	使能定时器
+    timerAlarmEnable(timer); //	使能定时器*/
 
 #endif
 
@@ -115,7 +115,8 @@ void loop() {
     mqtt_loop();
 
 #if PWM_EN
-    pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
+    set_pwm();
+   // pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
 #endif
 
 }

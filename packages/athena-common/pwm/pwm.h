@@ -11,6 +11,8 @@
 
 void init_motor();
 
+void set_pwm();
+
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 
 void motor_control(int Cnt_L, int Cnt_R);
