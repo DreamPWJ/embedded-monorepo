@@ -44,7 +44,7 @@ const int channel_PWMA = 2;
 const int channel_PWMB = 3;
 
 // PWM频率，直接设置即可
-int freq_PWM = 1000;
+int freq_PWM = 50;
 
 // PWM分辨率，取值为 0-20 之间，这里填写为10，那么后面的ledcWrite
 // 这个里面填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
@@ -67,12 +67,16 @@ void init_motor() {
 }
 
 void set_pwm() {
-    Serial.println("开始启动控制电机");
-    ledcWrite(channel_PWMA, 512);
+    Serial.println("开始启动控制电机A");
+    ledcWrite(channel_PWMA, freq_PWM);
     ledcWrite(channel_PWMB, 0);
     delay(2000);
-    ledcWrite(channel_PWMB, 512);
     ledcWrite(channel_PWMA, 0);
+
+    Serial.println("开始启动控制电机B");
+    ledcWrite(channel_PWMB, freq_PWM);
+    ledcWrite(channel_PWMA, 0);
+    delay(2000);
 }
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
