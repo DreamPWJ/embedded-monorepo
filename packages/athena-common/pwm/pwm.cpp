@@ -69,13 +69,13 @@ void init_motor() {
 
 void set_pwm() {
 
-    Serial.println("开始启动控制电机A");
-/*    digitalWrite(Motor_INA1, HIGH);
+    Serial.println("开始控制电机正向");
+/*  digitalWrite(Motor_INA1, HIGH);
     digitalWrite(Motor_INA2, LOW);*/
     ledcWrite(channel_PWMA, 512);
     ledcWrite(channel_PWMB, 0);
 
-    Serial.println("开始启动控制电机B");
+    Serial.println("开始控制电机反向");
     ledcWrite(channel_PWMB, 512);
     ledcWrite(channel_PWMA, 0);
 
