@@ -44,6 +44,10 @@ const int Motor_INB2 = 18;*/
 const int channel_PWMA = 2;
 const int channel_PWMB = 3;
 
+// 电机上下限信号GPIO
+const int motor_upper_limit = 0;
+const int motor_lower_limit = 1;
+
 // PWM波形频率KHZ
 int freq_PWM = 50;
 
@@ -56,6 +60,9 @@ int resolution_PWM = 10;
  */
 void init_motor() {
     Serial.println("初始化PWM电机马达");
+    // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
+    pinMode(motor_upper_limit, INPUT);
+    pinMode(motor_lower_limit, INPUT);
 /*    pinMode(Motor_INA1, OUTPUT);
     pinMode(Motor_INA2, OUTPUT);*/
     /*  pinMode(Motor_INB1, OUTPUT);
@@ -68,16 +75,23 @@ void init_motor() {
 }
 
 void set_pwm() {
+    // 读取后电平为0/1
+    int upper_limit = digitalRead(motor_upper_limit);
+    int lower_limit = digitalRead(motor_lower_limit);
+    Serial.print("电机上限电平信号值: ");
+    Serial.println(upper_limit);
+    delay(2000);
+    Serial.print("电机下限电平信号值: ");
+    Serial.println(lower_limit);
 
-    Serial.println("开始控制电机正向");
-/*  digitalWrite(Motor_INA1, HIGH);
-    digitalWrite(Motor_INA2, LOW);*/
+/*  Serial.println("开始控制电机正向");
     ledcWrite(channel_PWMA, 512);
     ledcWrite(channel_PWMB, 0);
-
+    // 读取限位信号 停机电机 同时超时后自动复位
+    delay(2000);
     Serial.println("开始控制电机反向");
     ledcWrite(channel_PWMB, 512);
-    ledcWrite(channel_PWMA, 0);
+    ledcWrite(channel_PWMA, 0);*/
 
 }
 
