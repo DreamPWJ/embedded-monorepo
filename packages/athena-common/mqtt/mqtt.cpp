@@ -13,7 +13,7 @@
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
 const char *topic = "esp32/test"; // 设置MQTT的订阅主题
-const char *mqtt_username = "admin";
+const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 

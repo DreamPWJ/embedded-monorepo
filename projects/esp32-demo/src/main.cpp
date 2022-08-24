@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <nb_iot.h>
 #include <mqtt.h>
+#include <pwm.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 #include "../../../packages/athena-common/chip_info/chip_info.h"
 #include "../lib/bluetooth/bluetooth_connect.h"
@@ -8,10 +9,9 @@
 #include "../../../packages/athena-common/http/http.h"
 #include "../lib/aliyun/aliyun_iot.h"
 #include "../lib/ota/ota.h"
-#include "../lib/pwm/pwm.h"
 
 
-#define PWM_EN 0 // 是否开启PWM脉冲宽度调制
+#define PWM_EN 1 // 是否开启PWM脉冲宽度调制
 int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 hw_timer_t *timer1 = NULL;
