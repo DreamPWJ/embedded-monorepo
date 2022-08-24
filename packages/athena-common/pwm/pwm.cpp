@@ -45,8 +45,8 @@ const int channel_PWMA = 2;
 const int channel_PWMB = 3;
 
 // 电机上下限信号GPIO
-const int motor_upper_limit = 0;
-const int motor_lower_limit = 1;
+const int motor_lower_limit = 0; // 下限位
+const int motor_upper_limit = 1; // 上限位
 
 // PWM波形频率KHZ
 int freq_PWM = 50;
@@ -78,11 +78,20 @@ void set_pwm() {
     // 读取后电平为0/1
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
-    Serial.print("电机上限电平信号值: ");
+    printf("GPIO(%.1f) 电平信号值: ", motor_upper_limit);
     Serial.println(upper_limit);
-    delay(2000);
-    Serial.print("电机下限电平信号值: ");
+    printf("GPIO(%.1f) 电平信号值: ", motor_lower_limit);
     Serial.println(lower_limit);
+    if (upper_limit == 0 && lower_limit == 1) {
+        Serial.println("电机上限位状态触发");
+    } else if (upper_limit == 1 && lower_limit == 0) {
+        Serial.println("电机下限位状态触发");
+    } else if (upper_limit == 1 && lower_limit == 1) {
+        Serial.println("电机运行状态触发");
+    } else if (upper_limit == 0 && lower_limit == 0) {
+        Serial.println("电机无效状态触发");
+    }
+    delay(2000);
 
 /*  Serial.println("开始控制电机正向");
     ledcWrite(channel_PWMA, 512);
