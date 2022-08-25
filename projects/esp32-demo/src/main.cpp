@@ -13,7 +13,7 @@
 
 
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
-char rev; // 串口数据读取值
+char serialData; // 串口数据读取值
 /*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 
@@ -88,8 +88,8 @@ void setup() {
 
     // 初始化地感
     init_ground_feeling();
-    // OTA空中升级
-    exec_ota();
+
+
 }
 
 void loop() {
@@ -122,9 +122,9 @@ void loop() {
      * 读取串口数据
      */
     if (Serial.available()) {
-        rev = Serial.read();
+        serialData = Serial.read();
         Serial.print("读取串口数据: ");
-        Serial.println(rev);
+        Serial.println(serialData);
     }
 
 }

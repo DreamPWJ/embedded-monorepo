@@ -105,8 +105,8 @@ void set_pwm_status() {
     // 读取后电平为0/1
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
-    printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
-    printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
+    // printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
+    // printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
     if (upper_limit == 0 && lower_limit == 1) {
         ledcWrite(channel_PWMA, 0);
         Serial.println("电机上限位状态触发");
