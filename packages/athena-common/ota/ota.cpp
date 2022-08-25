@@ -110,8 +110,8 @@ void do_firmware_upgrade() {
         if (ret == ESP_OK) {
             Serial.println("执行OTA空中升级成功了, 准备重启单片机...");
             // 升级成功LED 闪动的方便查看
-            digitalWrite(18, HIGH);
-            delay(5000);
+            /*    digitalWrite(18, HIGH);
+                  delay(5000); */
             esp_restart();
         } else {
             Serial.println("执行OTA空中升级失败");

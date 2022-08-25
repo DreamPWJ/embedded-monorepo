@@ -41,10 +41,10 @@ void init_wifi() {
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("WiFi 连接成功！");
         // 开发板LED 闪动的实现
-        digitalWrite(18, HIGH);
+/*        digitalWrite(18, HIGH);
         delay(2000);
         digitalWrite(18, LOW);
-        delay(1000);
+        delay(1000);*/
         Serial.println("IP Address: ");
         Serial.println(WiFi.localIP());
         Serial.print("WiFi连接强度RRSI: ");

@@ -49,7 +49,7 @@ const int motor_lower_limit = 0; // 下限位
 const int motor_upper_limit = 1; // 上限位
 
 // PWM波形频率KHZ
-int freq_PWM = 50;
+int freq_PWM = 1000;
 
 // PWM占空比的分辨率，控制精度，取值为 0-20 之间
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
@@ -74,7 +74,32 @@ void init_motor() {
     ledcAttachPin(PWM_PinB, channel_PWMB);
 }
 
+/**
+ * 电机马达运作
+ */
 void set_pwm() {
+
+    Serial.println("开始控制电机正向");
+    ledcWrite(channel_PWMA, 1024);
+    ledcWrite(channel_PWMB, 0);
+    // 读取限位信号 停机电机 同时超时后自动复位
+    for (int i = 0; i < 6; i++) {
+        set_pwm_status();
+        delay(1000);
+    }
+    Serial.println("开始控制电机反向");
+    ledcWrite(channel_PWMB, 1024);
+    ledcWrite(channel_PWMA, 0);
+    for (int i = 0; i < 6; i++) {
+        set_pwm_status();
+        delay(1000);
+    }
+}
+
+/**
+ * 电机马达运作状态检测
+ */
+void set_pwm_status() {
     // 读取后电平为0/1
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
@@ -82,24 +107,15 @@ void set_pwm() {
     printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
     if (upper_limit == 0 && lower_limit == 1) {
         Serial.println("电机上限位状态触发");
+        ledcWrite(channel_PWMA, 0);
     } else if (upper_limit == 1 && lower_limit == 0) {
         Serial.println("电机下限位状态触发");
+        ledcWrite(channel_PWMB, 0);
     } else if (upper_limit == 1 && lower_limit == 1) {
         Serial.println("电机运行状态触发");
     } else if (upper_limit == 0 && lower_limit == 0) {
         Serial.println("电机无效状态触发");
     }
-    delay(2000);
-
-/*  Serial.println("开始控制电机正向");
-    ledcWrite(channel_PWMA, 512);
-    ledcWrite(channel_PWMB, 0);
-    // 读取限位信号 停机电机 同时超时后自动复位
-    delay(2000);
-    Serial.println("开始控制电机反向");
-    ledcWrite(channel_PWMB, 512);
-    ledcWrite(channel_PWMA, 0);*/
-
 }
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
