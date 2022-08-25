@@ -7,6 +7,6 @@
 * @description NB-IoT物联网网络协议
 */
 
-void init_NB();
+void init_nb_iot();
 
 #endif

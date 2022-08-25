@@ -7,10 +7,10 @@
 * @description NB-IoT物联网网络协议
 */
 
-
 /**
  * 初始化NB网络协议
  */
-void init_NB() {
+void init_nb_iot() {
+    // 发送AT指令
     Serial.println("AT+GMR");
 }

@@ -16,7 +16,6 @@
 char rev; // 串口数据读取值
 /*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
-hw_timer_t *timer1 = NULL;*/
 
 //	函数名称：onTimer()
 //	函数功能：中断服务的功能，它必须是一个返回void（空）且没有输入参数的函数
@@ -39,7 +38,7 @@ void setup() {
     // 将LED数字引脚初始化为输出
     set_pin_mode();
     // 初始化NB-IoT网络协议
-    init_NB();
+    init_nb_iot();
     // 初始化蓝牙设置
     // init_bluetooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
@@ -60,7 +59,7 @@ void setup() {
 #if PWM_EN
     init_motor();
 
-/*    //	函数名称：timerBegin()
+/*  //	函数名称：timerBegin()
     //	函数功能：Timer初始化，分别有三个参数
     //	函数输入：1. 定时器编号（0到3，对应全部4个硬件定时器）
     //			 2. 预分频器数值（ESP32计数器基频为80M，80分频单位是微秒）
@@ -83,15 +82,9 @@ void setup() {
     //			 3. 定时器在产生中断时是否重新加载的标志
     //	函数返回：无
     timerAlarmWrite(timer, 1000000, true);
-    timerAlarmEnable(timer); //	使能定时器*/
+    timerAlarmEnable(timer); //	使能定时器 */
 
 #endif
-
-    // OTA空中升级
-/*  timer1 = timerBegin(1, 80, true);
-    timerAttachInterrupt(timer1, &exec_ota, true);
-    timerAlarmWrite(timer1, 30000000, true);
-    timerAlarmEnable(timer1); // 使能定时器 */
 
     // 初始化地感
     init_ground_feeling();
