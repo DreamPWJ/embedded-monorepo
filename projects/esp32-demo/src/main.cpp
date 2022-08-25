@@ -13,7 +13,7 @@
 
 
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
-char rev;
+char rev; // 串口数据读取值
 /*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
 hw_timer_t *timer1 = NULL;*/
@@ -36,7 +36,7 @@ void setup() {
     Serial.println("串口连接成功");
     // 初始化日志上报
     // init_insights();
-    // 将 LED 数字引脚初始化为输出
+    // 将LED数字引脚初始化为输出
     set_pin_mode();
     // 初始化NB-IoT网络协议
     init_NB();

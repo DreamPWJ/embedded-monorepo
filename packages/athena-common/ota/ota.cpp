@@ -38,8 +38,8 @@ using namespace std;
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
 // 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
 // 证书生成命令(Windows系统在Git Bash执行): openssl req -x509 -newkey rsa:2048 -keyout ca_key.pem -out ca_cert.pem -days 3650 -nodes
-extern const uint8_t server_cert_pem_start[] asm("_binary_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
-extern const uint8_t server_cert_pem_end[] asm("_binary_server_certs_ca_cert_pem_end");
+extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
+extern const uint8_t server_cert_pem_end[] asm("_binary_lib_server_certs_ca_cert_pem_end");
 
 static HttpsOTAStatus_t otaStatus;
 
