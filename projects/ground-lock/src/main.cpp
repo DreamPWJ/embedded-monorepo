@@ -30,7 +30,6 @@ void setup() {
 
     // 初始化MQTT消息协议
     init_mqtt();
-
     // 初始化电机马达
     init_motor();
 
