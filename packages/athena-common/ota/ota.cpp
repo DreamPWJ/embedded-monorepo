@@ -94,7 +94,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     //Serial.println(file_url);
 
     if (version_compare(new_version, version) == 1) {
-        printf("当前固件版本v%s, 有v%s新版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
+        printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
                 .cert_pem = (char *) server_cert_pem_start,
@@ -114,7 +114,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
             // return ESP_FAIL;
         }
     } else {
-        Serial.println("没有新版本OTA固件, 跳过升级");
+        printf("当前固件版本v%s, 没有新版本OTA固件, 跳过升级 \n", version.c_str());
     }
     //printf("OTA定时检测任务延迟中...\n");
     // 每多少时间执行一次
