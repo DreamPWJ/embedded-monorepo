@@ -23,7 +23,7 @@ void init_ground_feeling() {
  */
 void ground_feeling_status() {
     int ground_feeling = digitalRead(ground_feeling_gpio);
-    printf("GPIO %d 电平信号值: %d \n", ground_feeling_gpio, ground_feeling);
+    // printf("GPIO %d 电平信号值: %d \n", ground_feeling_gpio, ground_feeling);
     if (ground_feeling == 0) {
         printf("地感检测有车 \n");
     } else if (ground_feeling == 1) {

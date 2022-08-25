@@ -9,10 +9,9 @@
 * @description 固件OTA空中升级
 */
 
-void exec_ota();
+void exec_ota(String version, String jsonUrl);
 
 // esp_err_t do_firmware_upgrade(void *pvParameter);
 
-void check_ota();
 
 #endif

@@ -11,7 +11,8 @@
 #include "../../../packages/athena-common/http/http.h"
 #include "../lib/aliyun/aliyun_iot.h"
 
-
+#define FIRMWARE_VERSION            "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
+#define FIRMWARE_UPDATE_JSON_URL    "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制
 char serialData; // 串口数据读取值
 /*int interruptCounter = 0;
@@ -89,6 +90,8 @@ void setup() {
     // 初始化地感
     init_ground_feeling();
 
+    // 执行OTA空中升级
+    exec_ota(FIRMWARE_VERSION,FIRMWARE_UPDATE_JSON_URL);
 
 }
 
@@ -104,10 +107,6 @@ void loop() {
     // bluetooth_state();
     // 定时检测重新连接WiFi
     reconnect_wifi();
-    // OTA空中升级
-    // exec_ota();
-    // 检测OTA
-    // check_ota();
     // MQTT消息服务
     mqtt_loop();
 
