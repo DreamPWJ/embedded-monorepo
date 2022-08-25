@@ -31,8 +31,8 @@ using namespace std;
 // WebServer server(80);
 
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
-#define FIRMWARE_VERSION         "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
-#define FIRMWARE_UPDATE_JSON_URL "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/sit/ground-lockota.json" // 如果https证书有问题 可以使用http协议
+/*#define FIRMWARE_VERSION         "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
+#define FIRMWARE_UPDATE_JSON_URL "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议*/
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置

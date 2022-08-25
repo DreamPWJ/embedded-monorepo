@@ -87,7 +87,7 @@ void setup() {
 
 #endif
 
-    // 初始化地感
+    // 初始化地感线圈
     init_ground_feeling();
 
     // 执行OTA空中升级
