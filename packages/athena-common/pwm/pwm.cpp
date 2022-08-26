@@ -83,17 +83,17 @@ void set_pwm() {
     ledcWrite(channel_PWMA, 1024);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 600; i++) {
         set_pwm_status();
-        delay(1000);
+        delay(10);
     }
 
     Serial.println("开始控制电机反向");
     ledcWrite(channel_PWMB, 1024);
     ledcWrite(channel_PWMA, 0);
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 600; i++) {
         set_pwm_status();
-        delay(1000);
+        delay(10);
     }
 
 }
@@ -102,7 +102,7 @@ void set_pwm() {
  * 电机马达运作状态检测
  */
 void set_pwm_status() {
-    // 读取后电平为0/1
+    // 读取后电平为0/1  中断机制
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
     // printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
