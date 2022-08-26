@@ -78,34 +78,39 @@ void init_motor() {
  * 电机马达运作
  */
 void set_pwm() {
-    time_t start = 0, end = 0;
-    double cost; // 时间差 秒
+    time_t startA = 0, endA = 0;
+    double costA; // 时间差 秒
     Serial.println("开始控制电机正向");
-    time(&start);
+    time(&startA);
     ledcWrite(channel_PWMA, 1024);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    for (int i = 0; i < 600; i++) {
-        set_pwm_status();
+    while (get_pwm_status() == 1) {
         delay(10);
     }
-    time(&end);
-    cost = difftime(end, start);
-    printf("电机执行耗时：%f \n", cost);
+    time(&endA);
+    costA = difftime(endA, startA);
+    printf("电机正向执行耗时：%f \n", costA);
 
+    time_t startB = 0, endB = 0;
+    double costB; // 时间差 秒
     Serial.println("开始控制电机反向");
+    time(&startB);
     ledcWrite(channel_PWMB, 1024);
     ledcWrite(channel_PWMA, 0);
-    for (int i = 0; i < 600; i++) {
-        set_pwm_status();
+    while (get_pwm_status() == 0) {
         delay(10);
     }
+    time(&endB);
+    costB = difftime(endB, startB);
+    printf("电机反向执行耗时：%f \n", costB);
+    
 }
 
 /**
  * 电机马达运作状态检测
  */
-void set_pwm_status() {
+int get_pwm_status() {
     // 读取后电平为0/1  中断机制
     int upper_limit = digitalRead(motor_upper_limit);
     int lower_limit = digitalRead(motor_lower_limit);
@@ -114,13 +119,17 @@ void set_pwm_status() {
     if (upper_limit == 0 && lower_limit == 1) {
         ledcWrite(channel_PWMA, 0);
         //Serial.println("电机上限位状态触发");
+        return 1;
     } else if (upper_limit == 1 && lower_limit == 0) {
         ledcWrite(channel_PWMB, 0);
         //Serial.println("电机下限位状态触发");
+        return 0;
     } else if (upper_limit == 1 && lower_limit == 1) {
         //Serial.println("电机运行状态触发");
+        return 2;
     } else if (upper_limit == 0 && lower_limit == 0) {
         //Serial.println("电机无效状态触发");
+        return -1;
     }
 }
 

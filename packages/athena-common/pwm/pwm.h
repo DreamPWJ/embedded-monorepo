@@ -13,7 +13,7 @@ void init_motor();
 
 void set_pwm();
 
-void set_pwm_status();
+int get_pwm_status();
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 

@@ -9,10 +9,9 @@ using namespace std;
 * @description 版本控制工具类
 */
 
-// Method to compare two versions.
+// 语义化版本号对比 Method to compare two versions.
 // Returns 1 if v2 is smaller, -1 if v1 is smaller, 0 if equal
-int version_compare(string v1, string v2)
-{
+int version_compare(String v1, String v2) {
     // vnum stores each numeric
     // part of version
     int vnum1 = 0, vnum2 = 0;

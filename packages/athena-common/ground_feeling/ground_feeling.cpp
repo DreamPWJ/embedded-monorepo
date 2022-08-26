@@ -27,6 +27,7 @@ void ground_feeling_status() {
     if (ground_feeling == 0) {
         printf("地感检测有车 \n");
     } else if (ground_feeling == 1) {
+        // 如果无车时间超过一定时长  地锁抬起
         printf("地感检测无车 \n");
     }
 }

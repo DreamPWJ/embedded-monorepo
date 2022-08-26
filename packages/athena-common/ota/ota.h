@@ -11,6 +11,8 @@
 
 void exec_ota(String version, String jsonUrl);
 
+int version_compare(String v1, String v2);
+
 // esp_err_t do_firmware_upgrade(void *pvParameter);
 
 
