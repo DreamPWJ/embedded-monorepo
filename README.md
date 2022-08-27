@@ -28,7 +28,7 @@
 
 - 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 安装执行 python get-platformio.py
 
-### 嵌入式硬件框架: Arduino
+### 跨芯片嵌入式框架: Arduino (不同芯片代码复用)
 
 ### 云平台: 阿里云IoT物联网平台
 
