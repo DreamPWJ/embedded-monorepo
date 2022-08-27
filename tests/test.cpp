@@ -4,22 +4,34 @@
 #include <ctime>
 #include <iostream>
 
-using   namespace   std;
+using namespace std;
 
-int main(void ) {
+void test_json_file() {
+
+}
+
+int main(void) {
     //设置程序为中文编码
-    setlocale(LC_ALL,"zh-CN");
+    setlocale(LC_ALL, "zh-CN");
     system("chcp 65001");
 
     printf("666 \n");
 
+    int overtime = 3;// 超时时间 秒
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
 
     time(&startA);
 
-    _sleep(3*1000); //延时5秒
+    _sleep(5 * 1000); //延时5秒
     time(&endA);
     costA = difftime(endA, startA);
     printf("电机正向执行耗时：%f \n", costA);
+    if (costA >= overtime) {
+        printf("超时了 \n");
+    }
+
+    test_json_file();
 }
+
+

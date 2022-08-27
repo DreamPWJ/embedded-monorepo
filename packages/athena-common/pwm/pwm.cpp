@@ -78,33 +78,45 @@ void init_motor() {
  * 电机马达运作
  */
 void set_pwm() {
+    int overtime = 10;// 超时时间 秒s
+
+    Serial.println("开始控制电机正向");
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
-    Serial.println("开始控制电机正向");
     time(&startA);
     ledcWrite(channel_PWMA, 1024);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     while (get_pwm_status() == 1) {
         delay(10);
+        time(&endA);
+        costA = difftime(endA, startA);
+        // printf("电机正向执行耗时：%f \n", costA);
+        if (costA >= overtime) {
+            printf("电机正向运行超时了 \n");
+            ledcWrite(channel_PWMA, 0);
+            break;
+        }
     }
-    time(&endA);
-    costA = difftime(endA, startA);
-    printf("电机正向执行耗时：%f \n", costA);
 
+    Serial.println("开始控制电机反向");
     time_t startB = 0, endB = 0;
     double costB; // 时间差 秒
-    Serial.println("开始控制电机反向");
     time(&startB);
     ledcWrite(channel_PWMB, 1024);
     ledcWrite(channel_PWMA, 0);
     while (get_pwm_status() == 0) {
         delay(10);
+        time(&endB);
+        costB = difftime(endB, startB);
+        //printf("电机反向执行耗时：%f \n", costB);
+        if (costB >= overtime) {
+            printf("电机反向运行超时了 \n");
+            ledcWrite(channel_PWMB, 0);
+            break;
+        }
     }
-    time(&endB);
-    costB = difftime(endB, startB);
-    printf("电机反向执行耗时：%f \n", costB);
-    
+
 }
 
 /**
