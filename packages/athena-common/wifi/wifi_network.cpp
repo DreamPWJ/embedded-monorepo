@@ -23,7 +23,7 @@ unsigned long interval = 30000;
  */
 void init_wifi() {
     Serial.println("开始初始化WiFi模块");
-    // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络
+    // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
     // WiFi.useStaticBuffers(true);
     WiFi.mode(WIFI_STA);

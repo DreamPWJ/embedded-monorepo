@@ -55,6 +55,7 @@ void loop() {
     set_pwm();
 
     // MQTT消息服务
+    mqtt_reconnect();
     mqtt_loop();
 
     // 地感状态检测  判断是否有车

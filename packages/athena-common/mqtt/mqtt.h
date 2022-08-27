@@ -11,4 +11,6 @@ void init_mqtt();
 
 void mqtt_loop();
 
+void mqtt_reconnect();
+
 #endif

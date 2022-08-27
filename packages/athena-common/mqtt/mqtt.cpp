@@ -17,9 +17,9 @@ const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
-WiFiClient espClient;
+// NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
+WiFiClient espClient; // WiFi网络类型
 PubSubClient client(espClient);
-
 
 /**
  * MQTT接受的消息回调
@@ -45,7 +45,7 @@ void init_mqtt() {
     client.setCallback(mqtt_callback);
     while (!client.connected()) {
         String client_id = "esp32-client-";
-        client_id += String(WiFi.macAddress());
+        client_id += String(random(0xffff),HEX); // String(WiFi.macAddress())
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("Public emqx mqtt broker connected");
@@ -65,4 +65,13 @@ void init_mqtt() {
  */
 void mqtt_loop() {
     client.loop();
+}
+
+/**
+ * 重连MQTT服务
+ */
+void mqtt_reconnect() {
+    while (!client.connected()){
+        init_mqtt();
+    }
 }

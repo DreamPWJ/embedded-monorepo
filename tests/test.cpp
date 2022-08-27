@@ -7,6 +7,7 @@
 using namespace std;
 
 void test_json_file() {
+  // 参考文章： https://stackoverflow.com/questions/32205981/reading-json-files-in-c
 
 }
 
@@ -15,9 +16,11 @@ int main(void) {
     setlocale(LC_ALL, "zh-CN");
     system("chcp 65001");
 
-    printf("666 \n");
+    printf("单文件运行测试 \n");
 
-    int overtime = 3;// 超时时间 秒
+    test_json_file();
+
+/*    int overtime = 3;// 超时时间 秒
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
 
@@ -30,8 +33,7 @@ int main(void) {
     if (costA >= overtime) {
         printf("超时了 \n");
     }
-
-    test_json_file();
+    */
 }
 
 
