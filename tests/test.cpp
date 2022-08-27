@@ -7,8 +7,12 @@
 using   namespace   std;
 
 int main(void ) {
-    setlocale(LC_ALL,"zh-CN"); //设置程序为中文编码
+    //设置程序为中文编码
+    setlocale(LC_ALL,"zh-CN");
+    system("chcp 65001");
+
     printf("666 \n");
+
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
 
