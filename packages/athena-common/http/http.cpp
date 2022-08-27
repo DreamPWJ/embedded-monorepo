@@ -12,7 +12,10 @@
 * 文档地址： https://arduinojson.org/v6/how-to/use-arduinojson-with-httpclient/
 */
 
-/* GET请求 */
+
+/**
+ * GET请求
+ */
 DynamicJsonDocument http_get(String url) {
     HTTPClient http;
     DynamicJsonDocument doc(2048);
@@ -34,12 +37,14 @@ DynamicJsonDocument http_get(String url) {
             Serial.println(resBuff); */
         }
     }
-    return doc;
     // Disconnect
     http.end();
+    return doc;
 }
 
-/* POST请求 */
+/**
+ * POST请求
+ */
 void http_post(String url, String data) {
     // ArduinoJson文档地址: https://github.com/bblanchon/ArduinoJson.git
     // Prepare JSON document

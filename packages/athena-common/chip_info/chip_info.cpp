@@ -9,7 +9,10 @@
 * @description 芯片信息模块
 */
 
-/* 获取芯片信息 */
+
+/**
+ * 获取芯片信息
+ */
 void get_chip_info() {
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
