@@ -143,6 +143,7 @@ int get_pwm_status() {
         //Serial.println("电机无效状态触发");
         return -1;
     }
+    return -1;
 }
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
