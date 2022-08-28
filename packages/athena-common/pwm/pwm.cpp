@@ -49,7 +49,7 @@ const int motor_lower_limit = 0; // 下限位
 const int motor_upper_limit = 1; // 上限位
 
 // PWM波形频率KHZ
-int freq_PWM = 1000;
+int freq_PWM = 30000;
 
 // PWM占空比的分辨率，控制精度，取值为 0-20 之间
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
@@ -84,7 +84,8 @@ void set_pwm() {
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
-    ledcWrite(channel_PWMA, 1024);
+    int channel_PWMA_duty = 1024;
+    ledcWrite(channel_PWMA, channel_PWMA_duty);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     while (get_pwm_status() == 1) {
@@ -92,9 +93,14 @@ void set_pwm() {
         time(&endA);
         costA = difftime(endA, startA);
         // printf("电机正向执行耗时：%f \n", costA);
+        if (costA >= 2) { // 电机运行过半减速
+            ledcWrite(channel_PWMA, channel_PWMA_duty);
+            ledcWrite(channel_PWMB, 0);
+            channel_PWMA_duty = channel_PWMA_duty - 2;
+        }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
-            ledcWrite(channel_PWMA, 0);
+            ledcWrite(channel_PWMA, 0); // 停止电机
             break;
         }
     }
@@ -103,16 +109,22 @@ void set_pwm() {
     time_t startB = 0, endB = 0;
     double costB; // 时间差 秒
     time(&startB);
-    ledcWrite(channel_PWMB, 1024);
+    int channel_PWMB_duty = 1024;
+    ledcWrite(channel_PWMB, channel_PWMB_duty);
     ledcWrite(channel_PWMA, 0);
     while (get_pwm_status() == 0) {
         delay(10);
         time(&endB);
         costB = difftime(endB, startB);
         //printf("电机反向执行耗时：%f \n", costB);
+        if (costA >= 2) { // 电机运行过半减速
+            ledcWrite(channel_PWMB, channel_PWMB_duty);
+            ledcWrite(channel_PWMA, 0);
+            channel_PWMB_duty = channel_PWMB_duty - 2;
+        }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
-            ledcWrite(channel_PWMB, 0);
+            ledcWrite(channel_PWMB, 0); // 停止电机
             break;
         }
     }
