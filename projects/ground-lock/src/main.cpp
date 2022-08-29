@@ -24,12 +24,13 @@ void setup() {
     init_nb_iot();
 
 #if WIFI_EN
-    // 初始化Wifi无线网络
+    // 初始化WiFi无线网络
     init_wifi();
 #endif
 
     // 初始化MQTT消息协议
     init_mqtt();
+
     // 初始化电机马达
     init_motor();
 

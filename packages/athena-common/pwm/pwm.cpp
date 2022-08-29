@@ -49,7 +49,7 @@ const int motor_lower_limit = 0; // 下限位
 const int motor_upper_limit = 1; // 上限位
 
 // PWM波形频率KHZ
-int freq_PWM = 30000;
+int freq_PWM = 5000;
 
 // PWM占空比的分辨率，控制精度，取值为 0-20 之间
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
