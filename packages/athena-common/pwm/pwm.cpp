@@ -97,7 +97,7 @@ void set_motor_up() {
         if (costA >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             ledcWrite(channel_PWMB, 0);
-            channel_PWMA_duty = channel_PWMA_duty - 2;
+            channel_PWMA_duty = channel_PWMA_duty - 1;
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
@@ -130,7 +130,7 @@ void set_motor_down() {
         if (costB >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             ledcWrite(channel_PWMA, 0);
-            channel_PWMB_duty = channel_PWMB_duty - 2;
+            channel_PWMB_duty = channel_PWMB_duty - 1;
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");

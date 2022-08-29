@@ -13,7 +13,7 @@
 
 #define FIRMWARE_VERSION            "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
 #define FIRMWARE_UPDATE_JSON_URL    "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/esp32-demo/sit/esp32-demoota.json" // 如果https证书有问题 可以使用http协议
-#define PWM_EN 1 // 是否开启PWM脉冲宽度调制
+#define PWM_EN 0 // 是否开启PWM脉冲宽度调制
 char serialData; // 串口数据读取值
 /*int interruptCounter = 0;
 hw_timer_t *timer = NULL;
@@ -34,14 +34,8 @@ void setup() {
     Serial.begin(115200);
     // while (Serial.available()) {  // 等待串口连接成功
     Serial.println("串口连接成功");
-    // 初始化日志上报
-    // init_insights();
     // 将LED数字引脚初始化为输出
     set_pin_mode();
-    // 初始化NB-IoT网络协议
-    init_nb_iot();
-    // 初始化蓝牙设置
-    // init_bluetooth("ESP32-PanWeiJi");
     // 初始化Wifi无线网络
     init_wifi();
     // FreeRTOS实时系统多线程处理  Create a connection task with 8kB stack on core 0
@@ -53,9 +47,6 @@ void setup() {
             "");*/
     // init_aliyun_iot_sdk();
     // }
-
-    // 初始化MQTT消息协议
-    init_mqtt("esp32-mcu-client");
 
 #if PWM_EN
     init_motor();
@@ -87,9 +78,6 @@ void setup() {
 
 #endif
 
-    // 初始化地感线圈
-    init_ground_feeling();
-
     // 执行OTA空中升级
     exec_ota(FIRMWARE_VERSION,FIRMWARE_UPDATE_JSON_URL);
 
@@ -107,15 +95,11 @@ void loop() {
     // bluetooth_state();
     // 定时检测重新连接WiFi
     reconnect_wifi();
-    // MQTT消息服务
-    mqtt_loop();
 
 #if PWM_EN
     set_pwm();
     // pwm_set_duty(200 * interruptCounter, 200 * interruptCounter);
 #endif
-    // 地感状态检测  判断是否有车
-    ground_feeling_status();
 
     /**
      * 读取串口数据
@@ -125,5 +109,4 @@ void loop() {
         Serial.print("读取串口数据: ");
         Serial.println(serialData);
     }
-
 }
