@@ -1,6 +1,7 @@
 #include "mqtt.h"
 #include <Arduino.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 #include <WiFi.h>
 #include <pwm.h>
 #include <chip_info.h>
@@ -30,12 +31,26 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.print("MQTT消息到达主题: ");
     Serial.println(topic);
     Serial.print("MQTT订阅接受的消息:");
+    String payloadData = "";
     for (int i = 0; i < length; i++) {
         Serial.print((char) payload[i]);
+        payloadData += (char) payload[i];
     }
     Serial.println();
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, payloadData);
+    String type = doc["type"].as<String>();
+    Serial.println(type);
     Serial.println("-----------------------");
-    // set_motor_up();
+
+    // 控制电机马达逻辑
+    if (type == "up") {
+        set_motor_up();
+    }
+    if (type == "down") {
+        set_motor_down();
+    }
+
 }
 
 /**
