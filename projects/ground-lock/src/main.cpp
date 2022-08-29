@@ -29,7 +29,7 @@ void setup() {
 #endif
 
     // 初始化MQTT消息协议
-    init_mqtt();
+    init_mqtt("esp32-mcu-client");
 
     // 初始化电机马达
     init_motor();

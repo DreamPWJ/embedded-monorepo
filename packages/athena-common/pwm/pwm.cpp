@@ -75,12 +75,12 @@ void init_motor() {
 }
 
 /**
- * 电机马达运作
+ * 控制电机马达抬起
  */
-void set_pwm() {
+void set_motor_up() {
     int overtime = 10;// 超时时间 秒s
 
-    Serial.println("开始控制电机正向");
+    Serial.println("开始控制电机正向运动");
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
@@ -97,7 +97,7 @@ void set_pwm() {
         if (costA >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             ledcWrite(channel_PWMB, 0);
-            channel_PWMA_duty = channel_PWMA_duty - 1;
+            channel_PWMA_duty = channel_PWMA_duty - 2;
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
@@ -106,9 +106,15 @@ void set_pwm() {
         }
     }
 
-    delay(2000);
+}
 
-    Serial.println("开始控制电机反向");
+/**
+ * 控制电机马达落下
+ */
+void set_motor_down() {
+    int overtime = 10;// 超时时间 秒s
+
+    Serial.println("开始控制电机反向运动");
     time_t startB = 0, endB = 0;
     double costB; // 时间差 秒
     time(&startB);
@@ -121,10 +127,10 @@ void set_pwm() {
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
-        if (costA >= 2) { // 电机运行过半减速
+        if (costB >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             ledcWrite(channel_PWMA, 0);
-            channel_PWMB_duty = channel_PWMB_duty - 1;
+            channel_PWMB_duty = channel_PWMB_duty - 2;
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
@@ -132,7 +138,15 @@ void set_pwm() {
             break;
         }
     }
+}
 
+/**
+ * 电机马达运作
+ */
+void set_pwm() {
+    set_motor_up();
+    delay(2000);
+    set_motor_down();
 }
 
 /**

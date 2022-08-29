@@ -55,7 +55,7 @@ void setup() {
     // }
 
     // 初始化MQTT消息协议
-    init_mqtt();
+    init_mqtt("esp32-mcu-client");
 
 #if PWM_EN
     init_motor();

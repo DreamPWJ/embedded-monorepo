@@ -1,11 +1,15 @@
 #include "nb_iot.h"
 #include <Arduino.h>
+//#include <MKRGSM.h>
 
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
 * @description NB-IoT物联网网络协议
 */
+
+// modem verification object
+//GSMModem modem;
 
 /**
  * 初始化NB网络协议
@@ -18,4 +22,13 @@ void init_nb_iot() {
     Serial.println("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
     Serial.println("AT+CGACT=1\r\n"); // 激活网络
     Serial.println("AT+ECPING='www.baidu.com'\r\n"); // 测试网络
+}
+
+
+/**
+ * 获取国际移动设备唯一标识IMEI串号码
+ */
+String get_imei() {
+    // return modem.getIMEI();
+    return "";
 }
