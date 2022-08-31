@@ -97,6 +97,7 @@ void set_motor_up() {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
+    delay(1000);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endA);
@@ -137,6 +138,7 @@ void set_motor_down() {
     int channel_PWMB_duty = 1024;
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     ledcWrite(channel_PWMA, 0);
+    delay(1000);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endB);

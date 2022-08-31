@@ -28,8 +28,8 @@ PubSubClient client(espClient);
  * MQTT接受的消息回调
  */
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
-    Serial.print("MQTT消息到达主题: ");
-    Serial.println(topic);
+    // Serial.print("MQTT消息到达主题: ");
+    // Serial.println(topic);
     Serial.print("MQTT订阅接受的消息: ");
     String payloadData = "";
     for (int i = 0; i < length; i++) {
@@ -40,7 +40,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     DynamicJsonDocument doc(2048);
     deserializeJson(doc, payloadData);
     String command = doc["command"].as<String>();
-    Serial.println(command);
+    // Serial.println(command);
     Serial.println("-----------------------");
 
     // 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
