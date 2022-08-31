@@ -78,6 +78,9 @@ void init_motor() {
  * 控制电机马达抬起
  */
 void set_motor_up() {
+    if (get_pwm_status() == 1) { // 如果已经在上限位
+        return;
+    }
     int overtime = 10;// 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
@@ -112,6 +115,9 @@ void set_motor_up() {
  * 控制电机马达落下
  */
 void set_motor_down() {
+    if (get_pwm_status() == 0) { // 如果已经在下限位
+        return;
+    }
     int overtime = 10;// 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
