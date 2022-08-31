@@ -1,5 +1,6 @@
 #include "pwm.h"
 #include <Arduino.h>
+#include <ground_feeling.h>
 
 /**
 * @author 潘维吉
@@ -78,7 +79,12 @@ void init_motor() {
  * 控制电机马达抬起
  */
 void set_motor_up() {
-    if (get_pwm_status() == 1) { // 如果已经在上限位
+    // 地感保证无车才能抬杆
+    if (ground_feeling_status() == 1) {
+        Serial.println("地感判断有车地锁不能抬起");
+        return;
+    }
+    if (get_pwm_status() == 1) { // 如果已经在上限位 不触发电机
         return;
     }
     int overtime = 10;// 超时时间 秒s
@@ -91,12 +97,16 @@ void set_motor_up() {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(1000);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endA);
         costA = difftime(endA, startA);
         //printf("电机正向执行耗时：%f \n", costA);
+        if (ground_feeling_status() == 1) {
+            ledcWrite(channel_PWMA, 0); // 停止电机
+            Serial.println("地感判断有车地锁不能继续抬起");
+            break;
+        }
         if (costA >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             ledcWrite(channel_PWMB, 0);
@@ -115,7 +125,7 @@ void set_motor_up() {
  * 控制电机马达落下
  */
 void set_motor_down() {
-    if (get_pwm_status() == 0) { // 如果已经在下限位
+    if (get_pwm_status() == 0) { // 如果已经在下限位 不触发电机
         return;
     }
     int overtime = 10;// 超时时间 秒s
@@ -127,7 +137,6 @@ void set_motor_down() {
     int channel_PWMB_duty = 1024;
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     ledcWrite(channel_PWMA, 0);
-    delay(1000);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endB);

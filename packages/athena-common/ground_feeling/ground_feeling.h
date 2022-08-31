@@ -9,6 +9,6 @@
 
 void init_ground_feeling();
 
-void ground_feeling_status();
+int ground_feeling_status();
 
 #endif

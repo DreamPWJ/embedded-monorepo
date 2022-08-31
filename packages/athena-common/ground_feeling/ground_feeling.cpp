@@ -21,13 +21,16 @@ void init_ground_feeling() {
 /**
  * 地感信号检测
  */
-void ground_feeling_status() {
+int ground_feeling_status() {
     int ground_feeling = digitalRead(ground_feeling_gpio);
     // printf("GPIO %d 电平信号值: %d \n", ground_feeling_gpio, ground_feeling);
     if (ground_feeling == 0) {
-        printf("地感检测有车 \n");
+        // printf("地感检测有车 \n");
+        return 1;
     } else if (ground_feeling == 1) {
         // 如果无车时间超过一定时长  地锁抬起
-        printf("地感检测无车 \n");
+        // printf("地感检测无车 \n");
+        return 0;
     }
+    return 1;
 }

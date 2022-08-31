@@ -33,7 +33,7 @@ DynamicJsonDocument http_get(String url) {
        /*     Serial.println(doc["version"].as<double>());
             Serial.println(doc["file"].as<String>()); */
 
-/*          String resBuff = http.getString();
+       /*   String resBuff = http.getString();
             Serial.println(resBuff); */
         }
     }

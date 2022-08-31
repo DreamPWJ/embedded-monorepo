@@ -44,11 +44,22 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.println("-----------------------");
 
     // 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
+    uint32_t chipId = get_chip_id();
     if (command == "raise") {
         set_motor_up();
     }
     if (command == "putdown") {
         set_motor_down();
+    }
+    if (command == "query") {
+        int status = get_pwm_status();
+        DynamicJsonDocument doc(1024);
+        JsonObject object = doc.to<JsonObject>();
+        object["command"] = "query";
+        object["deviceCode"] = chipId;
+        object["deviceStatus"] = status;
+        client.publish(topic, "主动查询MCU状态信息");
+        client.subscribe(topic);
     }
 
 }

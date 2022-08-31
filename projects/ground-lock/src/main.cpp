@@ -65,6 +65,6 @@ void loop() {
     mqtt_loop();
 
     // 地感状态检测  判断是否有车
-    ground_feeling_status();
+    //ground_feeling_status();
 
 }
