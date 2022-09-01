@@ -49,12 +49,12 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.println("-----------------------");
 
     // 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
-/*     try {
-    uint32_t chipId = get_chip_id();
-    Serial.println("----------------------- " + chipId);
-     } catch (exception &e) {
-         cout << &e << endl;
-     }*/
+    uint32_t chipId;
+    try {
+        chipId = get_chip_id();
+    } catch (exception &e) {
+        cout << &e << endl;
+    }
 
     if (command == "raise") {
         set_motor_up();
@@ -64,10 +64,10 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     }
     if (command == "query") {
         //int status = get_pwm_status();
-        /* DynamicJsonDocument doc(1024);
-           JsonObject object = doc.to<JsonObject>();
-           object["command"] = "query";
-           object["deviceCode"] = chipId;*/
+        DynamicJsonDocument doc(1024);
+        JsonObject object = doc.to<JsonObject>();
+        object["command"] = "query";
+        object["deviceCode"] = chipId;
         //object["deviceStatus"] = status;
         client.publish(topics, "主动查询MCU状态信息");
     }
