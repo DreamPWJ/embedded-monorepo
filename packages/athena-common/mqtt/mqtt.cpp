@@ -5,6 +5,11 @@
 #include <WiFi.h>
 #include <pwm.h>
 #include <chip_info.h>
+#include <exception>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -15,7 +20,7 @@
 
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
-const char *topic = "esp32/test"; // 设置MQTT的订阅主题
+const char *topics = "esp32/test"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
@@ -28,8 +33,8 @@ PubSubClient client(espClient);
  * MQTT接受的消息回调
  */
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
-    // Serial.print("MQTT消息到达主题: ");
-    // Serial.println(topic);
+    /*   Serial.print("MQTT消息到达主题: ");
+       Serial.println(topic);*/
     Serial.print("MQTT订阅接受的消息: ");
     String payloadData = "";
     for (int i = 0; i < length; i++) {
@@ -44,7 +49,13 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.println("-----------------------");
 
     // 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
+/*     try {
     uint32_t chipId = get_chip_id();
+    Serial.println("----------------------- " + chipId);
+     } catch (exception &e) {
+         cout << &e << endl;
+     }*/
+
     if (command == "raise") {
         set_motor_up();
     }
@@ -52,25 +63,25 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
         set_motor_down();
     }
     if (command == "query") {
-        int status = get_pwm_status();
-        DynamicJsonDocument doc(1024);
-        JsonObject object = doc.to<JsonObject>();
-        object["command"] = "query";
-        object["deviceCode"] = chipId;
-        object["deviceStatus"] = status;
-        client.publish(topic, "主动查询MCU状态信息");
-        client.subscribe(topic);
+        //int status = get_pwm_status();
+        /* DynamicJsonDocument doc(1024);
+           JsonObject object = doc.to<JsonObject>();
+           object["command"] = "query";
+           object["deviceCode"] = chipId;*/
+        //object["deviceStatus"] = status;
+        client.publish(topics, "主动查询MCU状态信息");
     }
 
 }
 
 /**
- * 初始化MQTT协议
+ * 初始化MQTT客户端
  */
 void init_mqtt(String name) {
-    Serial.println("初始化MQTT协议");
+    Serial.println("初始化MQTT客户端");
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
+    client.setKeepAlive(90); // 保持连接多少秒
     client.setCallback(mqtt_callback);
     while (!client.connected()) {
         String client_id = name + "-";
@@ -85,8 +96,8 @@ void init_mqtt(String name) {
         }
     }
     // publish and subscribe
-    client.publish(topic, "Hi EMQX I'm ESP32 ^^");
-    client.subscribe(topic);
+    // client.publish(topics, "Hi EMQX I'm ESP32 ^^");
+    client.subscribe(topics);
 }
 
 /**
@@ -99,8 +110,8 @@ void mqtt_loop() {
 /**
  * 重连MQTT服务
  */
-void mqtt_reconnect() {
+void mqtt_reconnect(String name) {
     while (!client.connected()) {
-        init_mqtt("esp32-mcu-client");
+        init_mqtt(name);
     }
 }

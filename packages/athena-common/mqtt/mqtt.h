@@ -11,6 +11,6 @@ void init_mqtt(String name);
 
 void mqtt_loop();
 
-void mqtt_reconnect();
+void mqtt_reconnect(String name);
 
 #endif
