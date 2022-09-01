@@ -26,7 +26,8 @@
 
 ### 开发平台：PlatformIO
 
-- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 安装执行 python get-platformio.py
+- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 安装执行 python
+  get-platformio.py
 
 ### 跨芯片嵌入式框架: Arduino (不同芯片代码复用)
 
@@ -38,9 +39,13 @@
 
 ### 硬件调试烧录工具: DapLink、ST-Link/J-Link、EspTool
 
+### WokWi在浏览器中模拟 IoT 项目
+
+- https://wokwi.com
+
 ### Logic 2借助让您爱不释手的逻辑分析仪
 
-https://www.jetbrains.com/help/clion/platformio.html
+- https://www.jetbrains.com/help/clion/platformio.html
 
 #### 搭建参考文章
 
@@ -80,7 +85,8 @@ https://help.aliyun.com/document_detail/254820.html
 #### IDEA工具内File->Settings->File and Code Templates->Includes标签->File Header 添加如下注释信息，之后创建类会自动生成注释信息
 
 /**
+
 * @author 潘维吉
 * @date ${DATE} ${TIME}
 * @description 描述
-*/
+  */
