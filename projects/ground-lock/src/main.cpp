@@ -71,7 +71,7 @@ void setup() {
     xTaskCreate(
             xTaskOTA,  /* Task function. */
             "TaskOTA", /* String with name of task. */
-            8096,      /* Stack size in bytes. */
+            8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             5,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */

@@ -44,7 +44,6 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
  * 执行固件升级
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
-    // while (1) {  // 多线程需要不断的任务执行
     DynamicJsonDocument json = http_get(jsonUrl);
     // 读取JSON数据
     // Serial.println("OTA响应数据:");
@@ -55,6 +54,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     //Serial.println(file_url);
 
     if (version_compare(new_version, version) == 1) {
+        // 做固件MD5签名算法 保证固件本身是安全的
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
@@ -65,7 +65,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         };
         esp_err_t ret = esp_https_ota(&config);
         if (ret == ESP_OK) {
-            // 检测固件是否正常  设计失败恢复方案
+            // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
             // 升级成功LED 闪动的方便查看
             /*    digitalWrite(18, HIGH);
@@ -78,12 +78,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     } else {
         printf("当前固件版本v%s, 没有新版本OTA固件, 跳过升级 \n", version.c_str());
     }
-    //printf("OTA定时检测任务延迟中...\n");
-    // 每多少时间执行一次
-    // delay(30000);
-    //vTaskDelay(30000 / portTICK_PERIOD_MS);
     // return ESP_OK; // esp_err_t 类型
-    //}
 }
 
 /**
@@ -106,16 +101,10 @@ void exec_ota(String version, String jsonUrl) {
     xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 4096, NULL, 1, NULL, 0);
 #endif*/
 
-    // 开启多线程OTA任务
-    // xTaskCreate(&do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 5, NULL);
-    // xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 8192, NULL, 3, NULL, 0);
-
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */
 
-    // start the check update task
-    // xTaskCreate(&check_update_task, "check_update_task", 8192, NULL, 5, NULL);
 }
 
 // 语义化版本号对比 Method to compare two versions.
