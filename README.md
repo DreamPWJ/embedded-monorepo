@@ -39,7 +39,7 @@
 
 ### 硬件调试烧录工具: DapLink、ST-Link/J-Link、EspTool
 
-### WokWi在浏览器中模拟 IoT 项目
+### WokWi在浏览器中模拟调试 IoT 嵌入式单片机项目
 
 - https://wokwi.com
 
