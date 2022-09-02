@@ -65,6 +65,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         };
         esp_err_t ret = esp_https_ota(&config);
         if (ret == ESP_OK) {
+            // 检测固件是否正常  设计失败恢复方案
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
             // 升级成功LED 闪动的方便查看
             /*    digitalWrite(18, HIGH);
