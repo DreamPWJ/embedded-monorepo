@@ -9,6 +9,8 @@
 
 uint32_t get_chip_id();
 
+uint64_t get_chip_mac();
+
 void get_chip_info(void);
 
 #endif

@@ -16,17 +16,22 @@ uint32_t chipId = 0;
  * 获取芯片ID唯一标识
  */
 uint32_t get_chip_id() {
-    for(int i=0; i<17; i=i+8) {
+    for (int i = 0; i < 17; i = i + 8) {
         chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
     }
-    return  chipId;
+    return chipId;
+}
+
+uint64_t get_chip_mac() {
+    chipId |= ESP.getEfuseMac();
+    return chipId;
 }
 
 /**
  * 获取芯片信息
  */
 void get_chip_info() {
-    for(int i=0; i<17; i=i+8) {
+    for (int i = 0; i < 17; i = i + 8) {
         chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
     }
 

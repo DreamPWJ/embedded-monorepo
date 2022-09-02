@@ -40,6 +40,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     for (int i = 0; i < length; i++) {
         Serial.print((char) payload[i]);
         payloadData += (char) payload[i];
+
     }
     Serial.println();
     DynamicJsonDocument doc(2048);
@@ -48,7 +49,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     // Serial.println(command);
     Serial.println("-----------------------");
 
-    // 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
+    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
     uint32_t chipId;
     try {
         chipId = get_chip_id();
@@ -63,6 +64,8 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
         set_motor_down();
     }
     if (command == "query") {
+        String deviceCode = doc["deviceCode"].as<String>();
+        Serial.println(deviceCode);
         int status = get_pwm_status();
         /*    DynamicJsonDocument doc(1024);
               JsonObject object = doc.to<JsonObject>();
