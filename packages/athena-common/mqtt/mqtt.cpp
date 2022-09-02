@@ -20,7 +20,7 @@ using namespace std;
 
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
-const char *topics = "esp32/test"; // 设置MQTT的订阅主题
+const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
 const char *mqtt_password = "public";
 const int mqtt_port = 1883;
@@ -64,8 +64,6 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
         set_motor_down();
     }
     if (command == "query") {
-        String deviceCode = doc["deviceCode"].as<String>();
-        Serial.println(deviceCode);
         int status = get_pwm_status();
         /*    DynamicJsonDocument doc(1024);
               JsonObject object = doc.to<JsonObject>();
@@ -102,8 +100,9 @@ void init_mqtt(String name) {
         }
     }
     // publish and subscribe
-    // client.publish(topics, "Hi EMQX I'm ESP32 ^^");
-    client.subscribe(topics);
+    std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
+    client.publish(topic_device.c_str(), " 你好, MQTT服务 , 我是ESP32 单片机 ");
+    client.subscribe(topic_device.c_str());
 }
 
 /**

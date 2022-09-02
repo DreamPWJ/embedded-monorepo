@@ -10,7 +10,7 @@
 */
 
 uint32_t chipId = 0;
-
+uint64_t chipMac = 0LL;
 
 /**
  * 获取芯片ID唯一标识
@@ -23,8 +23,8 @@ uint32_t get_chip_id() {
 }
 
 uint64_t get_chip_mac() {
-    chipId |= ESP.getEfuseMac();
-    return chipId;
+    chipMac |= ESP.getEfuseMac();
+    return chipMac;
 }
 
 /**
