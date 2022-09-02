@@ -63,13 +63,16 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
         set_motor_down();
     }
     if (command == "query") {
-        //int status = get_pwm_status();
-        DynamicJsonDocument doc(1024);
-        JsonObject object = doc.to<JsonObject>();
-        object["command"] = "query";
-        object["deviceCode"] = chipId;
-        //object["deviceStatus"] = status;
-        client.publish(topics, "主动查询MCU状态信息");
+        int status = get_pwm_status();
+        /*    DynamicJsonDocument doc(1024);
+              JsonObject object = doc.to<JsonObject>();
+              object["command"] = "query";
+              object["deviceCode"] = chipId;
+              object["deviceStatus"] = status; */
+        std:
+        string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
+                          to_string(status) + "\"}";
+        client.publish(topics, jsonData.c_str());
     }
 
 }
