@@ -15,6 +15,7 @@
 #include "HttpsOTAUpdate.h"
 #include <ArduinoJson.h>
 #include <bits/stdc++.h>
+#include <common_utils.h>
 
 using namespace std;
 
@@ -84,27 +85,53 @@ void do_firmware_upgrade(String version, String jsonUrl) {
 /**
  * 执行OTA空中升级
  */
+static String otaVersion;
+static String otaJsonUrl;
+
 void exec_ota(String version, String jsonUrl) {
     Serial.println("开始检测OTA空中升级...");
-    do_firmware_upgrade(version, jsonUrl);
-
-/*#if !USE_MULTI_CORE
+    // do_firmware_upgrade(version, jsonUrl);
+    otaVersion = version;
+    otaJsonUrl = jsonUrl;
+#if !USE_MULTI_CORE
+/*    String paramsStr = version + "," + jsonUrl;
+    Serial.println(paramsStr.c_str());
+    const char *params = paramsStr.c_str(); // 逗号分割多参数*/
+    const char *params = NULL;
     xTaskCreate(
-            do_firmware_upgrade,  *//* Task function. *//*
-            "do_firmware_upgrade", *//* String with name of task. *//*
-            8192,      *//* Stack size in bytes. *//*
-            NULL,      *//* Parameter passed as input of the task *//*
-            5,         *//* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
-            NULL);     *//* Task handle. *//*
+            xTaskOTA,  /* Task function. */
+            "TaskOTA", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            5,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
     xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 4096, NULL, 1, NULL, 0);
-#endif*/
+#endif
 
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
        Serial.println("Please Wait it takes some time ..."); */
+}
 
+/**
+ * 多线程OTA任务
+ */
+char *pcTaskName;
+
+void xTaskOTA(void *pvParameters) {
+    while (1) {
+        Serial.println("多线程OTA任务,检测OTA空中升级...");
+        /*    pcTaskName = (char *) pvParameters;
+               std::vector<string> res = split(pcTaskName, ",");
+               String version = res[0].c_str();
+               String jsonUrl = res[1].c_str();
+               Serial.println(version);
+               Serial.println(jsonUrl); */
+        do_firmware_upgrade(otaVersion, otaJsonUrl);
+        delay(30000);
+    }
 }
 
 // 语义化版本号对比 Method to compare two versions.

@@ -11,9 +11,9 @@
 
 void exec_ota(String version, String jsonUrl);
 
-int version_compare(String v1, String v2);
+void xTaskOTA(void *pvParameters);
 
-// esp_err_t do_firmware_upgrade(void *pvParameter);
+int version_compare(String v1, String v2);
 
 
 #endif

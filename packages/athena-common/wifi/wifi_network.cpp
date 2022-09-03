@@ -11,8 +11,8 @@
 * @description WiFI无线网络模块
 */
 
-const char *ssid = "TP-LINK_2020";  // WiFi用户名  注意模组只支持2.4G
-const char *password = "a18863302302";  // WiFi密码 最少 8 个字符
+const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
+const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
 
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
