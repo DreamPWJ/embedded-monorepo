@@ -107,7 +107,7 @@ void exec_ota(String version, String jsonUrl) {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(do_firmware_upgrade, "do_firmware_upgrade", 4096, NULL, 1, NULL, 0);
+    xTaskCreatePinnedToCore(xTaskOTA, "TaskOTA", 8192, NULL, 5, NULL, 0);
 #endif
 
     /* HttpsOTA.onHttpEvent(HttpEvent);
@@ -130,7 +130,7 @@ void xTaskOTA(void *pvParameters) {
                Serial.println(version);
                Serial.println(jsonUrl); */
         do_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(30000);
+        delay(60000); // 多久执行一次 毫秒
     }
 }
 

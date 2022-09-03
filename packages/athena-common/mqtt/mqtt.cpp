@@ -18,6 +18,8 @@ using namespace std;
 * 参考文档： https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
 */
 
+#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
@@ -34,7 +36,7 @@ PubSubClient client(espClient);
  */
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     /*   Serial.print("MQTT消息到达主题: ");
-       Serial.println(topic);*/
+       Serial.println(topic); */
     Serial.print("MQTT订阅接受的消息: ");
     String payloadData = "";
     for (int i = 0; i < length; i++) {
@@ -118,5 +120,36 @@ void mqtt_loop() {
 void mqtt_reconnect(String name) {
     while (!client.connected()) {
         init_mqtt(name);
+    }
+}
+
+/**
+ * MQTT心跳服务
+ */
+void mqtt_heart_beat() {
+#if !USE_MULTI_CORE
+
+    const char *params = NULL;
+    xTaskCreate(
+            xTaskMQTT,  /* Task function. */
+            "TaskMQTT", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(xTaskMQTT, "TaskMQTT", 8192, NULL, 5, NULL, 0);
+#endif
+}
+
+/**
+ * 多线程MQTT任务
+ */
+void xTaskMQTT(void *pvParameters) {
+    while (1) {
+        Serial.println("多线程MQTT任务...");
+        client.publish(topics, " 我是MQTT心跳发的消息 ");
+        delay(60000); // 多久执行一次 毫秒
     }
 }
