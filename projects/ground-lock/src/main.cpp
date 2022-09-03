@@ -9,6 +9,7 @@
 #include <chip_info.h>
 #include <iostream>
 #include <string>
+#include <nvs.h>
 
 using namespace std;
 
@@ -29,6 +30,9 @@ void setup() {
 
     // 将LED数字引脚初始化为输出
     set_pin_mode();
+
+    // 初始化非易失性存储
+    intNVS();
 
     // 初始化NB-IoT网络协议
     init_nb_iot();
