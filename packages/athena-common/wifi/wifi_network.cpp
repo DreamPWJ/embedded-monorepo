@@ -2,20 +2,17 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-//there's an include for this but it doesn't define the function if it doesn't think it needs it, so manually declare the function
-//extern "C" void phy_bbpll_en_usb(bool en);
-
 /**
 * @author 潘维吉
 * @date 2022/7/20 10:36
 * @description WiFI无线网络模块
 */
 
-const char *ssid = "TP-LINK_2020";  // WiFi用户名  注意模组只支持2.4G
-const char *password = "a18863302302";  // WiFi密码 最少 8 个字符
+const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
+const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
 
 unsigned long previousMillis = 0;
-unsigned long interval = 30000;
+unsigned long interval = 60000;
 
 /**
  * 初始化WiFi
@@ -25,12 +22,8 @@ void init_wifi() {
     Serial.println("开始初始化WiFi模块");
     // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
-    // WiFi.useStaticBuffers(true);
     WiFi.mode(WIFI_STA);
-    // 解决ESP32-C3 原生 USB CDC 在使用 WiFi 时停止工作
-    // phy_bbpll_en_usb(true); // this brings the USB serial-jtag back to life. Suggest doing this immediately after wifi startup.
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
-    //WiFi.disconnect();
     WiFi.begin(ssid, password);
     // 阻塞程序，直到连接成功
     while (WiFi.status() != WL_CONNECTED) {
