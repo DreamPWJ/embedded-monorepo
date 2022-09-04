@@ -42,7 +42,7 @@ using namespace std;
 extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 
 /**
- * 执行固件升级
+ * 执行固件升级 1. 定时检测HTTP方式 1.主动触发MQTT方式
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
     DynamicJsonDocument json = http_get(jsonUrl);
@@ -68,7 +68,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
-            // 升级成功LED 闪动的方便查看
+            // 升级成功LED 闪动的方便在硬件方式查看
             /*    digitalWrite(18, HIGH);
                   delay(5000); */
             esp_restart();
@@ -122,7 +122,7 @@ char *pcTaskName;
 
 void xTaskOTA(void *pvParameters) {
     while (1) {
-        Serial.println("多线程OTA任务,检测OTA空中升级...");
+        Serial.println("多线程OTA任务, 检测OTA空中升级...");
         /*    pcTaskName = (char *) pvParameters;
                std::vector<string> res = split(pcTaskName, ",");
                String version = res[0].c_str();

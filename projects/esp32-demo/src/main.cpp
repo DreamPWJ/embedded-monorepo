@@ -2,7 +2,6 @@
 #include <nb_iot.h>
 #include <mqtt.h>
 #include <pwm.h>
-#include <ground_feeling.h>
 #include <ota.h>
 #include <wifi_network.h>
 #include <bluetooth_connect.h>
