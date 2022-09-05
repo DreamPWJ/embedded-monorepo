@@ -148,7 +148,7 @@ void mqtt_heart_beat() {
  */
 void xTaskMQTT(void *pvParameters) {
     while (1) {
-        Serial.println("多线程MQTT任务, 心跳检测...");
+        // Serial.println("多线程MQTT任务, 心跳检测...");
         client.publish(topics, " 我是MQTT心跳发的消息 ");
         delay(60000); // 多久执行一次 毫秒
     }

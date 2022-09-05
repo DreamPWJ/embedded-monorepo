@@ -122,7 +122,7 @@ char *pcTaskName;
 
 void xTaskOTA(void *pvParameters) {
     while (1) {
-        Serial.println("多线程OTA任务, 检测OTA空中升级...");
+        // Serial.println("多线程OTA任务, 检测OTA空中升级...");
         /*    pcTaskName = (char *) pvParameters;
                std::vector<string> res = split(pcTaskName, ",");
                String version = res[0].c_str();

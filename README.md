@@ -47,8 +47,9 @@
 
 - https://www.jetbrains.com/help/clion/platformio.html
 
-#### 搭建参考文章
+#### 参考文章
 
+https://randomnerdtutorials.com/projects-esp32/
 https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-development-part-iii/
 https://zhuanlan.zhihu.com/p/63672432
 https://zhuanlan.zhihu.com/p/145801160

@@ -1,6 +1,7 @@
 #include "wifi_network.h"
 #include <Arduino.h>
 #include <WiFi.h>
+#include <WiFiMulti.h>
 
 /**
 * @author 潘维吉
@@ -8,11 +9,13 @@
 * @description WiFI无线网络模块
 */
 
+WiFiMulti wifiMulti;
+
 const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
 const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
 
 unsigned long previousMillis = 0;
-unsigned long interval = 60000;
+unsigned long interval = 60000; // 检测wifi状态间隔 毫秒
 
 /**
  * 初始化WiFi
@@ -34,10 +37,10 @@ void init_wifi() {
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("WiFi 连接成功！");
         // 开发板LED 闪动的实现
-/*        digitalWrite(18, HIGH);
+/*      digitalWrite(18, HIGH);
         delay(2000);
         digitalWrite(18, LOW);
-        delay(1000);*/
+        delay(1000); */
         Serial.println("IP Address: ");
         Serial.println(WiFi.localIP());
         Serial.print("WiFi连接强度RRSI: ");
@@ -53,6 +56,47 @@ void init_wifi() {
  */
 void init_wifi_multi_thread(void *pvParameters) {
     init_wifi();
+}
+
+/**
+ * 扫码WiFi 选择开放Wifi直接连接
+ */
+void scan_wifi() {
+    WiFi.mode(WIFI_STA);
+    // Add list of wifi networks
+    wifiMulti.addAP("ssid_from_AP_1", "your_password_for_AP_1");
+    wifiMulti.addAP("ssid_from_AP_2", "your_password_for_AP_2");
+    wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
+
+    // WiFi.scanNetworks will return the number of networks found
+    int n = WiFi.scanNetworks();
+    Serial.println("scan done");
+    if (n == 0) {
+        Serial.println("no networks found");
+    } else {
+        Serial.print(n);
+        Serial.println(" networks found");
+        for (int i = 0; i < n; ++i) {
+            // Print SSID and RSSI for each network found
+            Serial.print(i + 1);
+            Serial.print(": ");
+            Serial.print(WiFi.SSID(i));
+            Serial.print(" (");
+            Serial.print(WiFi.RSSI(i));
+            Serial.print(")");
+            Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+            delay(10);
+        }
+    }
+
+    // Connect to Wi-Fi using wifiMulti (connects to the SSID with strongest connection)
+    Serial.println("Connecting Wifi...");
+    if (wifiMulti.run() == WL_CONNECTED) {
+        Serial.println("");
+        Serial.println("WiFi connected");
+        Serial.println("IP address: ");
+        Serial.println(WiFi.localIP());
+    }
 }
 
 /**
