@@ -8,6 +8,11 @@
 */
 
 
+void init_temperature();
+
+float get_temperature();
+
+int get_electricity();
 
 
 #endif

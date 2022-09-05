@@ -11,10 +11,11 @@
 #include <string>
 #include <nvs.h>
 #include <uart.h>
+#include <device_info.h>
 
 using namespace std;
 
-#define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
+#define FIRMWARE_VERSION              "0.6.1"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 1 // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1 // 是否开启MQTT消息协议 0 关闭  1 开启
@@ -63,6 +64,9 @@ void setup() {
     // 初始化地感线圈
     init_ground_feeling();
 
+    // 初始化温度设置
+    // init_temperature();
+
     // 执行OTA空中升级
     exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
@@ -75,6 +79,7 @@ void loop() {
     set_led();
 
     //Serial.println(getNVS("name"));
+    //Serial.println(get_temperature());
 
 #if WIFI_EN
     // 定时检测重新连接WiFi
