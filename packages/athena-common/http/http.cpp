@@ -3,7 +3,6 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
 
 /**
 * @author 潘维吉
