@@ -1,7 +1,5 @@
 #include "device_info.h"
-
 #include "driver/temp_sensor.h"
-
 
 /**
 * @author 潘维吉
@@ -15,8 +13,8 @@
  */
 void init_temperature() {
     temp_sensor_config_t temp_sensor = {
-            .dac_offset=TSENS_DAC_L2,
-            .clk_div=6
+            .dac_offset = TSENS_DAC_L2,
+            .clk_div = 6
     };
     temp_sensor_set_config(temp_sensor);
     temp_sensor_start();

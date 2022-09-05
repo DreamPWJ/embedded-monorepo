@@ -28,6 +28,8 @@ const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
+/*TinyGsm modem();
+TinyGsmClient client();*/
 WiFiClient espClient; // WiFi网络类型
 PubSubClient client(espClient);
 
