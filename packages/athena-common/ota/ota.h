@@ -13,7 +13,5 @@ void exec_ota(String version, String jsonUrl);
 
 void xTaskOTA(void *pvParameters);
 
-int version_compare(String v1, String v2);
-
 
 #endif

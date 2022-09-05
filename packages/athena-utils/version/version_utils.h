@@ -9,6 +9,6 @@
 * @description 版本控制工具类
 */
 
-int version_compare(String v1, String v2)
+int version_compare(String v1, String v2);
 
 #endif
