@@ -46,6 +46,7 @@ void setup() {
 
     // 网络请求
     http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
+    //esp_http();
 
 #if WIFI_EN
     // 初始化WiFi无线网络
