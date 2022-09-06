@@ -15,6 +15,6 @@ void mqtt_reconnect(String name);
 
 void mqtt_heart_beat();
 
-void xTaskMQTT(void *pvParameters);
+void x_task_mqtt(void *pvParameters);
 
 #endif

@@ -133,22 +133,22 @@ void mqtt_heart_beat() {
 
     const char *params = NULL;
     xTaskCreate(
-            xTaskMQTT,  /* Task function. */
-            "TaskMQTT", /* String with name of task. */
+            x_task_mqtt,  /* Task function. */
+            "x_task_mqtt", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(xTaskMQTT, "TaskMQTT", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_mqtt, "TaskMQTT", 8192, NULL, 5, NULL, 0);
 #endif
 }
 
 /**
  * 多线程MQTT任务
  */
-void xTaskMQTT(void *pvParameters) {
+void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         client.publish(topics, " 我是MQTT心跳发的消息 ");

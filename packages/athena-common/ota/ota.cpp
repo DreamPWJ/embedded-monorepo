@@ -100,15 +100,15 @@ void exec_ota(String version, String jsonUrl) {
     const char *params = paramsStr.c_str(); // 逗号分割多参数*/
     const char *params = NULL;
     xTaskCreate(
-            xTaskOTA,  /* Task function. */
-            "TaskOTA", /* String with name of task. */
+            x_task_ota,  /* Task function. */
+            "x_task_ota", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             5,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(xTaskOTA, "TaskOTA", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_ota, "TaskOTA", 8192, NULL, 5, NULL, 0);
 #endif
 
     /* HttpsOTA.onHttpEvent(HttpEvent);
@@ -121,7 +121,7 @@ void exec_ota(String version, String jsonUrl) {
  */
 char *pcTaskName;
 
-void xTaskOTA(void *pvParameters) {
+void x_task_ota(void *pvParameters) {
     while (1) {
         // Serial.println("多线程OTA任务, 检测OTA空中升级...");
         /*    pcTaskName = (char *) pvParameters;

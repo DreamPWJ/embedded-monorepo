@@ -11,7 +11,7 @@
 
 void exec_ota(String version, String jsonUrl);
 
-void xTaskOTA(void *pvParameters);
+void x_task_ota(void *pvParameters);
 
 
 #endif

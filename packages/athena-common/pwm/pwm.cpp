@@ -105,6 +105,7 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
+            set_motor_down(); // 回落锁
             Serial.println("地感判断有车地锁不能继续抬起");
             break;
         }
@@ -192,6 +193,31 @@ int get_pwm_status() {
     }
     return -1;
 }
+
+/**
+ * 多线程检测是否有车  有车实时上报MQTT服务器
+ */
+void x_task_has_car(void *pvParameters) {
+    // 确保上次检测是无车, 本次检测有车才上报
+    while (1){
+
+        delay(5000);
+    }
+}
+
+/**
+ * 多线程检测是否有车
+ */
+void check_car() {
+    xTaskCreate(
+            x_task_has_car,  /* Task function. */
+            "x_task_has_car", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            NULL,      /* Parameter passed as input of the task */
+            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+}
+
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     ledcWrite(channel_PWMA, DutyA);

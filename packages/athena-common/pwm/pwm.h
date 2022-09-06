@@ -19,6 +19,8 @@ void set_pwm();
 
 int get_pwm_status();
 
+void check_car();
+
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 
 void motor_control(int Cnt_L, int Cnt_R);
