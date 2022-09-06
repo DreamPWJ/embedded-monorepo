@@ -3,8 +3,8 @@
 //#include <MKRGSM.h>
 #include <SoftwareSerial.h>
 
-#define MYPORT_TX 7
-#define MYPORT_RX 8
+#define PIN_TX 7
+#define PIN_RX 8
 
 // Set up a new SoftwareSerial object
 SoftwareSerial mySerial;
@@ -33,11 +33,11 @@ void init_nb_iot() {
     digitalWrite(nb_gpio_1, HIGH);
     digitalWrite(nb_gpio_2, HIGH);
 
-    pinMode(MYPORT_RX, INPUT);
-    pinMode(MYPORT_TX, OUTPUT);
+    pinMode(PIN_RX, INPUT);
+    pinMode(PIN_TX, OUTPUT);
 
     // 参考文档： https://github.com/plerup/espsoftwareserial
-    mySerial.begin(9600, SWSERIAL_8N1, -1, MYPORT_TX, false); // NB模组的波特率
+    mySerial.begin(9600, SWSERIAL_8N1, -1, PIN_TX, false); // NB模组的波特率
     if (!mySerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
@@ -45,18 +45,19 @@ void init_nb_iot() {
             delay(1000);
         }
     }
-    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
-    mySerial.write("AT"); // 测试AT指令
-    delay(2000);
+    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
+    Serial.println("给NB模组发送AT指令");
+    // mySerial.write("AT"); // 测试AT指令
+    // delay(2000);
     mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(2000);
     mySerial.write("AT+CGATT=1\r\n"); // 附着网络
     delay(2000);
-    mySerial.write("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
+/*    mySerial.write("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
     delay(2000);
     mySerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(2000);
-    mySerial.write("AT+ECPING='www.baidu.com'\r\n"); // 测试网络
+    mySerial.write("AT+ECPING='www.baidu.com'\r\n"); // 测试网络*/
 }
 
 /**
