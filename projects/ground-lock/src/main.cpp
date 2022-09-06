@@ -32,7 +32,7 @@ void setup() {
     Serial.begin(115200);
 
     // 初始化其它UART串口
-    init_uart();
+    // init_uart();
 
     // 将LED数字引脚初始化为输出
     set_pin_mode();

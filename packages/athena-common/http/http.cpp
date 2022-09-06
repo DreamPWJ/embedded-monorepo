@@ -28,11 +28,11 @@ DynamicJsonDocument http_get(String url) {
             deserializeJson(doc, http.getStream());
 
             // Read values
-       /*     Serial.println(doc["version"].as<double>());
-            Serial.println(doc["file"].as<String>()); */
+            /*     Serial.println(doc["version"].as<double>());
+                 Serial.println(doc["file"].as<String>()); */
 
-       /*   String resBuff = http.getString();
-            Serial.println(resBuff); */
+            /*   String resBuff = http.getString();
+                 Serial.println(resBuff); */
         }
     }
     // Disconnect
@@ -63,15 +63,15 @@ void http_post(String url, String data) {
     // Send request
     http.begin(url);
     http.addHeader("Content-Type", "application/json; charset=UTF-8");
-    if (WiFi.status() == WL_CONNECTED) {
-        int httpCode = http.POST(dataJSON);
-        Serial.printf("HTTP POST Code: %d\r\n", httpCode);
-        Serial.println("HTTP POST Msg: " + http.getString());
-        if (httpCode == HTTP_CODE_OK) {
-            // Read response
-            Serial.print(http.getString());
-        }
+    // if (WiFi.status() == WL_CONNECTED) {
+    int httpCode = http.POST(dataJSON);
+    Serial.printf("HTTP POST Code: %d\r\n", httpCode);
+    Serial.println("HTTP POST Msg: " + http.getString());
+    if (httpCode == HTTP_CODE_OK) {
+        // Read response
+        Serial.print(http.getString());
     }
+    // }
     // Disconnect
     http.end();
 }
