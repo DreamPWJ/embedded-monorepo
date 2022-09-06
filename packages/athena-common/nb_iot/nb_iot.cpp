@@ -52,12 +52,12 @@ void init_nb_iot() {
     mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(5000);
     mySerial.write("AT+CGATT=1\r\n"); // 附着网络
-    delay(10000);
-    mySerial.write("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
-    delay(10000);
+    delay(5000);
+    mySerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
+    delay(5000);
     mySerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(5000);
-    mySerial.write("AT+ECPING='www.baidu.com'\r\n"); // 测试网络
+    mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
 }
 
 /**
