@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <WiFi.h>
 
 /**
 * @author 潘维吉

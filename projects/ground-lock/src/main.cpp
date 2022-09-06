@@ -12,6 +12,7 @@
 #include <nvs.h>
 #include <uart.h>
 #include <device_info.h>
+#include <http.h>
 
 using namespace std;
 
@@ -42,6 +43,9 @@ void setup() {
 
     // 初始化NB-IoT网络协议
     init_nb_iot();
+
+    // 网络请求
+    http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
 
 #if WIFI_EN
     // 初始化WiFi无线网络

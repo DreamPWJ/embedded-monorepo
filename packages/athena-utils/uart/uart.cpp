@@ -4,6 +4,7 @@
 #include <freertos/task.h>
 #include <driver/uart.h>
 #include <driver/gpio.h>
+#include <nb_iot.h>
 
 /**
 * @author 潘维吉
@@ -45,11 +46,13 @@ static void set_uart(void *pvParameters) {
         int len = uart_read_bytes(uart_num, data, BUF_SIZE, 20 / portTICK_RATE_MS);
         // 写入UART数据
         uart_write_bytes(uart_num, (const char *) data, len);
+       // delay(1000);
     }
 
 }
 
 void init_uart(void) {
+    Serial.println("UART通用异步收发送器初始化");
     xTaskCreate(
             set_uart,  /* Task function. */
             "set_uart", /* String with name of task. */
@@ -57,4 +60,7 @@ void init_uart(void) {
             NULL,      /* Parameter passed as input of the task */
             10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
+
+    // 初始化NB-IoT网络协议
+    //init_nb_iot();
 }
