@@ -47,17 +47,17 @@ void init_nb_iot() {
     }
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     Serial.println("给NB模组发送AT指令");
-    // mySerial.write("AT"); // 测试AT指令
-    // delay(2000);
+    // mySerial.write("AT\r\n"); // 测试AT指令
+    delay(5000);
     mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
-    delay(2000);
+    delay(5000);
     mySerial.write("AT+CGATT=1\r\n"); // 附着网络
-    delay(2000);
-/*    mySerial.write("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
-    delay(2000);
+    delay(10000);
+    mySerial.write("AT+CGDCONT=1,'IP','CMNET'\r\n"); // 注册APNID接入网络
+    delay(10000);
     mySerial.write("AT+CGACT=1\r\n"); // 激活网络
-    delay(2000);
-    mySerial.write("AT+ECPING='www.baidu.com'\r\n"); // 测试网络*/
+    delay(5000);
+    mySerial.write("AT+ECPING='www.baidu.com'\r\n"); // 测试网络
 }
 
 /**
