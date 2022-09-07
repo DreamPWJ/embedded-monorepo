@@ -1,7 +1,10 @@
+//#define TINY_GSM_MODEM_SIM800
+
 #include "mqtt.h"
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+//#include <TinyGsmClient.h>
 #include <WiFi.h>
 #include <pwm.h>
 #include <chip_info.h>
@@ -28,8 +31,9 @@ const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
-/*TinyGsm modem();
-TinyGsmClient client();*/
+/*#define SerialAT Serial1
+TinyGsm modem();
+TinyGsmClient espClient(modem); // NB-IoT网络类型*/
 WiFiClient espClient; // WiFi网络类型
 PubSubClient client(espClient);
 

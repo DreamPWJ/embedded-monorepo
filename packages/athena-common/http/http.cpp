@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <TinyGsmClient.h>
+// #include <TinyGsmClient.h>
 #include <esp_http_client.h>
 
 /**
@@ -19,9 +19,9 @@
 #define TINY_GSM_USE_GPRS true
 #define TINY_GSM_USE_WIFI false
 
-#define SerialAT Serial1
+/*#define SerialAT Serial1
 TinyGsm modem(SerialAT);
-TinyGsmClient client(modem);
+TinyGsmClient client(modem);*/
 
 
 /**
