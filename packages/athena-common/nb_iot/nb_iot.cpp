@@ -66,7 +66,7 @@ void init_nb_iot() {
     mySerial.write("AT+HTTPCREATE=0,\042http://www.jxybkj.cn:8088\042\r\n"); // 创建实例
     delay(1000);
     mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
-    delay(5000);
+    delay(1000);
     mySerial.write("AT+HTTPSEND=0,0,89,\042/token\042\r\n"); // Http请求
 }
 
