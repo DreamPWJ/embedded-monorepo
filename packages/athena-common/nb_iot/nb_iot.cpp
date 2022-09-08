@@ -19,8 +19,8 @@ SoftwareSerial mySerial;
 // GSMModem modem;
 
 // NB控制GPIO
-const int nb_gpio_1 = 6;
-const int nb_gpio_2 = 10;
+#define MODEM_RST            6
+#define MODEM_PWKEY          10
 
 
 /**
@@ -28,10 +28,10 @@ const int nb_gpio_2 = 10;
  */
 void init_nb_iot() {
     // NB相关引脚初始化
-    pinMode(nb_gpio_1, OUTPUT);
-    pinMode(nb_gpio_2, OUTPUT);
-    digitalWrite(nb_gpio_1, HIGH);
-    digitalWrite(nb_gpio_2, HIGH);
+    pinMode(MODEM_RST, OUTPUT);
+    pinMode(MODEM_PWKEY, OUTPUT);
+    digitalWrite(MODEM_RST, HIGH);
+    digitalWrite(MODEM_PWKEY, LOW);
 
     pinMode(PIN_RX, INPUT);
     pinMode(PIN_TX, OUTPUT);

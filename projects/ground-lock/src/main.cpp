@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include <led_pin.h>
 #include <nb_iot.h>
 #include <wifi_network.h>
@@ -13,17 +15,17 @@
 #include <uart.h>
 #include <device_info.h>
 #include <http.h>
+#include "../lib/gsm_http/gsm_http.h"
 
 using namespace std;
 
-#define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
+#define FIRMWARE_VERSION              "0.6.3"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "https://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
-#define WIFI_EN 1 // 是否开启WIFI网络功能 0 关闭  1 开启
-#define MQTT_EN 1 // 是否开启MQTT消息协议 0 关闭  1 开启
+#define WIFI_EN 0 // 是否开启WIFI网络功能 0 关闭  1 开启
+#define MQTT_EN 0 // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
-
 
 void setup() {
     // 初始化设置代码
@@ -45,8 +47,11 @@ void setup() {
     init_nb_iot();
 
     // 网络请求
-    //http_get("http://httpbin.org/redirect/2");
+    //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     //esp_http();
+    //nb_http_get();
+    gsm_http_get();
+
 
 #if WIFI_EN
     // 初始化WiFi无线网络

@@ -1,6 +1,5 @@
-//#define TINY_GSM_MODEM_SIM800
-
 #include "mqtt.h"
+
 #include <Arduino.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
@@ -19,6 +18,7 @@ using namespace std;
 * @date 2022/7/29 15:51
 * @description MQTT消息队列遥测传输协议
 * 参考文档： https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
+* https://github.com/khoih-prog/NB_Generic
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
