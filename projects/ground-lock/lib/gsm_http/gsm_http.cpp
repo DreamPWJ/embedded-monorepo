@@ -6,6 +6,7 @@
 * @date 2022/9/8 8:38
 * @description GSM网络类型的Http请求
 * 参考文档： https://randomnerdtutorials.com/esp32-sim800l-publish-data-to-cloud/
+* https://github.com/vshymanskyy/TinyGSM
 */
 
 // Your GPRS credentials (leave empty, if not needed)
@@ -35,7 +36,7 @@ const int port = 80;
 #define SerialAT Serial1
 
 // Configure TinyGSM library
-#define TINY_GSM_MODEM_SIM800      // Modem is SIM800
+#define TINY_GSM_MODEM_SIM800     // Modem is SIM800
 #define TINY_GSM_RX_BUFFER   1024  // Set RX buffer to 1Kb
 
 // Define the serial console for debug prints, if needed
@@ -61,7 +62,6 @@ TinyGsmClient client(modem);
 void gsm_http_get() {
     Serial.println("GSM网络Http的Get请求");
     SerialMon.begin(115200);
-
     /* // Set modem reset, enable, power pins
      pinMode(MODEM_PWKEY, OUTPUT);
      pinMode(MODEM_RST, OUTPUT);
@@ -85,11 +85,11 @@ void gsm_http_get() {
     SerialMon.print("Connecting to APN: ");
     SerialMon.print(apn);
     yield(); // 处理和看门狗任务冲突
+
     if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
         SerialMon.println("GSM gprsConnect Fail");
     } else {
         SerialMon.println("GSM gprsConnect OK");
-
         SerialMon.print(" GSM Connecting to ");
         SerialMon.print(server);
         if (!client.connect(server, port)) {
