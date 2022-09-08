@@ -57,7 +57,17 @@ void init_nb_iot() {
     delay(1000);
     mySerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);
-    mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+    //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+
+    // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
+    delay(1000);
+    mySerial.write("AT+ECDNS=\042www.jxybkj.cn\042\r\n"); // DNS解析测试
+    delay(1000);
+    mySerial.write("AT+HTTPCREATE=0,\042http://www.jxybkj.cn:8088\042\r\n"); // 创建实例
+    delay(1000);
+    mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
+    delay(5000);
+    mySerial.write("AT+HTTPSEND=0,0,89,\042/token\042\r\n"); // Http请求
 }
 
 /**

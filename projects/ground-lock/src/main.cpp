@@ -51,8 +51,8 @@ void setup() {
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     //esp_http();
     //nb_http_get();
-    gsm_http_get();
-    init_gsm_mqtt();
+    // gsm_http_get();
+    // init_gsm_mqtt();
 
 #if WIFI_EN
     // 初始化WiFi无线网络
@@ -111,6 +111,6 @@ void loop() {
     // 地感状态检测  判断是否有车
     // ground_feeling_status();
 
-    gsm_mqtt_loop();
+    // gsm_mqtt_loop();
 
 }
