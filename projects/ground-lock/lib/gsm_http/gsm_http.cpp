@@ -9,7 +9,7 @@
 */
 
 // Your GPRS credentials (leave empty, if not needed)
-const char apn[] = "internet.vodafone.pt"; // APN (example: internet.vodafone.pt) use https://wiki.apnchanger.org
+const char apn[] = "CMNET"; // APN (example: internet.vodafone.pt) use https://wiki.apnchanger.org
 const char gprsUser[] = ""; // GPRS User
 const char gprsPass[] = ""; // GPRS Password
 
@@ -18,8 +18,8 @@ const char simPIN[] = "";
 
 // Server details
 // The server variable can be just a domain name or it can have a subdomain. It depends on the service you are using
-const char server[] = "archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json"; // domain name: example.com, maker.ifttt.com, etc
-const char resource[] = "/";         // resource path, for example: /post-data.php
+const char server[] = "archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com"; // domain name: example.com, maker.ifttt.com, etc
+const char resource[] = "/iot/ground-lock/prod/ground-lockota.json";         // resource path, for example: /post-data.php
 const int port = 80;
 
 // 定义GSM网络模组管脚 pins
@@ -61,14 +61,15 @@ TinyGsmClient client(modem);
 void gsm_http_get() {
     Serial.println("GSM网络Http的Get请求");
     SerialMon.begin(115200);
+
     /* // Set modem reset, enable, power pins
      pinMode(MODEM_PWKEY, OUTPUT);
      pinMode(MODEM_RST, OUTPUT);
     // pinMode(MODEM_POWER_ON, OUTPUT);
      digitalWrite(MODEM_PWKEY, LOW);
      digitalWrite(MODEM_RST, HIGH);*/
-
     // digitalWrite(MODEM_POWER_ON, HIGH);
+
     // Set GSM module baud rate and UART pins
     SerialAT.begin(9600, SERIAL_8N1, MODEM_RX, MODEM_TX);
     delay(3000);
@@ -83,19 +84,18 @@ void gsm_http_get() {
     }*/
     SerialMon.print("Connecting to APN: ");
     SerialMon.print(apn);
-    yield();
-    delay(3000);
+    yield(); // 处理和看门狗任务冲突
     if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-        SerialMon.println(" fail");
+        SerialMon.println("GSM gprsConnect Fail");
     } else {
-        SerialMon.println(" OK");
+        SerialMon.println("GSM gprsConnect OK");
 
-        SerialMon.print("Connecting to ");
+        SerialMon.print(" GSM Connecting to ");
         SerialMon.print(server);
         if (!client.connect(server, port)) {
-            SerialMon.println(" fail");
+            SerialMon.println(" connect Fail");
         } else {
-            SerialMon.println(" OK");
+            SerialMon.println(" connect OK");
 
             // Making an HTTP GET request
             SerialMon.println("Performing HTTP GET request...");

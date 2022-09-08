@@ -31,7 +31,7 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     pinMode(MODEM_PWKEY, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
-    digitalWrite(MODEM_PWKEY, LOW);
+    digitalWrite(MODEM_PWKEY, HIGH);
 
     pinMode(PIN_RX, INPUT);
     pinMode(PIN_TX, OUTPUT);

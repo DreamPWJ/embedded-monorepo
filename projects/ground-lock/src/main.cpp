@@ -20,7 +20,7 @@
 using namespace std;
 
 #define FIRMWARE_VERSION              "0.6.3"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
-#define FIRMWARE_UPDATE_JSON_URL      "https://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
+#define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0 // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 0 // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
@@ -44,7 +44,7 @@ void setup() {
     //setNVS("name", "panweiji");
 
     // 初始化NB-IoT网络协议
-    init_nb_iot();
+    //init_nb_iot();
 
     // 网络请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
