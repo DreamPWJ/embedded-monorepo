@@ -78,6 +78,9 @@ void gsm_http_get() {
     SerialMon.println("Initializing modem...");
     // use modem.init() if you don't need the complete restart
     modem.restart();
+    String modemInfo = modem.getModemInfo();
+    SerialMon.print("Modem Info: ");
+    SerialMon.println(modemInfo);
     // Unlock your SIM card with a PIN if needed
 /*    if (strlen(simPIN) && modem.getSimStatus() != 3 ) {
         modem.simUnlock(simPIN);

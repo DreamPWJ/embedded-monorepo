@@ -16,6 +16,7 @@
 #include <device_info.h>
 #include <http.h>
 #include "../lib/gsm_http/gsm_http.h"
+#include "../lib/gsm_mqtt/gsm_mqtt.h"
 
 using namespace std;
 
@@ -51,7 +52,7 @@ void setup() {
     //esp_http();
     //nb_http_get();
     gsm_http_get();
-
+    init_gsm_mqtt();
 
 #if WIFI_EN
     // 初始化WiFi无线网络
@@ -109,5 +110,7 @@ void loop() {
 
     // 地感状态检测  判断是否有车
     // ground_feeling_status();
+
+    gsm_mqtt_loop();
 
 }
