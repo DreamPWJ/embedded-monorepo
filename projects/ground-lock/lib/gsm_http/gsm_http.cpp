@@ -40,7 +40,7 @@ const int port = 80;
 #define TINY_GSM_RX_BUFFER   1024  // Set RX buffer to 1Kb
 
 // Define the serial console for debug prints, if needed
-//#define DUMP_AT_COMMANDS
+#define DUMP_AT_COMMANDS
 
 #include <Wire.h>
 #include <TinyGsmClient.h>
