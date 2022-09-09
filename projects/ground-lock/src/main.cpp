@@ -45,7 +45,7 @@ void setup() {
     //setNVS("name", "panweiji");
 
     // 初始化NB-IoT网络协议
-    init_nb_iot();
+     init_nb_iot();
 
     // 网络请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
