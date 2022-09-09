@@ -28,7 +28,7 @@ const int port = 80;
 #define MODEM_PWKEY          10
 //#define MODEM_POWER_ON       23
 #define MODEM_TX             7
-#define MODEM_RX             8
+#define MODEM_RX             3
 
 // Set serial for debug console (to Serial Monitor, default speed 115200)
 #define SerialMon Serial

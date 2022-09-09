@@ -6,11 +6,12 @@
 
 using namespace std;
 
+#define PIN_RX 3
 #define PIN_TX 7
-#define PIN_RX 8
 
 // Set up a new SoftwareSerial object
-SoftwareSerial mySerial;
+//SoftwareSerial mySerial(PIN_RX, PIN_TX);
+SoftwareSerial mySerial(PIN_RX, PIN_TX);
 
 /**
 * @author 潘维吉
@@ -38,9 +39,10 @@ void init_nb_iot() {
 
     pinMode(PIN_RX, INPUT);
     pinMode(PIN_TX, OUTPUT);
-
+    Serial.begin(115200);
     // 参考文档： https://github.com/plerup/espsoftwareserial
-    mySerial.begin(9600, SWSERIAL_8N1, -1, PIN_TX, false); // NB模组的波特率
+    mySerial.begin(9600, SWSERIAL_8N1, PIN_RX, PIN_TX, false); // NB模组的波特率
+    //mySerial.begin(9600);
     if (!mySerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
@@ -50,7 +52,7 @@ void init_nb_iot() {
     }
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     Serial.println("给NB模组发送AT指令");
-    // mySerial.write("AT\r\n"); // 测试AT指令
+/*    // mySerial.write("AT\r\n"); // 测试AT指令
     delay(3000);
     mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(1000);
@@ -60,30 +62,28 @@ void init_nb_iot() {
     delay(1000);
     mySerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);
-    //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+    //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络*/
 
     // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
     delay(1000);
-    mySerial.write("AT+ECDNS=\042archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com\042\r\n"); // DNS解析测试
+    mySerial.print("AT+ECDNS=\042archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com\042\r\n"); // DNS解析测试
     delay(1000);
-    mySerial.write("AT+HTTPCREATE=0,\042http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com:80\042\r\n"); // 创建实例
+    mySerial.print(
+            "AT+HTTPCREATE=0,\042http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com:80\042\r\n"); // 创建实例
     delay(1000);
-    mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
+    mySerial.print("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
     string path = "/iot/ground-lock/prod/ground-lockota.json";
-    mySerial.write("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
-    delay(2000);
-
+    mySerial.print("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
     String buffer;
     char incomingByte;
+    // Now we simply display any text that the GSM shield sends out on the serial monitor
     while (mySerial.available() > 0) {
         incomingByte = mySerial.read();
-        Serial.println("==============================");
-        Serial.println(incomingByte);
+       // Serial.println(incomingByte);
         buffer.concat(incomingByte);
         delay(10);
     }
-
     Serial.println(buffer);
 }
 
