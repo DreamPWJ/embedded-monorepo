@@ -64,7 +64,7 @@ void init_nb_iot() {
     //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络*/
 
     // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
-    delay(1000);
+    delay(3000);
     mySerial.write("AT+ECDNS=\042archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com\042\r\n"); // DNS解析测试
     delay(1000);
     mySerial.write(
@@ -74,19 +74,20 @@ void init_nb_iot() {
     delay(1000);
     string path = "/iot/ground-lock/prod/ground-lockota.json";
     mySerial.write("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
+
     String buffer;
-    char incomingByte;
+    String incomingByte;
     // Now we simply display any text that the GSM shield sends out on the serial monitor
-    if (mySerial.available() > 0) {
-        Serial.println("=========================");
-        //for (int i = 0; i <= 10; i++) {
-        incomingByte = mySerial.read();
-        Serial.println(incomingByte);
-        buffer.concat(incomingByte);
-        delay(10);
-        // }
-    }
-    Serial.println(buffer);
+    // if (mySerial.available() > 0) {
+    Serial.println("=========================");
+    // for (int i = 0; i <= 10; i++) {
+    incomingByte = mySerial.readString();
+    Serial.println(incomingByte);
+    // buffer.concat(incomingByte);
+    // delay(10);
+    // }
+    // }
+    // Serial.println(buffer);
 }
 
 /**
