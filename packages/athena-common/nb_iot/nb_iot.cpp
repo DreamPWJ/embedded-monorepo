@@ -1,7 +1,10 @@
 #include "nb_iot.h"
 #include <Arduino.h>
+#include <string.h>
 //#include <MKRGSM.h>
 #include <SoftwareSerial.h>
+
+using namespace std;
 
 #define PIN_TX 7
 #define PIN_RX 8
@@ -61,13 +64,27 @@ void init_nb_iot() {
 
     // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
     delay(1000);
-    mySerial.write("AT+ECDNS=\042www.jxybkj.cn\042\r\n"); // DNS解析测试
+    mySerial.write("AT+ECDNS=\042archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com\042\r\n"); // DNS解析测试
     delay(1000);
-    mySerial.write("AT+HTTPCREATE=0,\042http://www.jxybkj.cn:8088\042\r\n"); // 创建实例
+    mySerial.write("AT+HTTPCREATE=0,\042http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com:80\042\r\n"); // 创建实例
     delay(1000);
     mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
-    mySerial.write("AT+HTTPSEND=0,0,6,\042/token\042\r\n"); // Http请求
+    string path = "/iot/ground-lock/prod/ground-lockota.json";
+    mySerial.write("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
+    delay(2000);
+
+    String buffer;
+    char incomingByte;
+    while (mySerial.available() > 0) {
+        incomingByte = mySerial.read();
+        Serial.println("==============================");
+        Serial.println(incomingByte);
+        buffer.concat(incomingByte);
+        delay(10);
+    }
+
+    Serial.println(buffer);
 }
 
 /**

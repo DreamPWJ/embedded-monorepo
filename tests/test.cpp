@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include <ctime>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -19,6 +20,12 @@ int main(void) {
     printf("单文件运行测试 \n");
 
     test_json_file();
+
+    int x = 0xa1a56;
+    std::stringstream ss;
+    ss << x;
+    cout << ss.str();
+
 
 /*    int overtime = 3;// 超时时间 秒
     time_t startA = 0, endA = 0;
