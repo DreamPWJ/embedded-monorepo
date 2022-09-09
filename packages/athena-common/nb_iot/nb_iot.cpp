@@ -67,7 +67,7 @@ void init_nb_iot() {
     delay(1000);
     mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
-    mySerial.write("AT+HTTPSEND=0,0,89,\042/token\042\r\n"); // Http请求
+    mySerial.write("AT+HTTPSEND=0,0,6,\042/token\042\r\n"); // Http请求
 }
 
 /**
