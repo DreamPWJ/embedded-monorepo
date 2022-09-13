@@ -1,4 +1,4 @@
-#include "nvs.h"
+#include "mcu_nvs.h"
 #include <Arduino.h>
 #include <ArduinoNvs.h>
 
@@ -9,14 +9,14 @@
 */
 
 
-void intNVS() {
+void int_nvs() {
     NVS.begin();
 }
 
-String getNVS(String key) {
+String get_nvs(String key) {
     return NVS.getString(key);
 }
 
-bool setNVS(String key, String data) {
+bool set_nvs(String key, String data) {
     return NVS.setString(key, data);
 }

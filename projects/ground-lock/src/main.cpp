@@ -11,7 +11,7 @@
 #include <chip_info.h>
 #include <iostream>
 #include <string>
-#include <nvs.h>
+#include <mcu_nvs.h>
 #include <uart.h>
 #include <device_info.h>
 #include <http.h>
@@ -41,8 +41,8 @@ void setup() {
     set_pin_mode();
 
     // 初始化非易失性存储
-    intNVS();
-    //setNVS("name", "panweiji");
+    int_nvs();
+    //set_nvs("name", "panweiji");
 
     // 初始化NB-IoT网络协议
     init_nb_iot();
@@ -92,7 +92,7 @@ void loop() {
     // 开发板LED 闪动的实现
     set_led();
 
-    //Serial.println(getNVS("name"));
+    //Serial.println(get_nvs("name"));
     //Serial.println(get_temperature());
 
 #if WIFI_EN

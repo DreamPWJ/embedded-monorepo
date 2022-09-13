@@ -12,11 +12,11 @@
 */
 
 
-void intNVS();
+void int_nvs();
 
-String getNVS(String key);
+String get_nvs(String key);
 
-bool setNVS(String key, String data);
+bool set_nvs(String key, String data);
 
 
 #endif

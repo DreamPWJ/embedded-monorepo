@@ -15,6 +15,7 @@
 */
 JsonObject string_to_json(String data) {
     DynamicJsonDocument doc(2048);
+    doc.clear();
     // 用String类型的变量来代替串口获取的Json数据
     // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
     deserializeJson(doc, data);
