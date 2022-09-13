@@ -54,23 +54,23 @@ void init_nb_iot() {
             delay(1000);
         }
     }
-    Serial.println(get_nvs("is_nb_iot_init"));
-   // if (get_nvs("is_nb_iot_init") == "true") {
-        // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
-        Serial.println("给NB模组发送AT指令");
-        // mySerial.write("AT\r\n"); // 测试AT指令
-        delay(3000);
-        mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
-        delay(1000);
-        mySerial.write("AT+CGATT=1\r\n"); // 附着网络
-        delay(1000);
-        mySerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
-        delay(1000);
-        mySerial.write("AT+CGACT=1\r\n"); // 激活网络
-        delay(1000);
-        //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
-        set_nvs("is_nb_iot_init", "true");
-   // }
+
+    // if (get_nvs("is_nb_iot_init") == "true") {
+    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
+    Serial.println("给NB模组发送AT指令");
+    // mySerial.write("AT\r\n"); // 测试AT指令
+    delay(3000);
+    mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
+    delay(1000);
+    mySerial.write("AT+CGATT=1\r\n"); // 附着网络
+    delay(1000);
+    mySerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
+    delay(1000);
+    mySerial.write("AT+CGACT=1\r\n"); // 激活网络
+    delay(1000);
+    //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+    set_nvs("is_nb_iot_init", "true"); // 单片机持久化存储是否初始化NB-IoT网络
+    // }
 
 }
 

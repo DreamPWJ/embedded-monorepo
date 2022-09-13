@@ -51,7 +51,7 @@ void setup() {
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     //esp_http();
     //nb_http_get();
-    // gsm_http_get();
+    //gsm_http_get();
     // init_gsm_mqtt();
 
     at_http_get();
