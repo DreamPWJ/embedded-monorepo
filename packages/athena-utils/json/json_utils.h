@@ -9,7 +9,7 @@
 * @description JSON数据类型工具类
 */
 
-JsonObject string_to_json(String data);
+DynamicJsonDocument string_to_json(String data);
 
 String json_to_string(JsonObject data);
 

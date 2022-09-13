@@ -116,11 +116,11 @@ void x_task_check_uart_data() {
         // Serial.println(data);
         String jsonStr = hex_to_string(data.c_str()).c_str();
         Serial.println(jsonStr);
-        JsonObject json = string_to_json(jsonStr);
+        DynamicJsonDocument json = string_to_json(jsonStr);
 
-        string new_version = json["version"];
+        String new_version = json["version"].as<String>();
         String file_url = json["file"].as<String>();
-        Serial.println(new_version.c_str());
+        Serial.println(new_version);
         Serial.println(file_url);
     }
     // }
