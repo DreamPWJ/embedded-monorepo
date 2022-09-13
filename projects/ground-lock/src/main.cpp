@@ -15,6 +15,7 @@
 #include <uart.h>
 #include <device_info.h>
 #include <http.h>
+#include <at_mqtt/at_mqtt.h>
 #include "../lib/gsm_http/gsm_http.h"
 #include "../lib/gsm_mqtt/gsm_mqtt.h"
 
@@ -56,6 +57,7 @@ void setup() {
     //init_gsm_mqtt();
 
     at_http_get();
+    init_at_mqtt(mqttName);
 
 
 #if WIFI_EN
@@ -83,7 +85,7 @@ void setup() {
     // init_temperature();
 
     // 执行OTA空中升级
-    exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 

@@ -46,11 +46,13 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
  * 执行固件升级 1. 定时检测HTTP方式 1.主动触发MQTT方式
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
-    DynamicJsonDocument json = http_get(jsonUrl);
+    // DynamicJsonDocument json = http_get(jsonUrl);
     // 读取JSON数据
     // Serial.println("OTA响应数据:");
-    String new_version = json["version"].as<String>();
-    String file_url = json["file"].as<String>();
+    /*  String new_version = json["version"].as<String>();
+      String file_url = json["file"].as<String>();*/
+    String new_version = "0.7.1";
+    String file_url = "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin";
     //char *file_url = reinterpret_cast<char *>(json["file"].as<char>());
     //Serial.println(new_version);
     //Serial.println(file_url);

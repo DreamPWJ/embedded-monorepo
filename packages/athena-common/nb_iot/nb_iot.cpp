@@ -16,7 +16,7 @@ using namespace std;
 
 // Set up a new SoftwareSerial object
 SoftwareSerial mySerial(PIN_RX, PIN_TX);
-//SoftwareSerial mySerial(PIN_RX, PIN_TX);
+//SoftwareSerial mySerial;
 
 /**
 * @author 潘维吉
