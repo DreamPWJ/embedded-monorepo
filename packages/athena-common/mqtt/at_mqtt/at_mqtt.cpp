@@ -20,14 +20,14 @@ void init_at_mqtt(String name) {
     myMqttSerial.begin(9600);
     Serial.println("初始化MQTT客户端AT指令");
     // 设置MQTT连接所需要的的参数
-    myMqttSerial.println("AT+ECMTCFG=0,1,120,0");
+    myMqttSerial.write("AT+ECMTCFG=\"keepalive\",120\r\n");
     delay(1000);
-    myMqttSerial.println("AT+ECMTOPEN=0,\"192.168.1.200\",1883");
+    myMqttSerial.write("AT+ECMTOPEN=0,\"192.168.1.200\",1883\r\n");
     delay(1000);
-    myMqttSerial.println("AT+ECMTCONN=0,\"at-esp32-mcu-client-test\",\"admin\",\"public\"");
+    myMqttSerial.write("AT+ECMTCONN=0,\"at-esp32-mcu-client-test\",\"admin\",\"public\",0,0\r\n");
     delay(3000);
     // 发布MQTT消息
-    myMqttSerial.println("AT+ECMTPUB=0,0,0,0,\"ESP32/common\",\"你好, MQTT服务 , 我是ESP32 单片机\",0");
+    myMqttSerial.write("AT+ECMTPUB=0,0,0,0,\"ESP32/common\",\"你好, MQTT服务 , 我是ESP32 单片机\",0\r\n");
     delay(1000);
 
     delay(100);
@@ -36,5 +36,5 @@ void init_at_mqtt(String name) {
     Serial.println(incomingByte);
 
     // 订阅MQTT消息
-    myMqttSerial.println("AT+ECMTSUB=0,0,\"ESP32/common\",0,0");
+    myMqttSerial.write("AT+ECMTSUB=0,0,\"ESP32/common\",0,0\r\n");
 }
