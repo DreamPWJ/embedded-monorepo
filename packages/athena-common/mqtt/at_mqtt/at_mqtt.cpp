@@ -26,7 +26,7 @@ void init_at_mqtt(String name) {
         }
     }
     Serial.println("初始化MQTT客户端AT指令");
-   // myMqttSerial.write("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
+    // myMqttSerial.write("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     delay(3000);
     // 设置MQTT连接所需要的的参数
     // myMqttSerial.write("AT+ECMTCFG=\042keepalive\042,120\r\n");
@@ -36,14 +36,27 @@ void init_at_mqtt(String name) {
     myMqttSerial.write("AT+ECMTCONN=0,\042at-esp32-mcu-client-test\042,\042admin\042,\042public\042\r\n");
     delay(3000);
     // 发布MQTT消息
-    myMqttSerial.write("AT+ECMTPUB=0,0,0,0,\042ESP32/common\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息 \042,0\r\n");
+    myMqttSerial.write(
+            "AT+ECMTPUB=0,0,0,0,\042ESP32/common\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n");
     delay(1000);
 
-    delay(100);
-    String incomingByte;
-    incomingByte = myMqttSerial.readString();
-    Serial.println(incomingByte);
-
     // 订阅MQTT消息
-    myMqttSerial.write("AT+ECMTSUB=0,0,\"ESP32/common\"\r\n");
+    myMqttSerial.write("AT+ECMTSUB=0,1,\"ESP32/common\",1\r\n");
+
+    delay(1000);
+    // MQTT订阅消息回调
+    at_mqtt_callback();
+}
+
+/**
+ * MQTT订阅消息回调
+ */
+void at_mqtt_callback() {
+    Serial.print("MQTT订阅接受的消息: ");
+    while (1) {
+        delay(10);
+        String incomingByte;
+        incomingByte = myMqttSerial.readString();
+        Serial.println(incomingByte);
+    }
 }
