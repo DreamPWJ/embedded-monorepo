@@ -1,5 +1,7 @@
 #ifndef EMBEDDED_MONOREPO_HEX_UTILS_H
 #define EMBEDDED_MONOREPO_HEX_UTILS_H
+#include <string>
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -9,6 +11,6 @@
 
 std::string hex_to_string(const std::string& str);
 
-std::string string_to_hex(const std::string& data)
+std::string string_to_hex(const std::string& data);
 
 #endif

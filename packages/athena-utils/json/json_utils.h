@@ -1,6 +1,7 @@
 #ifndef EMBEDDED_MONOREPO_JSON_UTILS_H
 #define EMBEDDED_MONOREPO_JSON_UTILS_H
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 /**
 * @author 潘维吉
@@ -8,8 +9,8 @@
 * @description JSON数据类型工具类
 */
 
-String json_to_string(JsonObject data);
-
 JsonObject string_to_json(String data);
+
+String json_to_string(JsonObject data);
 
 #endif

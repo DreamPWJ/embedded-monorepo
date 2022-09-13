@@ -1,7 +1,10 @@
 #include "hex_utils.h"
+
 #include <iostream>
-#include <stream>
 #include <sstream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉

@@ -1,8 +1,11 @@
 #include "nb_iot.h"
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <string.h>
 //#include <MKRGSM.h>
 #include <SoftwareSerial.h>
+#include <hex_utils.h>
+#include <json_utils.h>
 
 using namespace std;
 
@@ -78,7 +81,7 @@ void at_http_get() {
     delay(1000);
     mySerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
-    string path = "/iot/ground-lock/prod/ground-lockota.json";
+    String path = "/iot/ground-lock/prod/ground-lockota.json";
     mySerial.write("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
     delay(100);
     x_task_check_uart_data();
@@ -91,7 +94,6 @@ void x_task_check_uart_data() {
     //Receiving MODEM Response
     // while (mySerial.available() > 0) {
     //   while (1) {
-    delay(10);
     delay(10);
     String incomingByte;
     incomingByte = mySerial.readString();
@@ -107,9 +109,14 @@ void x_task_check_uart_data() {
         Serial.println(endIndex);
         String end = start.substring(0, endIndex + 1);
         Serial.println(end);
-        String data = end.substring(end.lastIndexOf(",")+1, end.length());
+        String data = end.substring(end.lastIndexOf(",") + 1, end.length());
         Serial.print("AT Message is: ");
         Serial.println(data);
+        String jsonStr = hex_to_string(data.c_str()).c_str();
+        Serial.println(jsonStr);
+        JsonObject json = string_to_json(jsonStr);
+        Serial.println(json["version"].as<String>());
+        Serial.println(json["file"].as<String>());
     }
     // }
     //  }

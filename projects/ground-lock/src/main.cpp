@@ -56,6 +56,7 @@ void setup() {
 
     at_http_get();
 
+
 #if WIFI_EN
     // 初始化WiFi无线网络
     init_wifi();
