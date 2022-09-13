@@ -45,7 +45,7 @@ void setup() {
     //setNVS("name", "panweiji");
 
     // 初始化NB-IoT网络协议
-     init_nb_iot();
+    init_nb_iot();
 
     // 网络请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
@@ -53,6 +53,8 @@ void setup() {
     //nb_http_get();
     // gsm_http_get();
     // init_gsm_mqtt();
+
+    at_http_get();
 
 #if WIFI_EN
     // 初始化WiFi无线网络

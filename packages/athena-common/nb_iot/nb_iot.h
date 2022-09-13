@@ -9,6 +9,12 @@
 
 void init_nb_iot();
 
+void at_http_get();
+
+void check_uart_data();
+
+void x_task_check_uart_data();
+
 String get_imei();
 
 #endif
