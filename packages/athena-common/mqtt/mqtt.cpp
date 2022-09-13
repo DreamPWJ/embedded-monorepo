@@ -109,7 +109,7 @@ void init_mqtt(String name) {
     }
     // publish and subscribe
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
-    client.publish(topic_device.c_str(), " 你好, MQTT服务 , 我是ESP32 单片机 ");
+    client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机 ");
     client.subscribe(topic_device.c_str());
 }
 
