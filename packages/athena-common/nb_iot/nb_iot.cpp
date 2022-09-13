@@ -97,35 +97,34 @@ void at_http_get() {
  * 多线程监测缓冲区串口返回的数据
  */
 void x_task_check_uart_data() {
-    //Receiving MODEM Response
+    // Receiving MODEM Response
     // while (mySerial.available() > 0) {
     //   while (1) {
     delay(10);
     String incomingByte;
     incomingByte = mySerial.readString();
     Serial.println(incomingByte);
-    Serial.println(mySerial.available());
+    // Serial.println(mySerial.available());
     String flag = "HTTPRESPC";
     if (incomingByte.indexOf(flag) != -1) {
         int startIndex = incomingByte.indexOf(flag);
-        Serial.println(startIndex);
         String start = incomingByte.substring(startIndex);
-        Serial.println(start);
         int endIndex = start.indexOf("\n");
-        Serial.println(endIndex);
         String end = start.substring(0, endIndex + 1);
-        Serial.println(end);
         String data = end.substring(end.lastIndexOf(",") + 1, end.length());
-        Serial.print("AT Message is: ");
-        Serial.println(data);
+        // Serial.print("AT Message is: ");
+        // Serial.println(data);
         String jsonStr = hex_to_string(data.c_str()).c_str();
         Serial.println(jsonStr);
         JsonObject json = string_to_json(jsonStr);
-        Serial.println(json["version"].as<String>());
-        Serial.println(json["file"].as<String>());
+
+        String new_version = json["version"].as<String>();
+        String file_url = json["file"].as<String>();
+        Serial.println(new_version);
+        Serial.println(file_url);
     }
     // }
-    //  }
+    // }
 }
 
 /**
