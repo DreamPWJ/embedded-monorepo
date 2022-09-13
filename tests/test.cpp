@@ -21,26 +21,6 @@ int main(void) {
 
     test_json_file();
 
-    int x = 0xa1a56;
-    std::stringstream ss;
-    ss << x;
-    cout << ss.str();
-
-
-/*    int overtime = 3;// 超时时间 秒
-    time_t startA = 0, endA = 0;
-    double costA; // 时间差 秒
-
-    time(&startA);
-
-    _sleep(5 * 1000); //延时5秒
-    time(&endA);
-    costA = difftime(endA, startA);
-    printf("电机正向执行耗时：%f \n", costA);
-    if (costA >= overtime) {
-        printf("超时了 \n");
-    }
-    */
 }
 
 
