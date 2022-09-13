@@ -33,6 +33,7 @@ void setup() {
 
     // 设置串口波特率
     Serial.begin(115200);
+    delay(1000);
 
     // 初始化其它UART串口
     // init_uart();

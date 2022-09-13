@@ -55,6 +55,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     //Serial.println(new_version);
     //Serial.println(file_url);
 
+    // 检测到新版本或者指定设备才进行OTA空中升级
     if (new_version != "null" && version_compare(new_version, version) == 1) {
         // 做固件MD5签名算法 保证固件本身是安全的
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
