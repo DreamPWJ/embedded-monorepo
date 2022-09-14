@@ -57,7 +57,7 @@ void setup() {
     //gsm_http_get();
     //init_gsm_mqtt();
 
-    // at_http_get();
+    at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
     init_at_mqtt(mqttName);
 
 

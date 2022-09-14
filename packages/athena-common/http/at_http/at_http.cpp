@@ -18,7 +18,7 @@ SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
 /**
  * Http请求GET方法
  */
-void at_http_get() {
+void at_http_get(String url) {
     Serial.println("HTTP请求GET方法AT指令");
     myHttpSerial.begin(9600);
     if (!myHttpSerial) { // If the object did not initialize, then its configuration is invalid
@@ -29,16 +29,18 @@ void at_http_get() {
         }
     }
     // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
+    String domain = url.substring(0, url.indexOf("/"));
+    String path = url.substring(url.indexOf("/"), url.length());
+    int pathLength = path.length();
     delay(1000);
-    myHttpSerial.write("AT+ECDNS=\042archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com\042\r\n"); // DNS解析测试
+    myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
     delay(1000);
-    myHttpSerial.write(
-            "AT+HTTPCREATE=0,\042http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com:80\042\r\n"); // 创建实例
+    myHttpSerial.printf(
+            "AT+HTTPCREATE=0,\042http://%s:80\042\r\n", domain.c_str()); // 创建实例
     delay(1000);
-    myHttpSerial.write("AT+HTTPCON=0\r\n"); // 连接服务器
+    myHttpSerial.printf("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
-    String path = "/iot/ground-lock/prod/ground-lockota.json";
-    myHttpSerial.write("AT+HTTPSEND=0,0,41,\042/iot/ground-lock/prod/ground-lockota.json\042\r\n"); // Http请求
+    myHttpSerial.printf("AT+HTTPSEND=0,0,%d,\042%s\042\r\n", pathLength, path.c_str()); // Http请求
 
     // 获取缓冲区串口返回的数据
     get_http_uart_data();

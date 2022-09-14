@@ -4,12 +4,16 @@
 #include "freertos/task.h"
 #include <SoftwareSerial.h>
 #include <json_utils.h>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉
 * @date 2022/9/13 15:31
 * @description AT指令编写MQTT消息队列遥测传输协议
-* 参考文章： https://blog.csdn.net/Boantong_/article/details/116376011
+* 参考文章： https://github.com/elementzonline/Arduino-Sample-Codes/tree/master/SIM7600
 */
 
 #define PIN_RX 19
@@ -73,6 +77,12 @@ void init_at_mqtt(String name) {
  */
 void at_mqtt_callback(void *pvParameters) {
     Serial.print("MQTT订阅接受的消息: ");
+    // MQTT服务是否打开成功返回AT指令数据： +ECMTOPEN: 0,0
+    // MQTT服务是否连接成功返回AT指令数据： +ECMTCONN: 0,0,0
+    // MQTT服务是否发送成功返回AT指令数据： +ECMTPUB: 0,0,0
+    // MQTT服务是否订阅成功返回AT指令数据： +ECMTSUB: 0,1,0,1
+
+    // MQTT服务订阅返回AT指令数据
     String flag = "ECMTRECV"; /* +ECMTRECV: 0,0,"ESP32/common",{
             "command": "putdown"
     }*/

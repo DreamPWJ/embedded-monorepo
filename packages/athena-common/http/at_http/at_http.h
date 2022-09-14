@@ -8,7 +8,7 @@
 * @description 基于AT指令的HTTP工具
 */
 
-void at_http_get();
+void at_http_get(String url);
 
 void get_http_uart_data();
 
