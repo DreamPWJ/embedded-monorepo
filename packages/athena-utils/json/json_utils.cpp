@@ -16,13 +16,14 @@
 DynamicJsonDocument string_to_json(String data) {
     // const size_t CAPACITY = JSON_OBJECT_SIZE(1);
     DynamicJsonDocument doc(1024);
-    if (data != "null") {
+    doc.clear();
+    if (data && data != "null") {
         // StaticJsonDocument<CAPACITY> doc;
         // 用String类型的变量来代替串口获取的Json数据
         // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
         DeserializationError error = deserializeJson(doc, data);
         if (error) {
-            Serial.print("deserializeJson() failed for LastFM: ");
+            Serial.print("deserializeJson() failed for : ");
             Serial.println(error.c_str());
         }
         // JsonObject obj = doc.as<JsonObject>();

@@ -67,7 +67,7 @@ void init_at_mqtt() {
     delay(1000);
 
     // 订阅MQTT消息
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
+    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
     delay(1000);
