@@ -25,6 +25,8 @@ using namespace std;
 #define PIN_TX 7
 SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
 
+String mqttName = "esp32-mcu-client"; // mqtt客户端名称
+
 const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
@@ -35,7 +37,7 @@ const int mqtt_port = 1883;
  *
  * 初始化MQTT客户端
  */
-void init_at_mqtt(String name) {
+void init_at_mqtt() {
     myMqttSerial.begin(9600);
     if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
@@ -45,7 +47,7 @@ void init_at_mqtt(String name) {
         }
     }
     Serial.println("初始化MQTT客户端AT指令");
-    String client_id = name + "-";
+    String client_id = mqttName + "-";
     client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     // delay(1000);
@@ -96,10 +98,12 @@ void at_mqtt_subscribe(String topic) {
 }
 
 /**
- * 重连MQTT服务
+ * 检测重连MQTT服务
  */
-void at_mqtt_reconnect(String name) {
-
+void at_mqtt_reconnect() {
+    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
+    myMqttSerial.printf("AT+ECMTSTAT=0\r\n"); // 1 连接已关闭或由对等方重置
+    // init_at_mqtt();
 }
 
 /**
@@ -180,6 +184,9 @@ void do_at_mqtt_subscribe(String command) {
 void x_at_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
+        // 检测服务状态 失效自动重连
+        at_mqtt_reconnect();
+        // 发送心跳消息
         at_mqtt_publish(topics, " 我是AT指令 MQTT心跳发的消息 ");
         delay(60000); // 多久执行一次 毫秒
     }

@@ -28,8 +28,6 @@ using namespace std;
 #define MQTT_EN 1 // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
-String mqttName = "esp32-mcu-client"; // mqtt客户端名称
-
 
 void setup() {
     // 初始化设置代码
@@ -63,13 +61,13 @@ void setup() {
 
 #if MQTT_EN
     // 初始化MQTT消息协议
-    init_at_mqtt(mqttName);
+    init_at_mqtt();
 
     // MQTT心跳服务
     at_mqtt_heart_beat();
 
     // 初始化MQTT消息协议
-    //init_mqtt(mqttName);
+    //init_mqtt();
 
     // MQTT心跳服务
     // mqtt_heart_beat();
@@ -100,8 +98,8 @@ void loop() {
 
 #if MQTT_EN
     // MQTT消息服务
-    at_mqtt_reconnect(mqttName);
-    // mqtt_reconnect(mqttName);
+    // at_mqtt_reconnect();
+    // mqtt_reconnect();
     // mqtt_loop();
 #endif
 

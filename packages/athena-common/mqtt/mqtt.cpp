@@ -23,6 +23,7 @@ using namespace std;
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
+String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
@@ -89,14 +90,14 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
 /**
  * 初始化MQTT客户端
  */
-void init_mqtt(String name) {
+void init_mqtt() {
     Serial.println("初始化MQTT客户端");
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
     client.setKeepAlive(90); // 保持连接多少秒
     client.setCallback(mqtt_callback);
     while (!client.connected()) {
-        String client_id = name + "-";
+        String client_id = mqttName + "-";
         client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
         Serial.printf("客户端 %s 已连接到 MQTT 服务器 \n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
@@ -123,9 +124,9 @@ void mqtt_loop() {
 /**
  * 重连MQTT服务
  */
-void mqtt_reconnect(String name) {
+void mqtt_reconnect() {
     while (!client.connected()) {
-        init_mqtt(name);
+        init_mqtt();
     }
 }
 
@@ -155,6 +156,8 @@ void mqtt_heart_beat() {
 void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
+        mqtt_reconnect();
+        // 发送心跳消息
         client.publish(topics, " 我是MQTT心跳发的消息 ");
         delay(60000); // 多久执行一次 毫秒
     }

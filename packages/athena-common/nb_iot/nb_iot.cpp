@@ -74,6 +74,14 @@ void init_nb_iot() {
     }
 }
 
+
+/**
+ * 重启NB模块芯片
+ */
+void restart_nb_iot() {
+    mySerial.write("AT+ECRST\r\n"); // 重启NB模块芯片
+}
+
 /**
  * 获取国际移动设备唯一标识IMEI串号码
  */

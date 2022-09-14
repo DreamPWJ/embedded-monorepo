@@ -9,7 +9,7 @@
 * @description AT指令编写MQTT消息队列遥测传输协议
 */
 
-void init_at_mqtt(String name);
+void init_at_mqtt();
 
 void at_mqtt_publish(String topic, String msg);
 
@@ -17,7 +17,7 @@ void at_mqtt_subscribe(String topic);
 
 void at_mqtt_callback(void *pvParameters);
 
-void at_mqtt_reconnect(String name);
+void at_mqtt_reconnect();
 
 void do_at_mqtt_subscribe(String command);
 

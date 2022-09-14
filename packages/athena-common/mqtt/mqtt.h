@@ -7,11 +7,11 @@
 * @description MQTT消息队列遥测传输协议
 */
 
-void init_mqtt(String name);
+void init_mqtt();
 
 void mqtt_loop();
 
-void mqtt_reconnect(String name);
+void mqtt_reconnect();
 
 void mqtt_heart_beat();
 
