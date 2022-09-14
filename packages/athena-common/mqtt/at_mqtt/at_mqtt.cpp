@@ -96,6 +96,13 @@ void at_mqtt_subscribe(String topic) {
 }
 
 /**
+ * 重连MQTT服务
+ */
+void at_mqtt_reconnect(String name) {
+
+}
+
+/**
  * MQTT订阅消息回调
  */
 void at_mqtt_callback(void *pvParameters) {

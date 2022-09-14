@@ -62,7 +62,6 @@ void setup() {
 #endif
 
 #if MQTT_EN
-
     // 初始化MQTT消息协议
     init_at_mqtt(mqttName);
 
@@ -74,8 +73,6 @@ void setup() {
 
     // MQTT心跳服务
     // mqtt_heart_beat();
-
-
 #endif
 
 #if PWM_EN
@@ -101,16 +98,16 @@ void loop() {
     reconnect_wifi();
 #endif
 
-#if PWM_EN
-    // 驱动电机马达工作
-    // set_pwm();
-#endif
-
 #if MQTT_EN
     // MQTT消息服务
+    at_mqtt_reconnect(mqttName);
     // mqtt_reconnect(mqttName);
     // mqtt_loop();
 #endif
 
+#if PWM_EN
+    // 驱动电机马达工作
+    // set_pwm();
+#endif
 
 }
