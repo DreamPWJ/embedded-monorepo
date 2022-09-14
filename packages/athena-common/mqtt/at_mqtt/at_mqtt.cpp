@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <SoftwareSerial.h>
+#include <json_utils.h>
 
 /**
 * @author 潘维吉
@@ -53,7 +54,7 @@ void init_at_mqtt(String name) {
     xTaskCreate(
             at_mqtt_callback,  /* Task function. */
             "at_mqtt_callback", /* String with name of task. */
-            4192,      /* Stack size in bytes. */
+            8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
@@ -71,6 +72,21 @@ void at_mqtt_callback(void *pvParameters) {
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         Serial.println(incomingByte);
+        if (incomingByte.indexOf(flag) != -1) {
+            int startIndex = incomingByte.indexOf(flag);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("}");
+            String end = start.substring(0, endIndex + 1);
+            // String topic = end.substring(end.indexOf(",\""), end.lastIndexOf(",\""));
+            // Serial.println("MQTT订阅主题: " + topic);
+            String data = end.substring(end.lastIndexOf("{"), end.length());
+            Serial.println(data);
+
+            DynamicJsonDocument json = string_to_json(data);
+            String command = json["command"].as<String>();
+
+            Serial.println(command);
+        }
         delay(10);
     }
 }

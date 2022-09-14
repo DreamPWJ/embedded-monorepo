@@ -54,7 +54,7 @@ void get_http_uart_data() {
     // 等待数据返回结果
     unsigned long tm = millis();
     String flag = "HTTPRESPC";
-    while (millis() - tm <= 10000) { // 多少秒超时 退出循环
+    while (millis() - tm <= 30000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         Serial.println(incomingByte);
