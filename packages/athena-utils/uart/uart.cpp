@@ -12,13 +12,12 @@
 * @description UART通用异步收发送器 实现不同设备之间的全双工或半双工数据交换
 */
 
-#define UART_ESP_TXD (GPIO_NUM_7)
+#define UART_ESP_TXD (GPIO_NUM_18)
 #define UART_ESP_RXD (GPIO_NUM_19)
 #define UART_ESP_RTS (UART_PIN_NO_CHANGE)
 #define UART_ESP_CTS (UART_PIN_NO_CHANGE)
 
 #define BUF_SIZE (1024)
-
 
 /**
  * ESP32芯片有三个UART控制器(UART 0、UART 1和UART 2)，它们具有一组相同的寄存器，以便于编程和灵活性

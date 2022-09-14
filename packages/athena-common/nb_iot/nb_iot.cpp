@@ -12,24 +12,24 @@
 using namespace std;
 
 #define PIN_RX 19
-#define PIN_TX 7
+#define PIN_TX 18
 
 // Set up a new SoftwareSerial object
 SoftwareSerial mySerial(PIN_RX, PIN_TX);
-//SoftwareSerial mySerial;
+//softwareserial myserial;
 
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
-* @description NB-IoT物联网网络协议
+* @description nb-iot物联网网络协议
 */
 
 // modem verification object
-// GSMModem modem;
+// gsmmodem modem;
 
-// NB控制GPIO
+// NB-IoT控制gpio
 #define MODEM_RST            6
-#define MODEM_PWKEY          10
+//#define MODEM_PWKEY          10
 
 
 /**
@@ -38,9 +38,9 @@ SoftwareSerial mySerial(PIN_RX, PIN_TX);
 void init_nb_iot() {
     // NB相关引脚初始化
     pinMode(MODEM_RST, OUTPUT);
-    pinMode(MODEM_PWKEY, OUTPUT);
+    //pinMode(MODEM_PWKEY, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
-    digitalWrite(MODEM_PWKEY, HIGH);
+    //digitalWrite(MODEM_PWKEY, HIGH);
 
     pinMode(PIN_RX, INPUT);
     pinMode(PIN_TX, OUTPUT);

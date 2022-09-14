@@ -12,7 +12,7 @@
 */
 
 #define PIN_RX 19
-#define PIN_TX 7
+#define PIN_TX 18
 SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
 
 /**

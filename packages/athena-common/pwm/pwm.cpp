@@ -30,8 +30,8 @@
 
 
 // PWM控制引脚GPIO
-const int PWM_PinA = 4;
-const int PWM_PinB = 5;
+const int PWM_PinA = 3;
+const int PWM_PinB = 2;
 // 电机驱动模块控制信号
 /*const int Motor_INA1 = 2;
 const int Motor_INA2 = 3;*/
