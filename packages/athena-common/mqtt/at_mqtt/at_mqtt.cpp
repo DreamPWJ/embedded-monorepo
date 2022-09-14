@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include <ArduinoJson.h>
 #include <SoftwareSerial.h>
 #include <json_utils.h>
 #include <iostream>
@@ -105,6 +106,7 @@ void at_mqtt_reconnect(String incomingByte) {
     // +ECMTSTAT: <tcpconnectID>,<err_code> 1 连接已关闭或由对等方重置
     String flag = "ECMTSTAT";
     if (incomingByte.indexOf(flag) != -1) {
+        Serial.println("AT指令重连MQTT服务");
         init_at_mqtt(); // 重连MQTT服务
     }
 }
@@ -129,7 +131,7 @@ void at_mqtt_callback(void *pvParameters) {
         // Serial.println(incomingByte);
 
         // 检测MQTT服务状态 如果失效自动重连
-        at_mqtt_reconnect(incomingByte);
+        // at_mqtt_reconnect(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
@@ -142,11 +144,9 @@ void at_mqtt_callback(void *pvParameters) {
             // Serial.println(data);
 
             DynamicJsonDocument json = string_to_json(data);
-            String command = json["command"].as<String>();
-            // Serial.println(command);
-            // 获取MQTT订阅消息后执行任务
-            do_at_mqtt_subscribe(command);
 
+            // 获取MQTT订阅消息后执行任务
+            do_at_mqtt_subscribe(json);
         }
         delay(10);
     }
@@ -155,8 +155,10 @@ void at_mqtt_callback(void *pvParameters) {
 /**
  * 获取MQTT订阅消息后执行任务
  */
-void do_at_mqtt_subscribe(String command) {
-    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
+void do_at_mqtt_subscribe(DynamicJsonDocument json) {
+    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
+    String command = json["command"].as<String>();
+    // Serial.println(command);
     uint32_t chipId;
     try {
         chipId = get_chip_id();
