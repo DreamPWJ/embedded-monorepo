@@ -5,9 +5,9 @@
 #include <SoftwareSerial.h>
 #include <hex_utils.h>
 #include <json_utils.h>
+#include <mcu_nvs.h>
 #include <iostream>
 #include <string>
-#include <mcu_nvs.h>
 
 using namespace std;
 
@@ -55,12 +55,11 @@ void init_nb_iot() {
         }
     }
     String isNBInit = get_nvs("is_nb_iot_init");
-    Serial.println(isNBInit);
-    if (isNBInit == "true") {
+    if (strcmp(isNBInit.c_str(), "true") == 0) {
         // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
         Serial.println("给NB模组发送AT指令");
         // mySerial.write("AT\r\n"); // 测试AT指令
-        delay(3000);
+        delay(2000);
         mySerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
         delay(1000);
         mySerial.write("AT+CGATT=1\r\n"); // 附着网络

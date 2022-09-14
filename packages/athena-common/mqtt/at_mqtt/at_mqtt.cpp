@@ -100,10 +100,13 @@ void at_mqtt_subscribe(String topic) {
 /**
  * 检测重连MQTT服务
  */
-void at_mqtt_reconnect() {
+void at_mqtt_reconnect(String incomingByte) {
     // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
-    myMqttSerial.printf("AT+ECMTSTAT=0\r\n"); // 1 连接已关闭或由对等方重置
-    // init_at_mqtt();
+    // +ECMTSTAT: <tcpconnectID>,<err_code> 1 连接已关闭或由对等方重置
+    String flag = "ECMTSTAT";
+    if (incomingByte.indexOf(flag) != -1) {
+        init_at_mqtt();
+    }
 }
 
 /**
@@ -124,6 +127,10 @@ void at_mqtt_callback(void *pvParameters) {
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         // Serial.println(incomingByte);
+
+        // 检测MQTT服务状态 如果失效自动重连
+        at_mqtt_reconnect(incomingByte);
+
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
             String start = incomingByte.substring(startIndex);
@@ -184,8 +191,6 @@ void do_at_mqtt_subscribe(String command) {
 void x_at_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
-        // 检测服务状态 失效自动重连
-        at_mqtt_reconnect();
         // 发送心跳消息
         at_mqtt_publish(topics, " 我是AT指令 MQTT心跳发的消息 ");
         delay(60000); // 多久执行一次 毫秒

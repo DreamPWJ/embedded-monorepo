@@ -125,7 +125,7 @@ void exec_ota(String version, String jsonUrl) {
 char *pcTaskName;
 
 void x_task_ota(void *pvParameters) {
-    while (1) {
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         // Serial.println("多线程OTA任务, 检测OTA空中升级...");
         /*    pcTaskName = (char *) pvParameters;
                std::vector<string> res = split(pcTaskName, ",");
