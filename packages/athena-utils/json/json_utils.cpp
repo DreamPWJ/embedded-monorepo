@@ -16,21 +16,23 @@
 DynamicJsonDocument string_to_json(String data) {
     // const size_t CAPACITY = JSON_OBJECT_SIZE(1);
     DynamicJsonDocument doc(1024);
-    // StaticJsonDocument<CAPACITY> doc;
-    // 用String类型的变量来代替串口获取的Json数据
-    // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
-    DeserializationError error = deserializeJson(doc, data);
-    if (error) {
-        Serial.print("deserializeJson() failed for LastFM: ");
-        Serial.println(error.c_str());
+    if (data != "null") {
+        // StaticJsonDocument<CAPACITY> doc;
+        // 用String类型的变量来代替串口获取的Json数据
+        // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
+        DeserializationError error = deserializeJson(doc, data);
+        if (error) {
+            Serial.print("deserializeJson() failed for LastFM: ");
+            Serial.println(error.c_str());
+        }
+        // JsonObject obj = doc.as<JsonObject>();
+        // 可以用 obj[键名] 提取数据
+        // Serial.println(obj["id"]);
+        // 如果是 { "PID":[5.1, 0.1, 0.02] }
+        // 则可以 kp = obj["PID"][0], ki = obj["PID"][1], kd = obj["PID"][2]
+        // 可以将他们存入变量
+        // String id = obj["id"];
     }
-   // JsonObject obj = doc.as<JsonObject>();
-    // 可以用 obj[键名] 提取数据
-    // Serial.println(obj["id"]);
-    // 如果是 { "PID":[5.1, 0.1, 0.02] }
-    // 则可以 kp = obj["PID"][0], ki = obj["PID"][1], kd = obj["PID"][2]
-    // 可以将他们存入变量
-    // String id = obj["id"];
     return doc;
 }
 

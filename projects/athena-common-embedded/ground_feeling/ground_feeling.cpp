@@ -1,6 +1,7 @@
 #include "ground_feeling.h"
 #include <Arduino.h>
-//#include "at_mqtt/at_mqtt.h"
+#include <ArduinoJson.h>
+#include "at_mqtt/at_mqtt.h"
 
 /**
 * @author 潘维吉
@@ -48,11 +49,11 @@ void x_task_ground_feeling_status(void *pvParameters) {
         int status = ground_feeling_status();
         if (lastTimeStatus == 0 && status == 1) {
             // 车辆驶入
-            //at_mqtt_publish("ESP32/common", "车辆驶入了");
+            at_mqtt_publish("ESP32/common", "车辆驶入了");
         }
         if (lastTimeStatus == 1 && status == 0) {
             // 车辆驶出
-            //at_mqtt_publish("ESP32/common", "车辆驶出了");
+            at_mqtt_publish("ESP32/common", "车辆驶出了");
         }
         lastTimeStatus = status;
         delay(2000); // 多久执行一次 毫秒
@@ -74,6 +75,6 @@ void check_ground_feeling_status() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_ground_feeling_status, "x_task_ground_feeling_status", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_ground_feeling_status, "x_task_ground_feeling_status", 8192, NULL, 6, NULL, 0);
 #endif
 }
