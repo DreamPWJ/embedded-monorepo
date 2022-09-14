@@ -1,6 +1,8 @@
 #ifndef EMBEDDED_MONOREPO_AT_MQTT_H
 #define EMBEDDED_MONOREPO_AT_MQTT_H
+
 #include <Arduino.h>
+
 /**
 * @author 潘维吉
 * @date 2022/9/13 15:31
@@ -9,7 +11,12 @@
 
 void init_at_mqtt(String name);
 
-void at_mqtt_callback(void *pvParameters) ;
+void at_mqtt_publish(String topic, String msg);
 
+void at_mqtt_subscribe(String topic);
+
+void at_mqtt_callback(void *pvParameters);
+
+void do_at_mqtt_subscribe(String command);
 
 #endif

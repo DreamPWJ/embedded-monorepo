@@ -70,7 +70,7 @@ void get_http_uart_data() {
             // Serial.print("AT Message is: ");
             // Serial.println(data);
             String jsonStr = hex_to_string(data.c_str()).c_str();
-            Serial.println(jsonStr);
+            // Serial.println(jsonStr);
             DynamicJsonDocument json = string_to_json(jsonStr);
 
             String new_version = json["version"].as<String>();
