@@ -43,7 +43,7 @@ PubSubClient client(espClient);
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     /*   Serial.print("MQTT消息到达主题: ");
        Serial.println(topic); */
-    Serial.print("MQTT订阅接受的消息: ");
+    Serial.println("MQTT订阅接受的消息: ");
     String payloadData = "";
     for (int i = 0; i < length; i++) {
         Serial.print((char) payload[i]);

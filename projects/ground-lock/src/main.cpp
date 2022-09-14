@@ -25,7 +25,7 @@ using namespace std;
 #define FIRMWARE_VERSION              "0.7.0"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0 // 是否开启WIFI网络功能 0 关闭  1 开启
-#define MQTT_EN 0 // 是否开启MQTT消息协议 0 关闭  1 开启
+#define MQTT_EN 1 // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
@@ -53,12 +53,7 @@ void setup() {
 
     // 网络请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
-    //nb_http_get();
-    //gsm_http_get();
-    //init_gsm_mqtt();
-
-    at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
-    init_at_mqtt(mqttName);
+    // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
 
 
 #if WIFI_EN
@@ -67,23 +62,28 @@ void setup() {
 #endif
 
 #if MQTT_EN
+
     // 初始化MQTT消息协议
-    init_mqtt(mqttName);
+    init_at_mqtt(mqttName);
 
     // MQTT心跳服务
-    mqtt_heart_beat();
+    at_mqtt_heart_beat();
+
+    // 初始化MQTT消息协议
+    //init_mqtt(mqttName);
+
+    // MQTT心跳服务
+    // mqtt_heart_beat();
+
+
 #endif
 
 #if PWM_EN
     // 初始化电机马达
     init_motor();
-#endif
-
     // 初始化地感线圈
     init_ground_feeling();
-
-    // 初始化温度设置
-    // init_temperature();
+#endif
 
     // 执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
@@ -95,9 +95,6 @@ void loop() {
 
     // 开发板LED 闪动的实现
     set_led();
-
-    //Serial.println(get_nvs("name"));
-    //Serial.println(get_temperature());
 
 #if WIFI_EN
     // 定时检测重新连接WiFi
@@ -111,13 +108,9 @@ void loop() {
 
 #if MQTT_EN
     // MQTT消息服务
-    mqtt_reconnect(mqttName);
-    mqtt_loop();
+    // mqtt_reconnect(mqttName);
+    // mqtt_loop();
 #endif
 
-    // 地感状态检测  判断是否有车
-    // ground_feeling_status();
-
-    // gsm_mqtt_loop();
 
 }

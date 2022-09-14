@@ -11,12 +11,15 @@
 
 using namespace std;
 
+
 /**
 * @author 潘维吉
 * @date 2022/9/13 15:31
 * @description AT指令编写MQTT消息队列遥测传输协议
 * 参考文章： https://github.com/elementzonline/Arduino-Sample-Codes/tree/master/SIM7600
 */
+
+#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 #define PIN_RX 19
 #define PIN_TX 7
@@ -96,7 +99,7 @@ void at_mqtt_subscribe(String topic) {
  * MQTT订阅消息回调
  */
 void at_mqtt_callback(void *pvParameters) {
-    Serial.print("MQTT订阅接受的消息: ");
+    Serial.println("AT指令MQTT订阅接受的消息: ");
     // MQTT服务是否打开成功返回AT指令数据： +ECMTOPEN: 0,0
     // MQTT服务是否连接成功返回AT指令数据： +ECMTCONN: 0,0,0
     // MQTT服务是否发送成功返回AT指令数据： +ECMTPUB: 0,0,0
@@ -162,4 +165,35 @@ void do_at_mqtt_subscribe(String command) {
         at_mqtt_publish(topics, jsonData.c_str());
     }
 
+}
+
+/**
+ * 多线程MQTT任务
+ */
+void x_at_task_mqtt(void *pvParameters) {
+    while (1) {
+        // Serial.println("多线程MQTT任务, 心跳检测...");
+        at_mqtt_publish(topics, " 我是AT指令 MQTT心跳发的消息 ");
+        delay(60000); // 多久执行一次 毫秒
+    }
+}
+
+/**
+ * MQTT心跳服务
+ */
+void at_mqtt_heart_beat() {
+#if !USE_MULTI_CORE
+
+    const char *params = NULL;
+    xTaskCreate(
+            x_at_task_mqtt,  /* Task function. */
+            "x_at_task_mqtt", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(x_task_mqtt, "TaskMQTT", 8192, NULL, 5, NULL, 0);
+#endif
 }

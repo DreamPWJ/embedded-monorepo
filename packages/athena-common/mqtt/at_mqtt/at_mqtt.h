@@ -19,4 +19,6 @@ void at_mqtt_callback(void *pvParameters);
 
 void do_at_mqtt_subscribe(String command);
 
+void at_mqtt_heart_beat();
+
 #endif
