@@ -11,4 +11,6 @@ void init_ground_feeling();
 
 int ground_feeling_status();
 
+void check_ground_feeling_status();
+
 #endif

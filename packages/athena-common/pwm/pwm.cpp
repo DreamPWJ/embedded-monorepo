@@ -194,31 +194,6 @@ int get_pwm_status() {
     return -1;
 }
 
-/**
- * 多线程检测是否有车  有车实时上报MQTT服务器
- */
-void x_task_has_car(void *pvParameters) {
-    // 确保上次检测是无车, 本次检测有车才上报
-    while (1){
-
-        delay(5000);
-    }
-}
-
-/**
- * 多线程检测是否有车
- */
-void check_car() {
-    xTaskCreate(
-            x_task_has_car,  /* Task function. */
-            "x_task_has_car", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
-            NULL,      /* Parameter passed as input of the task */
-            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
-            NULL);     /* Task handle. */
-}
-
-
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     ledcWrite(channel_PWMA, DutyA);
     // delay(1000);

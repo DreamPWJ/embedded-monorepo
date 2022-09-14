@@ -1,11 +1,14 @@
 #include "ground_feeling.h"
 #include <Arduino.h>
+#include "at_mqtt/at_mqtt.h"
 
 /**
 * @author 潘维吉
 * @date 2022/8/24 17:18
 * @description 地感信号
 */
+
+#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 地感信号GPIO
 const int ground_feeling_gpio = 9;
@@ -33,4 +36,44 @@ int ground_feeling_status() {
         return 0;
     }
     return 1;
+}
+
+/**
+ * 检测地感状态 有车实时上报MQTT服务器
+ */
+int lastTimeStatus; // 上次地感状态
+void x_task_ground_feeling_status(void *pvParameters) {
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+        // 确保上次检测是无车, 本次检测有车才上报 已上报不再上报
+        int status = ground_feeling_status();
+        if (lastTimeStatus == 0 && status == 1) {
+            // 车辆驶入
+            at_mqtt_publish("ESP32/common", "车辆驶入了");
+        }
+        if (lastTimeStatus == 1 && status == 0) {
+            // 车辆驶出
+            at_mqtt_publish("ESP32/common", "车辆驶出了");
+        }
+        lastTimeStatus = status;
+        delay(2000); // 多久执行一次 毫秒
+    }
+}
+
+/**
+ * 检测地感状态 有车实时上报MQTT服务器
+ */
+void check_ground_feeling_status() {
+#if !USE_MULTI_CORE
+    const char *params = NULL;
+    xTaskCreate(
+            x_task_ground_feeling_status,  /* Task function. */
+            "x_task_ground_feeling_status", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(x_task_ground_feeling_status, "x_task_ground_feeling_status", 8192, NULL, 5, NULL, 0);
+#endif
 }

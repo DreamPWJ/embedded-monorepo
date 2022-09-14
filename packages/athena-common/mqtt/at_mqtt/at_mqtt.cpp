@@ -202,7 +202,6 @@ void x_at_task_mqtt(void *pvParameters) {
  */
 void at_mqtt_heart_beat() {
 #if !USE_MULTI_CORE
-
     const char *params = NULL;
     xTaskCreate(
             x_at_task_mqtt,  /* Task function. */
@@ -213,6 +212,6 @@ void at_mqtt_heart_beat() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_mqtt, "TaskMQTT", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_at_task_mqtt, "x_at_task_mqtt", 8192, NULL, 3, NULL, 0);
 #endif
 }
