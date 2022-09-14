@@ -105,7 +105,7 @@ void at_mqtt_reconnect(String incomingByte) {
     // +ECMTSTAT: <tcpconnectID>,<err_code> 1 连接已关闭或由对等方重置
     String flag = "ECMTSTAT";
     if (incomingByte.indexOf(flag) != -1) {
-        init_at_mqtt();
+        init_at_mqtt(); // 重连MQTT服务
     }
 }
 
@@ -164,13 +164,13 @@ void do_at_mqtt_subscribe(String command) {
         cout << &e << endl;
     }
 
-    if (command == "raise") {
+    if (command == "raise") { // 电机升起指令
         set_motor_up();
     }
-    if (command == "putdown") {
+    if (command == "putdown") { // 电机下降指令
         set_motor_down();
     }
-    if (command == "query") {
+    if (command == "query") { // MQTT主动查询指令
         int status = get_pwm_status();
         /*    DynamicJsonDocument doc(1024);
               JsonObject object = doc.to<JsonObject>();
@@ -182,7 +182,6 @@ void do_at_mqtt_subscribe(String command) {
                           to_string(status) + "\"}";
         at_mqtt_publish(topics, jsonData.c_str());
     }
-
 }
 
 /**

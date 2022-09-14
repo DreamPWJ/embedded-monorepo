@@ -35,7 +35,7 @@ int ground_feeling_status() {
         // printf("地感检测无车 \n");
         return 0;
     }
-    return 1;
+    return -1;
 }
 
 /**

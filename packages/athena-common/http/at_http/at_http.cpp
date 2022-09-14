@@ -18,7 +18,7 @@ SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
 /**
  * Http请求GET方法
  */
-void at_http_get(String url) {
+DynamicJsonDocument at_http_get(String url) {
     Serial.println("HTTP请求GET方法AT指令");
     myHttpSerial.begin(9600);
     if (!myHttpSerial) { // If the object did not initialize, then its configuration is invalid
@@ -43,20 +43,21 @@ void at_http_get(String url) {
     myHttpSerial.printf("AT+HTTPSEND=0,0,%d,\042%s\042\r\n", pathLength, path.c_str()); // Http请求
 
     // 获取缓冲区串口返回的数据
-    get_http_uart_data();
+    return get_http_uart_data();
 }
 
 /**
  * 获取缓冲区串口返回的数据
  */
-void get_http_uart_data() {
+DynamicJsonDocument get_http_uart_data() {
     // Receiving MODEM Response
     // while (myHttpSerial.available() > 0) {
     // while (1) {
     // 等待数据返回结果
     unsigned long tm = millis();
+    DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC";
-    while (millis() - tm <= 30000) { // 多少秒超时 退出循环
+    while (millis() - tm <= 60000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         Serial.println(incomingByte);
@@ -71,15 +72,17 @@ void get_http_uart_data() {
             // Serial.println(data);
             String jsonStr = hex_to_string(data.c_str()).c_str();
             // Serial.println(jsonStr);
-            DynamicJsonDocument json = string_to_json(jsonStr);
+            json = string_to_json(jsonStr);
 
-            String new_version = json["version"].as<String>();
+/*          String new_version = json["version"].as<String>();
             String file_url = json["file"].as<String>();
             Serial.println(new_version);
-            Serial.println(file_url);
+            Serial.println(file_url);*/
+            return json;
             break;
         }
     }
+    return json;
     // }
     // }
 }

@@ -49,9 +49,10 @@ void setup() {
     // 初始化NB-IoT网络协议
     init_nb_iot();
 
-    // 网络请求
+    // WiFi网络版本HTTP请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
-    //at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
+    // NB-IoT网络版本HTTP请求
+    at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
 
 
 #if WIFI_EN
@@ -66,10 +67,10 @@ void setup() {
     // MQTT心跳服务
     at_mqtt_heart_beat();
 
-    // 初始化MQTT消息协议
-    //init_mqtt();
+    // WiFi网络版本初始化MQTT消息协议
+    // init_mqtt();
 
-    // MQTT心跳服务
+    // WiFi网络版本MQTT心跳服务
     // mqtt_heart_beat();
 #endif
 
@@ -82,7 +83,7 @@ void setup() {
     check_ground_feeling_status();
 #endif
 
-    // 执行OTA空中升级
+    // WiFi网络版本执行OTA空中升级
     exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
@@ -99,7 +100,7 @@ void loop() {
 #endif
 
 #if MQTT_EN
-    // MQTT消息服务
+    // WiFi网络版本MQTT消息服务
     // mqtt_loop();
 #endif
 
