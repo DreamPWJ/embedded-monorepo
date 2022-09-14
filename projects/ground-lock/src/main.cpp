@@ -52,7 +52,7 @@ void setup() {
     // WiFi网络版本HTTP请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     // NB-IoT网络版本HTTP请求
-    at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
+    // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
 
 
 #if WIFI_EN
@@ -84,7 +84,7 @@ void setup() {
 #endif
 
     // WiFi网络版本执行OTA空中升级
-    exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 
