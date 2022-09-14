@@ -32,7 +32,7 @@ DynamicJsonDocument at_http_get(String url) {
     String domain = url.substring(0, url.indexOf("/"));
     String path = url.substring(url.indexOf("/"), url.length());
     int pathLength = path.length();
-    delay(1000);
+    delay(2000);
     myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
     delay(1000);
     myHttpSerial.printf(

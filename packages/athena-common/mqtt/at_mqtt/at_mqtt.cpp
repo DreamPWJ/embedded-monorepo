@@ -54,7 +54,7 @@ void init_at_mqtt() {
     // delay(1000);
     // 设置MQTT连接所需要的的参数
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
-    delay(1000);
+    delay(2000);
     myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
     delay(1000);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), mqtt_username,
@@ -67,7 +67,7 @@ void init_at_mqtt() {
     delay(1000);
 
     // 订阅MQTT消息
-    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
     delay(1000);
@@ -131,7 +131,7 @@ void at_mqtt_callback(void *pvParameters) {
         // Serial.println(incomingByte);
 
         // 检测MQTT服务状态 如果失效自动重连
-        // at_mqtt_reconnect(incomingByte);
+        at_mqtt_reconnect(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
@@ -209,7 +209,7 @@ void at_mqtt_heart_beat() {
             "x_at_task_mqtt", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            8,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
