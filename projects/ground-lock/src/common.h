@@ -1,0 +1,8 @@
+#ifndef GROUND_LOCK_COMMON_H
+#define GROUND_LOCK_COMMON_H
+
+#define PIN_RX 19
+#define PIN_TX 7
+
+
+#endif //GROUND_LOCK_COMMON_H

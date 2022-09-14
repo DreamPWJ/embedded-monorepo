@@ -42,7 +42,7 @@ const int port = 80;
 // Define the serial console for debug prints, if needed
 #define DUMP_AT_COMMANDS
 
-#include <Wire.h>
+// #include <Wire.h>
 #include <TinyGsmClient.h>
 
 #ifdef DUMP_AT_COMMANDS

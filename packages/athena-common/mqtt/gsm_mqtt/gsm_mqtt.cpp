@@ -55,7 +55,7 @@ const char *topics = "ESP32/common";
 // Define the serial console for debug prints, if needed
 //#define DUMP_AT_COMMANDS
 
-#include <Wire.h>
+// #include <Wire.h>
 #include <TinyGsmClient.h>
 
 #ifdef DUMP_AT_COMMANDS
@@ -66,7 +66,7 @@ TinyGsm modem(debugger);
 TinyGsm modemMqtt(SerialAT);
 #endif
 
-#include <PubSubClient.h>
+#include "PubSubClient.h"
 
 TinyGsmClient clientMqtt(modemMqtt);
 PubSubClient mqtt(clientMqtt);

@@ -1,3 +1,4 @@
+#include <common.h>
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,8 +17,8 @@
 #include <device_info.h>
 #include <http.h>
 #include <at_mqtt/at_mqtt.h>
-#include "../lib/gsm_http/gsm_http.h"
-#include "../lib/gsm_mqtt/gsm_mqtt.h"
+#include <at_http/at_http.h>
+
 
 using namespace std;
 
@@ -28,6 +29,7 @@ using namespace std;
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
+
 
 void setup() {
     // 初始化设置代码
@@ -51,7 +53,6 @@ void setup() {
 
     // 网络请求
     //http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
-    //esp_http();
     //nb_http_get();
     //gsm_http_get();
     //init_gsm_mqtt();

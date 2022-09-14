@@ -53,6 +53,10 @@ void init_at_mqtt(String name) {
  */
 void at_mqtt_callback() {
     Serial.print("MQTT订阅接受的消息: ");
+    String flag = "ECMTRECV"; /* +ECMTRECV: 0,0,"ESP32/common",{
+            "command": "putdown"
+    }*/
+
     while (1) {
         delay(10);
         String incomingByte;

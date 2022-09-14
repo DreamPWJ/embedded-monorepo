@@ -54,6 +54,10 @@ https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-dev
 https://zhuanlan.zhihu.com/p/63672432
 https://zhuanlan.zhihu.com/p/145801160
 
+#### MinGW是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
+
+https://www.mingw-w64.org/
+
 #### ARM 工具链arm-none-eabi-gcc  用来编译ARM程序的交叉编译工具链
 
 #### 注意Windows上安装完成选择添加到环境变量中并重启系统, 否则无法通过CMake编译, 找不到C编译器！！！
@@ -63,10 +67,6 @@ https://developer.arm.com/downloads/-/gnu-rm
 #### OpenOCD芯片调试器 将代码写入MCU中调试刷机
 
 https://gnutoolchains.com/arm-eabi/openocd/
-
-#### MinGW是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
-
-https://www.mingw-w64.org/
 
 #### STM32CubeMX，用于配置 STM32 微控制器的图形工具
 
