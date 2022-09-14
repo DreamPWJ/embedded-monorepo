@@ -72,9 +72,7 @@ void init_nb_iot() {
         //mySerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
         set_nvs("is_nb_iot_init", "true"); // 单片机持久化存储是否初始化NB-IoT网络
     }
-
 }
-
 
 /**
  * 获取国际移动设备唯一标识IMEI串号码

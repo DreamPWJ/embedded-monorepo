@@ -16,7 +16,14 @@
 #define PIN_TX 7
 SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
 
+const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
+const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
+const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
+const char *mqtt_password = "public";
+const int mqtt_port = 1883;
+
 /**
+ *
  * 初始化MQTT客户端
  */
 void init_at_mqtt(String name) {
@@ -34,19 +41,20 @@ void init_at_mqtt(String name) {
     // 设置MQTT连接所需要的的参数
     // myMqttSerial.write("AT+ECMTCFG=\042keepalive\042,120\r\n");
     delay(1000);
-    myMqttSerial.write("AT+ECMTOPEN=0,\042119.188.90.222\042,1883\r\n");  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
-    delay(1000);
-    myMqttSerial.write("AT+ECMTCONN=0,\042at-esp32-mcu-client-test\042,\042admin\042,\042public\042\r\n");
-    delay(1000);
 
+    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
+    delay(1000);
+    myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", name.c_str(), mqtt_username,
+                        mqtt_password);
+    delay(1000);
+    Serial.println("MQTT Broker 已连接成功");
     // 发布MQTT消息
-    myMqttSerial.write(
-            "AT+ECMTPUB=0,0,0,0,\042ESP32/common\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n");
+    myMqttSerial.printf(
+            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n", topics);
     delay(1000);
 
     // 订阅MQTT消息
-    myMqttSerial.write("AT+ECMTSUB=0,1,\"ESP32/common\",1\r\n");
-
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     delay(1000);
 
     // MQTT订阅消息回调

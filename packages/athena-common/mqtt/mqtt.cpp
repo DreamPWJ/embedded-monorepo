@@ -100,7 +100,7 @@ void init_mqtt(String name) {
         client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
         Serial.printf("客户端 %s 已连接到 MQTT 服务器 \n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-            Serial.println("MQTT broker 已连接成功");
+            Serial.println("MQTT Broker 已连接成功");
         } else {
             Serial.print("MQTT状态失败 ");
             Serial.print(client.state());

@@ -57,7 +57,7 @@ void setup() {
     //gsm_http_get();
     //init_gsm_mqtt();
 
-    at_http_get();
+    // at_http_get();
     init_at_mqtt(mqttName);
 
 
