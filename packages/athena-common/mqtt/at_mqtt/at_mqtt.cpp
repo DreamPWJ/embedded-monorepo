@@ -68,14 +68,14 @@ void init_at_mqtt() {
 
     // 发布MQTT消息
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", topics,
+            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", topics,
             client_id.c_str());
     delay(1000);
 
     // 订阅MQTT主题消息
-    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
+    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str());
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -98,15 +98,16 @@ void init_at_mqtt() {
  * MQTT发送消息
  */
 void at_mqtt_publish(String topic, String msg) {
+    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息)
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
+            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
 }
 
 /**
  * MQTT订阅消息
  */
 void at_mqtt_subscribe(String topic) {
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic.c_str());
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
 }
 
 /**
