@@ -58,38 +58,49 @@ void init_nb_iot() {
     }
     String isNBInit = get_nvs("is_nb_iot_init");
     Serial.println(isNBInit);
-   // if (isNBInit.c_str() == "yes") {
-        // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
-        Serial.println("给NB模组发送AT指令");
-        // myNBSerial.write("AT\r\n"); // 测试AT指令
-        delay(3000);
-        myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
-        delay(1000);
-        myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络
-        delay(1000);
-        myNBSerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
-        delay(1000);
-        myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
-        delay(1000);
-        //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
-        set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
-        // NB模块心跳检测网络
-        delay(100);
+    // if (isNBInit.c_str() == "yes") {
+    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
+    restart_nb_iot();
+    Serial.println("给NB模组发送AT指令");
+    // myNBSerial.write("AT\r\n"); // 测试AT指令
+    delay(3000);
+    myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
+    delay(1000);
+    //  at_command_response();
+    myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络
+    delay(1000);
+    myNBSerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
+    delay(1000);
+    myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
+    delay(1000);
+    //  at_command_response();
+    //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+    set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
+    // NB模块心跳检测网络
 
-#if !USE_MULTI_CORE
-        const char *params = NULL;
-        xTaskCreate(
-                nb_iot_heart_beat,  //* Task function. *//*
-                "nb_iot_heart_beat", //* String with name of task. *//*
-                8192,      //* Stack size in bytes. *//*
-                (void *) params,      //* Parameter passed as input of the task *//*
-                3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
-                NULL);     //* Task handle. *//*
-#else
-        //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-        xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
-#endif
-   // }
+//#if !USE_MULTI_CORE
+//    const char *params = NULL;
+//    xTaskCreate(
+//            nb_iot_heart_beat,  //* Task function. *//*
+//            "nb_iot_heart_beat", //* String with name of task. *//*
+//            8192,      //* Stack size in bytes. *//*
+//            (void *) params,      //* Parameter passed as input of the task *//*
+//            3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
+//            NULL);     //* Task handle. *//*
+//#else
+//    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+//    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
+//#endif
+    // }
+}
+
+/**
+ * AT指令响应数据
+ */
+void at_command_response() {
+    while (myNBSerial.available()) {
+        Serial.println(myNBSerial.readStringUntil('\n'));
+    }
 }
 
 /**
@@ -114,7 +125,7 @@ void nb_iot_heart_beat(void *pvParameters) {
  * 重启NB模块芯片
  */
 void restart_nb_iot() {
-    printf("重启NB模块芯片...");
+    Serial.println("重启GSM调制解调器模块芯片...");
     myNBSerial.write("AT+ECRST\r\n"); // 重启NB模块芯片
 }
 

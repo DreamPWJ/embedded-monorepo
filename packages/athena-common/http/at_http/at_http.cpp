@@ -84,7 +84,6 @@ DynamicJsonDocument get_http_uart_data() {
             return json;
             break;
         }
-        delay(10);
     }
     return json;
     // }

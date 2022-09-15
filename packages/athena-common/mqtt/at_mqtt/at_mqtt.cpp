@@ -39,6 +39,8 @@ const int mqtt_port = 1883;
  * 初始化MQTT客户端
  */
 void init_at_mqtt() {
+    Serial.println("初始化MQTT客户端AT指令");
+
     myMqttSerial.begin(9600);
     if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
@@ -47,7 +49,7 @@ void init_at_mqtt() {
             delay(1000);
         }
     }
-    Serial.println("初始化MQTT客户端AT指令");
+
     String client_id = mqttName + "-";
     client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
@@ -61,16 +63,16 @@ void init_at_mqtt() {
                         mqtt_password);
     delay(1000);
     Serial.println("MQTT Broker 连接: " + client_id);
+
     // 发布MQTT消息
     myMqttSerial.printf(
             "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n", topics);
     delay(1000);
 
-    // 订阅MQTT消息
+    // 订阅MQTT主题消息
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
-    delay(1000);
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -132,6 +134,7 @@ void at_mqtt_callback(void *pvParameters) {
             "command": "putdown"
     }*/
     while (1) {
+        // Serial.println(myMqttSerial.available());
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         // Serial.println(incomingByte);
@@ -147,13 +150,14 @@ void at_mqtt_callback(void *pvParameters) {
             // String topic = end.substring(end.indexOf(",\""), end.lastIndexOf(",\""));
             // Serial.println("MQTT订阅主题: " + topic);
             String data = end.substring(end.lastIndexOf("{"), end.length());
-            // Serial.println(data);
+            Serial.println(data);
 
-            DynamicJsonDocument json = string_to_json(data);
-
-            // 获取MQTT订阅消息后执行任务
-            do_at_mqtt_subscribe(json);
-        } else if (incomingByte.indexOf("ECMTCONN: 0,0,0") != -1) {        // MQTT连接成功
+            if (!data.isEmpty()) {
+                DynamicJsonDocument json = string_to_json(data);
+                // 获取MQTT订阅消息后执行任务
+                do_at_mqtt_subscribe(json);
+            }
+        } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {        // MQTT连接成功
             printf("MQTT服务器连接成功");
         }
         delay(10);
@@ -197,7 +201,7 @@ void at_mqtt_heart_beat() {
 void do_at_mqtt_subscribe(DynamicJsonDocument json) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
-    Serial.println(command);
+    Serial.println("指令类型: " + command);
     uint32_t chipId;
     try {
         chipId = get_chip_id();
