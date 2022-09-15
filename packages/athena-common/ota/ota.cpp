@@ -80,7 +80,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
             // return ESP_FAIL;
         }
     } else {
-        printf("当前固件版本v%s, 没有新版本OTA固件, 跳过升级 \n", version.c_str());
+        printf("当前固件版本v%s, 没有检测到新版本OTA固件, 跳过升级 \n", version.c_str());
     }
     // return ESP_OK; // esp_err_t 类型
 }

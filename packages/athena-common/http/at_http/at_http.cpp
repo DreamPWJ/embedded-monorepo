@@ -28,7 +28,9 @@ DynamicJsonDocument at_http_get(String url) {
             delay(1000);
         }
     }
-    // 安信可NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
+    // NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
+    url.replace("http://", "");
+    url.replace("https://", "");
     String domain = url.substring(0, url.indexOf("/"));
     String path = url.substring(url.indexOf("/"), url.length());
     int pathLength = path.length();
@@ -54,10 +56,11 @@ DynamicJsonDocument get_http_uart_data() {
     // while (myHttpSerial.available() > 0) {
     // while (1) {
     // 等待数据返回结果
+    Serial.println("HTTP获取缓冲区串口返回的数据");
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC";
-    while (millis() - tm <= 60000) { // 多少秒超时 退出循环
+    while (millis() - tm <= 10000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         // Serial.println(incomingByte);
