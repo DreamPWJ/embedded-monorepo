@@ -52,7 +52,8 @@ void init_at_mqtt() {
     }
 
     String client_id = mqttName + "-";
-    client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
+    string chip_id = to_string(get_chip_mac());
+    client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     // delay(1000);
     // 设置MQTT连接所需要的的参数
@@ -73,7 +74,7 @@ void init_at_mqtt() {
 
     // 订阅MQTT主题消息
     // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
-    std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
+    std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
 
 #if !USE_MULTI_CORE
@@ -176,7 +177,7 @@ void x_at_task_mqtt(void *pvParameters) {
         int parkingStatus = ground_feeling_status(); // 是否有车
         // 发送心跳消息
         string jsonData =
-                "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_id()) + "\",\"deviceStatus\":\"" +
+                "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
         delay(600000); // 多久执行一次 毫秒
@@ -211,7 +212,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json) {
     Serial.println("指令类型: " + command);
     uint32_t chipId;
     try {
-        chipId = get_chip_id();
+        chipId = get_chip_mac();
     } catch (exception &e) {
         cout << &e << endl;
     }

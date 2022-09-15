@@ -199,7 +199,7 @@ int get_pwm_status() {
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     ledcWrite(channel_PWMA, DutyA);
-    // delay(1000);
+    delay(1000);
     ledcWrite(channel_PWMB, DutyB);
 }
 

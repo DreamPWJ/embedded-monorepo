@@ -31,10 +31,6 @@ uint64_t get_chip_mac() {
  * 获取芯片信息
  */
 void get_chip_info() {
-    for (int i = 0; i < 17; i = i + 8) {
-        chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
-    }
-
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
     printf("This is ESP32 chip with %d CPU cores, WiFi%s%s, ",
@@ -48,5 +44,5 @@ void get_chip_info() {
            (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
     Serial.print("Chip ID: ");
-    Serial.println(chipId);
+    Serial.println(get_chip_mac());
 }
