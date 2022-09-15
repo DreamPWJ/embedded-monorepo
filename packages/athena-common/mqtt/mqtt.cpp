@@ -48,8 +48,8 @@ void init_mqtt() {
     client.setServer(mqtt_broker, mqtt_port);
     client.setKeepAlive(90); // 保持连接多少秒
     client.setCallback(mqtt_callback);
+    String client_id = mqttName + "-";
     while (!client.connected()) {
-        String client_id = mqttName + "-";
         client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
         Serial.printf("客户端 %s 已连接到 MQTT 服务器 \n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
@@ -62,7 +62,8 @@ void init_mqtt() {
     }
     // publish and subscribe
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
-    client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机 ");
+    client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机发布的初始化消息 ");
+
     client.subscribe(topic_device.c_str());
 }
 

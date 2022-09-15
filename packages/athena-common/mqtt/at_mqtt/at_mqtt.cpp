@@ -67,7 +67,7 @@ void init_at_mqtt() {
 
     // 发布MQTT消息
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32-%s单片机AT指令发布的消息\042\r\n", topics,
+            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", topics,
             client_id.c_str());
     delay(1000);
 
