@@ -9,6 +9,7 @@
 #include <string>
 #include <chip_info.h>
 #include <pwm.h>
+#include <ground_feeling.h>
 
 using namespace std;
 
@@ -66,11 +67,12 @@ void init_at_mqtt() {
 
     // 发布MQTT消息
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n", topics);
+            "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32-%s单片机AT指令发布的消息\042\r\n", topics,
+            client_id.c_str());
     delay(1000);
 
     // 订阅MQTT主题消息
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
+    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
 
@@ -170,8 +172,13 @@ void at_mqtt_callback(void *pvParameters) {
 void x_at_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
+        int deviceStatus = get_pwm_status(); // 设备电机状态
+        int parkingStatus = ground_feeling_status(); // 是否有车
         // 发送心跳消息
-        at_mqtt_publish(topics, " 我是AT指令 MQTT心跳发的消息 ");
+        string jsonData =
+                "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_id()) + "\",\"deviceStatus\":\"" +
+                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
+        at_mqtt_publish(topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
         delay(60000); // 多久执行一次 毫秒
     }
 }
@@ -216,15 +223,16 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json) {
         set_motor_down();
     }
     if (command == "query") { // MQTT主动查询指令
-        int status = get_pwm_status();
+        int deviceStatus = get_pwm_status(); // 设备电机状态
+        int parkingStatus = ground_feeling_status(); // 是否有车
         /*    DynamicJsonDocument doc(1024);
               JsonObject object = doc.to<JsonObject>();
               object["command"] = "query";
               object["deviceCode"] = chipId;
-              object["deviceStatus"] = status; */
+              object["deviceStatus"] = deviceStatus; */
         std:
         string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
-                          to_string(status) + "\"}";
+                          to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(topics, jsonData.c_str());
     }
 }
