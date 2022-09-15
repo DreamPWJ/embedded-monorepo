@@ -159,7 +159,7 @@ void at_mqtt_callback(void *pvParameters) {
                 // 获取MQTT订阅消息后执行任务
                 do_at_mqtt_subscribe(json);
             }
-        } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {        // MQTT连接成功
+        } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
         }
         delay(10);
@@ -179,7 +179,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_id()) + "\",\"deviceStatus\":\"" +
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(60000); // 多久执行一次 毫秒
+        delay(600000); // 多久执行一次 毫秒
     }
 }
 
@@ -218,18 +218,11 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json) {
 
     if (command == "raise") { // 电机升起指令
         set_motor_up();
-    }
-    if (command == "putdown") { // 电机下降指令
+    } else if (command == "putdown") { // 电机下降指令
         set_motor_down();
-    }
-    if (command == "query") { // MQTT主动查询指令
+    } else if (command == "query") { // MQTT主动查询指令
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
-        /*    DynamicJsonDocument doc(1024);
-              JsonObject object = doc.to<JsonObject>();
-              object["command"] = "query";
-              object["deviceCode"] = chipId;
-              object["deviceStatus"] = deviceStatus; */
         std:
         string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
                           to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";

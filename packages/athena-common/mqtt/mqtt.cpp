@@ -18,7 +18,7 @@ using namespace std;
 * @date 2022/7/29 15:51
 * @description MQTT消息队列遥测传输协议
 * 参考文档： https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
-* https://github.com/khoih-prog/NB_Generic
+* https://github.com/vshymanskyy/TinyGSM
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
@@ -133,7 +133,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     DynamicJsonDocument doc(2048);
     deserializeJson(doc, payloadData);
     String command = doc["command"].as<String>();
-    // Serial.println(command);
+    // Serial.println("指令类型: " + command);
     Serial.println("-----------------------");
 
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
@@ -146,17 +146,10 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
 
     if (command == "raise") {
         set_motor_up();
-    }
-    if (command == "putdown") {
+    } else if (command == "putdown") {
         set_motor_down();
-    }
-    if (command == "query") {
+    } else if (command == "query") {
         int status = get_pwm_status();
-        /*    DynamicJsonDocument doc(1024);
-              JsonObject object = doc.to<JsonObject>();
-              object["command"] = "query";
-              object["deviceCode"] = chipId;
-              object["deviceStatus"] = status; */
         std:
         string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
                           to_string(status) + "\"}";

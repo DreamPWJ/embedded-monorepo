@@ -66,7 +66,7 @@ void x_task_ground_feeling_status(void *pvParameters) {
             at_mqtt_publish(topic, jsonData.c_str());
         }
         lastTimeStatus = status;
-        delay(2000); // 多久执行一次 毫秒
+        delay(5000); // 多久执行一次 毫秒
     }
 }
 

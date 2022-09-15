@@ -17,7 +17,7 @@ DynamicJsonDocument string_to_json(String data) {
     // const size_t CAPACITY = JSON_OBJECT_SIZE(1);
     DynamicJsonDocument doc(2048);
     doc.clear();
-    if (data && data.c_str() != "" && data.c_str() != "null") {
+    if (!data.isEmpty()) {
         // StaticJsonDocument<CAPACITY> doc;
         // 用String类型的变量来代替串口获取的Json数据
         // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
