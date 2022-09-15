@@ -105,8 +105,8 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            set_motor_down(); // 回落锁
             Serial.println("地感判断有车地锁不能继续抬起");
+            set_motor_down(); // 回落锁
             break;
         }
         if (costA >= 2) { // 电机运行过半减速

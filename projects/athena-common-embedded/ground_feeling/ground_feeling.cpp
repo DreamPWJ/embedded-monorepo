@@ -16,7 +16,7 @@ using namespace std;
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 地感信号GPIO
-const int ground_feeling_gpio = 8;
+const int ground_feeling_gpio = 9;
 
 /**
  * 初始化地感信号GPIO
