@@ -44,7 +44,7 @@ using namespace std;
 extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 
 /**
- * 执行固件升级 1. 定时检测HTTP方式 1.主动触发MQTT方式
+ * 执行固件升级 1. 定时检测HTTP方式 2. 主动触发MQTT方式
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
     DynamicJsonDocument json = at_http_get(jsonUrl);
@@ -53,8 +53,8 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     String new_version = json["version"].as<String>();
     String file_url = json["file"].as<String>();
 
-    //Serial.println(new_version);
-    //Serial.println(file_url);
+    Serial.println(new_version);
+    Serial.println(file_url);
 
     // 检测到新版本或者指定设备才进行OTA空中升级
     if (new_version != "null" && version_compare(new_version, version) == 1) {

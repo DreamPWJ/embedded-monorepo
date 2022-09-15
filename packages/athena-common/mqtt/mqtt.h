@@ -17,4 +17,6 @@ void mqtt_heart_beat();
 
 void x_task_mqtt(void *pvParameters);
 
+void mqtt_callback(char *topic, byte *payload, unsigned int length);
+
 #endif

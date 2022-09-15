@@ -54,24 +54,25 @@ void init_at_mqtt() {
     // delay(1000);
     // 设置MQTT连接所需要的的参数
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
-    delay(2000);
-    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
     delay(1000);
+    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
+    delay(100);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), mqtt_username,
                         mqtt_password);
-    delay(1000);
-    Serial.println("MQTT Broker 已连接: " + client_id);
+    delay(100);
+    Serial.println("MQTT Broker 连接: " + client_id);
     // 发布MQTT消息
     myMqttSerial.printf(
             "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n", topics);
-    delay(1000);
+    delay(100);
 
     // 订阅MQTT消息
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
-    delay(1000);
+    delay(100);
 
+#if !USE_MULTI_CORE
     // MQTT订阅消息回调
     const char *params = NULL;
     xTaskCreate(
@@ -79,8 +80,13 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 1, NULL, 0);
+#endif
+
 }
 
 /**
@@ -147,6 +153,8 @@ void at_mqtt_callback(void *pvParameters) {
 
             // 获取MQTT订阅消息后执行任务
             do_at_mqtt_subscribe(json);
+        } else if (incomingByte.indexOf("ECMTCONN: 0,0,0") != -1) {        // MQTT连接成功
+            printf("MQTT服务器连接成功");
         }
         delay(10);
     }
@@ -179,7 +187,7 @@ void at_mqtt_heart_beat() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_at_task_mqtt, "x_at_task_mqtt", 8192, NULL, 3, NULL, 0);
+    xTaskCreatePinnedToCore(x_at_task_mqtt, "x_at_task_mqtt", 8192, NULL, 8, NULL, 0);
 #endif
 }
 
@@ -189,7 +197,7 @@ void at_mqtt_heart_beat() {
 void do_at_mqtt_subscribe(DynamicJsonDocument json) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
-    // Serial.println(command);
+    Serial.println(command);
     uint32_t chipId;
     try {
         chipId = get_chip_id();

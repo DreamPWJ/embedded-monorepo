@@ -11,6 +11,8 @@
 
 void exec_ota(String version, String jsonUrl);
 
+void do_firmware_upgrade(String version, String jsonUrl);
+
 void x_task_ota(void *pvParameters);
 
 

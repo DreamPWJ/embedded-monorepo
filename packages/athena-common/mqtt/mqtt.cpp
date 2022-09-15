@@ -38,54 +38,6 @@ TinyGsmClient espClient(modem); // NB-IoT网络类型*/
 WiFiClient espClient; // WiFi网络类型
 PubSubClient client(espClient);
 
-/**
- * MQTT接受的消息回调
- */
-void mqtt_callback(char *topic, byte *payload, unsigned int length) {
-    /*   Serial.print("MQTT消息到达主题: ");
-       Serial.println(topic); */
-    Serial.println("MQTT订阅接受的消息: ");
-    String payloadData = "";
-    for (int i = 0; i < length; i++) {
-        Serial.print((char) payload[i]);
-        payloadData += (char) payload[i];
-
-    }
-    Serial.println();
-    DynamicJsonDocument doc(2048);
-    deserializeJson(doc, payloadData);
-    String command = doc["command"].as<String>();
-    // Serial.println(command);
-    Serial.println("-----------------------");
-
-    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
-    uint32_t chipId;
-    try {
-        chipId = get_chip_id();
-    } catch (exception &e) {
-        cout << &e << endl;
-    }
-
-    if (command == "raise") {
-        set_motor_up();
-    }
-    if (command == "putdown") {
-        set_motor_down();
-    }
-    if (command == "query") {
-        int status = get_pwm_status();
-        /*    DynamicJsonDocument doc(1024);
-              JsonObject object = doc.to<JsonObject>();
-              object["command"] = "query";
-              object["deviceCode"] = chipId;
-              object["deviceStatus"] = status; */
-        std:
-        string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
-                          to_string(status) + "\"}";
-        client.publish(topics, jsonData.c_str());
-    }
-
-}
 
 /**
  * 初始化MQTT客户端
@@ -146,7 +98,7 @@ void mqtt_heart_beat() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_mqtt, "TaskMQTT", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_mqtt, "x_task_mqtt", 8192, NULL, 5, NULL, 0);
 #endif
 }
 
@@ -161,4 +113,53 @@ void x_task_mqtt(void *pvParameters) {
         client.publish(topics, " 我是MQTT心跳发的消息 ");
         delay(60000); // 多久执行一次 毫秒
     }
+}
+
+/**
+ * MQTT接受的消息回调
+ */
+void mqtt_callback(char *topic, byte *payload, unsigned int length) {
+    /*   Serial.print("MQTT消息到达主题: ");
+       Serial.println(topic); */
+    Serial.println("MQTT订阅接受的消息: ");
+    String payloadData = "";
+    for (int i = 0; i < length; i++) {
+        Serial.print((char) payload[i]);
+        payloadData += (char) payload[i];
+
+    }
+    Serial.println();
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, payloadData);
+    String command = doc["command"].as<String>();
+    // Serial.println(command);
+    Serial.println("-----------------------");
+
+    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
+    uint32_t chipId;
+    try {
+        chipId = get_chip_id();
+    } catch (exception &e) {
+        cout << &e << endl;
+    }
+
+    if (command == "raise") {
+        set_motor_up();
+    }
+    if (command == "putdown") {
+        set_motor_down();
+    }
+    if (command == "query") {
+        int status = get_pwm_status();
+        /*    DynamicJsonDocument doc(1024);
+              JsonObject object = doc.to<JsonObject>();
+              object["command"] = "query";
+              object["deviceCode"] = chipId;
+              object["deviceStatus"] = status; */
+        std:
+        string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
+                          to_string(status) + "\"}";
+        client.publish(topics, jsonData.c_str());
+    }
+
 }
