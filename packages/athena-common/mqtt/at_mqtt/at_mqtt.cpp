@@ -54,23 +54,23 @@ void init_at_mqtt() {
     // delay(1000);
     // 设置MQTT连接所需要的的参数
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
-    delay(1000);
+    delay(2000);
     myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
-    delay(100);
+    delay(1000);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), mqtt_username,
                         mqtt_password);
-    delay(100);
+    delay(1000);
     Serial.println("MQTT Broker 连接: " + client_id);
     // 发布MQTT消息
     myMqttSerial.printf(
             "AT+ECMTPUB=0,0,0,0,\042%s\042,\042你好, MQTT服务器 , 我是ESP32单片机AT指令发布的消息\042\r\n", topics);
-    delay(100);
+    delay(1000);
 
     // 订阅MQTT消息
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",1\r\n", topic_device.c_str());
-    delay(100);
+    delay(1000);
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调

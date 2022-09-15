@@ -84,7 +84,7 @@ void setup() {
 #endif
 
     // WiFi网络版本执行OTA空中升级
-   exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 

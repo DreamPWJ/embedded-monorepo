@@ -15,15 +15,16 @@
 */
 DynamicJsonDocument string_to_json(String data) {
     // const size_t CAPACITY = JSON_OBJECT_SIZE(1);
-    DynamicJsonDocument doc(1024);
+    DynamicJsonDocument doc(2048);
     doc.clear();
-    if (data && data != "null") {
+    if (data && data.c_str() != "" && data.c_str() != "null") {
         // StaticJsonDocument<CAPACITY> doc;
         // 用String类型的变量来代替串口获取的Json数据
         // String input = "{\"id\":\"l or r\",\"speed\":10.50, \"kp\":5.1, \"ki\":0.1, \"kd\":0.02, \"forward\":1}"
         DeserializationError error = deserializeJson(doc, data);
         if (error) {
-            Serial.print("deserializeJson() failed for : ");
+            Serial.print(data);
+            Serial.print(" deserializeJson() failed for : ");
             Serial.println(error.c_str());
         }
         // JsonObject obj = doc.as<JsonObject>();
@@ -41,7 +42,7 @@ DynamicJsonDocument string_to_json(String data) {
 * 将Json格式转换成String
 */
 String json_to_string(JsonObject data) {
-    DynamicJsonDocument doc(1024);
+    DynamicJsonDocument doc(2048);
     JsonObject obj = doc.as<JsonObject>();
     // 将数据键值对赋值
     obj["name"] = "潘维吉";
