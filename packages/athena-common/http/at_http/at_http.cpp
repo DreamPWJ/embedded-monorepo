@@ -36,12 +36,12 @@ DynamicJsonDocument at_http_get(String url) {
     int pathLength = path.length();
     delay(1000);
     myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
-    delay(100);
+    delay(1000);
     myHttpSerial.printf(
             "AT+HTTPCREATE=0,\042http://%s:80\042\r\n", domain.c_str()); // 创建实例
-    delay(100);
+    delay(1000);
     myHttpSerial.printf("AT+HTTPCON=0\r\n"); // 连接服务器
-    delay(100);
+    delay(1000);
     myHttpSerial.printf("AT+HTTPSEND=0,0,%d,\042%s\042\r\n", pathLength, path.c_str()); // Http请求
 
     // 获取缓冲区串口返回的数据
@@ -60,10 +60,10 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC";
-    while (millis() - tm <= 10000) { // 多少秒超时 退出循环
+    while (millis() - tm <= 6000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
-        // Serial.println(incomingByte);
+        Serial.println(incomingByte);
         // Serial.println(myHttpSerial.available());
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
