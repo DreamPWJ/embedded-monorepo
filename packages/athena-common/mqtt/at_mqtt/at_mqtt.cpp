@@ -163,7 +163,7 @@ void at_mqtt_callback(void *pvParameters) {
         } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
         }
-        delay(10);
+        // delay(10);
     }
 }
 

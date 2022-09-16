@@ -97,7 +97,7 @@ void set_motor_up() {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(1000);
+    delay(600);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endA);
@@ -105,7 +105,7 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地感判断有车地锁不能继续抬起");
+            Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
             set_motor_down(); // 回落锁
             break;
         }
@@ -139,7 +139,7 @@ void set_motor_down() {
     int channel_PWMB_duty = 1024;
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     ledcWrite(channel_PWMA, 0);
-    delay(1000);
+    delay(600);
     while (get_pwm_status() == 2) {
         delay(10);
         time(&endB);
