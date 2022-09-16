@@ -61,7 +61,7 @@ void init_nb_iot() {
     // if (isNBInit.c_str() == "yes") {
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     restart_nb_iot();
-    Serial.println("给NB模组发送AT指令");
+    Serial.println("给NB模组发送AT指令, 配置网络");
     // myNBSerial.write("AT\r\n"); // 测试AT指令
     delay(3000);
     myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
@@ -73,6 +73,7 @@ void init_nb_iot() {
     delay(1000);
     myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);
+    myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量
     //  at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络

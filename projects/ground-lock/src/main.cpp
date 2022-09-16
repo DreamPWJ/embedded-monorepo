@@ -18,6 +18,7 @@
 #include <http.h>
 #include <at_mqtt/at_mqtt.h>
 #include <at_http/at_http.h>
+#include <gsm_ota/gsm_ota.h>
 
 
 using namespace std;
@@ -84,7 +85,9 @@ void setup() {
 #endif
 
     // WiFi网络版本执行OTA空中升级
-    //exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // GSM网络版本执行OTA空中升级
+    do_gsm_firmware_upgrade(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 

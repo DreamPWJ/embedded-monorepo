@@ -1,5 +1,6 @@
 #include "ota.h"
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -13,7 +14,6 @@
 #include <http.h>
 #include <HTTPClient.h>
 #include "HttpsOTAUpdate.h"
-#include <ArduinoJson.h>
 #include <bits/stdc++.h>
 #include <common_utils.h>
 #include <version_utils.h>
@@ -47,8 +47,8 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
  * 执行固件升级 1. 定时检测HTTP方式 2. 主动触发MQTT方式
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
+    // 读取OTA升级文件 JSON数据
     DynamicJsonDocument json = at_http_get(jsonUrl);
-    // 读取JSON数据
     // Serial.println("OTA响应数据:");
     String new_version = json["version"].as<String>();
     String file_url = json["file"].as<String>();
