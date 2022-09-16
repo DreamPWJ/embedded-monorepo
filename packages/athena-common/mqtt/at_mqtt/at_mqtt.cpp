@@ -145,14 +145,14 @@ void at_mqtt_callback(void *pvParameters) {
         at_mqtt_reconnect(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
-/*           int startIndex = incomingByte.indexOf(flag);
+            int startIndex = incomingByte.indexOf(flag);
             String start = incomingByte.substring(startIndex);
             int endIndex = start.indexOf("}");
             String end = start.substring(0, endIndex + 1);
-            String data = end.substring(end.lastIndexOf("{"), end.length());*/
+            String data = end.substring(end.lastIndexOf("{"), end.length());
             vector<string> dataArray = split(incomingByte.c_str(), ",");
             String topic = dataArray[2].c_str();
-            String data = dataArray[3].c_str();
+            // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
             Serial.println(data);
 
             if (!data.isEmpty()) {
