@@ -32,9 +32,11 @@ float get_temperature() {
 
 /**
  * 获取电量信息
+ * 参考： https://randomnerdtutorials.com/power-esp32-esp8266-solar-panels-battery-level-monitoring/
  */
 float get_electricity() {
-    int GPIO = 7; // 监控电池电量IO引脚
+    int GPIO = 4; // 监控电池电量IO引脚 必须是模拟输入ADC
+    // pinMode(GPIO, ANALOG);
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
     // 获取电量值
     int value = analogRead(GPIO);

@@ -9,7 +9,7 @@
 
 // LED等引脚名称数字 开发板有标注 如果不是 Arduino 框架定义的，则设置
 #ifndef LED_PIN
-#define LED_PIN 4  // 注意不同的开发板配置不同
+#define LED_PIN 5  // 注意不同的开发板配置不同
 #endif
 
 /* 将 LED 数字引脚初始化为输出 */
