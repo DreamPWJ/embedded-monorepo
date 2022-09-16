@@ -12,7 +12,7 @@ void init_temperature();
 
 float get_temperature();
 
-int get_electricity();
+float get_electricity();
 
 
 #endif

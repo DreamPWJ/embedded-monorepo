@@ -16,7 +16,7 @@ using namespace std;
 
 // Set up a new SoftwareSerial object
 SoftwareSerial myNBSerial(PIN_RX, PIN_TX);
-//softwareserial myNBSerial;
+//SoftwareSerial myNBSerial;
 
 /**
 * @author 潘维吉
@@ -67,8 +67,8 @@ void init_nb_iot() {
     myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(1000);
     //  at_command_response();
-    myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络
-    delay(1000);
+    myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络  锁卡,没信号会导致设置失败
+    delay(2000);
     myNBSerial.write("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络
     delay(1000);
     myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络

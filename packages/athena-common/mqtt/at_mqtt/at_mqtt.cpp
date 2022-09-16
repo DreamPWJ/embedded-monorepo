@@ -10,6 +10,7 @@
 #include <chip_info.h>
 #include <pwm.h>
 #include <ground_feeling.h>
+#include <common_utils.h>
 
 using namespace std;
 
@@ -127,16 +128,13 @@ void at_mqtt_reconnect(String incomingByte) {
  * MQTT订阅消息回调
  */
 void at_mqtt_callback(void *pvParameters) {
-    Serial.println("AT指令MQTT订阅接受的消息: ");
-    // MQTT服务是否打开成功返回AT指令数据： +ECMTOPEN: 0,0
-    // MQTT服务是否连接成功返回AT指令数据： +ECMTCONN: 0,0,0
-    // MQTT服务是否发送成功返回AT指令数据： +ECMTPUB: 0,0,0
-    // MQTT服务是否订阅成功返回AT指令数据： +ECMTSUB: 0,1,0,1
+    Serial.println("AT指令MQTT订阅接收的消息: ");
 
     // MQTT服务订阅返回AT指令数据
-    String flag = "ECMTRECV"; /* +ECMTRECV: 0,0,"ESP32/common",{
+    /* +ECMTRECV: 0,0,"ESP32/common",{
             "command": "putdown"
     }*/
+    String flag = "ECMTRECV";
     while (1) {
         // Serial.println(myMqttSerial.available());
         String incomingByte;
@@ -147,19 +145,20 @@ void at_mqtt_callback(void *pvParameters) {
         at_mqtt_reconnect(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
-            int startIndex = incomingByte.indexOf(flag);
+/*           int startIndex = incomingByte.indexOf(flag);
             String start = incomingByte.substring(startIndex);
             int endIndex = start.indexOf("}");
             String end = start.substring(0, endIndex + 1);
-            // String topic = end.substring(end.indexOf(",\""), end.lastIndexOf(",\""));
-            // Serial.println("MQTT订阅主题: " + topic);
-            String data = end.substring(end.lastIndexOf("{"), end.length());
+            String data = end.substring(end.lastIndexOf("{"), end.length());*/
+            vector<string> dataArray = split(incomingByte.c_str(), ",");
+            String topic = dataArray[2].c_str();
+            String data = dataArray[3].c_str();
             Serial.println(data);
 
             if (!data.isEmpty()) {
                 DynamicJsonDocument json = string_to_json(data);
                 // 获取MQTT订阅消息后执行任务
-                do_at_mqtt_subscribe(json);
+                do_at_mqtt_subscribe(json, topic);
             }
         } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
@@ -207,8 +206,12 @@ void at_mqtt_heart_beat() {
 /**
  * 获取MQTT订阅消息后执行任务
  */
-void do_at_mqtt_subscribe(DynamicJsonDocument json) {
+void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
+    Serial.printf("MQTT订阅主题: %s\n", topic.c_str());
+    if (String(topic) == "") { // 针对主题做逻辑处理
+
+    }
     String command = json["command"].as<String>();
     Serial.println("指令类型: " + command);
     uint32_t chipId;

@@ -37,7 +37,7 @@
 
 ### MQTT服务器: EMQX
 
-### 硬件调试烧录工具: DapLink、ST-Link/J-Link、EspTool
+### 硬件调试烧录工具: EspTool、DapLink、ST-Link/J-Link
 
 ### WokWi在浏览器中模拟调试 IoT 嵌入式单片机项目
 
@@ -49,7 +49,7 @@
 
 #### 参考文章
 
-https://randomnerdtutorials.com/projects-esp32/
+https://randomnerdtutorials.com
 https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-development-part-iii/
 https://zhuanlan.zhihu.com/p/63672432
 https://zhuanlan.zhihu.com/p/145801160

@@ -49,8 +49,9 @@ void init_mqtt() {
     client.setKeepAlive(90); // 保持连接多少秒
     client.setCallback(mqtt_callback);
     String client_id = mqttName + "-";
+    string chip_id = to_string(get_chip_mac());
     while (!client.connected()) {
-        client_id += get_chip_id();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
+        client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
         Serial.printf("客户端 %s 已连接到 MQTT 服务器 \n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("MQTT Broker 已连接成功");
@@ -61,7 +62,8 @@ void init_mqtt() {
         }
     }
     // publish and subscribe
-    std::string topic_device = "ESP32/" + to_string(get_chip_id()); // .c_str 是 string 转 const char*
+    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息)
+    std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机发布的初始化消息 ");
 
     client.subscribe(topic_device.c_str());
@@ -120,9 +122,9 @@ void x_task_mqtt(void *pvParameters) {
  * MQTT接受的消息回调
  */
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
-    /*   Serial.print("MQTT消息到达主题: ");
+    /*   Serial.print("MQTT订阅主题: ");
        Serial.println(topic); */
-    Serial.println("MQTT订阅接受的消息: ");
+    Serial.println("MQTT订阅接收的消息: ");
     String payloadData = "";
     for (int i = 0; i < length; i++) {
         Serial.print((char) payload[i]);
@@ -132,14 +134,28 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     Serial.println();
     DynamicJsonDocument doc(2048);
     deserializeJson(doc, payloadData);
-    String command = doc["command"].as<String>();
+
+    // 获取MQTT订阅消息后执行任务
+    do_mqtt_subscribe(doc, topic);
+}
+
+
+/**
+ * 获取MQTT订阅消息后执行任务
+ */
+void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
+    Serial.printf("MQTT订阅主题: %s\n", topic);
+    if (String(topic) == "") { // 针对主题做逻辑处理
+
+    }
+    String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
     Serial.println("-----------------------");
 
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
     uint32_t chipId;
     try {
-        chipId = get_chip_id();
+        chipId = get_chip_mac();
     } catch (exception &e) {
         cout << &e << endl;
     }

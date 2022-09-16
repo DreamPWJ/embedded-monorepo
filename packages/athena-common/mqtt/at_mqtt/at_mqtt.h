@@ -19,8 +19,8 @@ void at_mqtt_callback(void *pvParameters);
 
 void at_mqtt_reconnect(String incomingByte);
 
-void do_at_mqtt_subscribe(DynamicJsonDocument json);
-
 void at_mqtt_heart_beat();
+
+void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic);
 
 #endif
