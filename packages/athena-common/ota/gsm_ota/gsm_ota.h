@@ -10,5 +10,6 @@
 
 void do_gsm_firmware_upgrade(String version, String jsonUrl);
 
+void gsm_exec_ota(String version, String jsonUrl);
 
 #endif

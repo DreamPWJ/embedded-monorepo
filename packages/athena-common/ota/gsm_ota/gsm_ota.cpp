@@ -68,7 +68,6 @@ void writeFile(fs::FS &fs, const char *path, const char *message) {
     }
 }
 
-
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {
     Serial.printf("Listing directory: %s\n", dirname);
 
@@ -133,7 +132,6 @@ void performUpdate(Stream &updateSource, size_t updateSize) {
     }
 }
 
-
 void printPercent(uint32_t readLength, uint32_t contentLength) {
     // If we know the total length
     if (contentLength != -1) {
@@ -144,7 +142,6 @@ void printPercent(uint32_t readLength, uint32_t contentLength) {
         Serial.println(readLength);
     }
 }
-
 
 void updateFromFS() {
     File updateBin = SPIFFS.open("/update.bin");
@@ -161,7 +158,7 @@ void updateFromFS() {
             Serial.println("Starting update");
             performUpdate(updateBin, updateSize);
         } else {
-            Serial.println("Error, archivo vacío");
+            Serial.println("Error, empty file");
         }
 
         updateBin.close();
@@ -183,6 +180,8 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     if (!SPIFFS.begin(true)) {
         Serial.println("SPIFFS Mount Failed");
         return;
+    } else {
+        Serial.println("SPIFFS is Success");
     }
 
     SPIFFS.format();
@@ -199,8 +198,16 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     String new_version = json["version"].as<String>();
     String file_url = json["file"].as<String>();
 
+    Serial.println(new_version);
+    Serial.println(file_url);
+
+    if (file_url != "null") {
+        Serial.println("下载升级固件...");
+        at_http_get(file_url, false);
+    }
+
     long timeout = millis();
-/*    while (1) {
+    while (1) {
         String line = myOTASerial.readStringUntil('\n');
         line.trim();
         //Serial.println(line);    // Uncomment this to show response header
@@ -210,7 +217,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
         } else if (line.length() == 0) {
             break;
         }
-    }*/
+    }
 
     timeout = millis();
     uint32_t readLength = 0;
@@ -218,7 +225,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     unsigned long timeElapsed = millis();
     printPercent(readLength, contentLength);
 
-/*    while (readLength < contentLength && millis() - timeout < 10000L) {
+    while (readLength < contentLength && millis() - timeout < 10000L) {
         int i = 0;
         while (myOTASerial.available()) {
             // read file data to spiffs
@@ -232,15 +239,14 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
             }
             timeout = millis();
         }
-    }*/
-
+    }
 
     file.close();
 
-    printPercent(readLength, contentLength);
-    timeElapsed = millis() - timeElapsed;
+    // printPercent(readLength, contentLength);
+    // timeElapsed = millis() - timeElapsed;
 
-   // float duration = float(timeElapsed) / 1000;
+    // float duration = float(timeElapsed) / 1000;
 
 /*    Serial.println("Se genera una espera de 3 segundos");
     for (int i = 0; i < 3; i++) {
@@ -248,7 +254,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
         delay(1000);
     }*/
 
-    //readFile(SPIFFS, "/update.bin");
+    readFile(SPIFFS, "/update.bin");
 
     updateFromFS();
 
@@ -265,4 +271,39 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     } else {
         printf("当前固件版本v%s, 没有检测到新版本OTA固件, 跳过升级 \n", version.c_str());
     }*/
+}
+
+/**
+ * 多线程OTA任务
+ */
+static String otaVersion;
+static String otaJsonUrl;
+
+void x_gsm_task_ota(void *pvParameters) {
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+        do_gsm_firmware_upgrade(otaVersion, otaJsonUrl);
+        delay(60000); // 多久执行一次 毫秒
+    }
+}
+
+/**
+ * 执行OTA空中升级
+ */
+void gsm_exec_ota(String version, String jsonUrl) {
+    Serial.println("开始检测GSM网络OTA空中升级...");
+    otaVersion = version;
+    otaJsonUrl = jsonUrl;
+#if !USE_MULTI_CORE
+    const char *params = NULL;
+    xTaskCreate(
+            x_gsm_task_ota,  /* Task function. */
+            "x_gsm_task_ota", /* String with name of task. */
+            8192,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(x_gsm_task_ota, "x_gsm_task_ota", 8192, NULL, 10, NULL, 0);
+#endif
 }

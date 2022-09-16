@@ -86,11 +86,11 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 1, NULL, 0);
+    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 2, NULL, 0);
 #endif
 
 }
@@ -163,7 +163,7 @@ void at_mqtt_callback(void *pvParameters) {
         } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
         }
-        // delay(10);
+        delay(10);
     }
 }
 

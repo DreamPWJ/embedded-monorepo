@@ -18,8 +18,9 @@ SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
 /**
  * Http请求GET方法
  */
-DynamicJsonDocument at_http_get(String url) {
+DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     Serial.println("HTTP请求GET方法AT指令");
+    yield();
     myHttpSerial.begin(9600);
     if (!myHttpSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
@@ -45,7 +46,9 @@ DynamicJsonDocument at_http_get(String url) {
     myHttpSerial.printf("AT+HTTPSEND=0,0,%d,\042%s\042\r\n", pathLength, path.c_str()); // Http请求
 
     // 获取缓冲区串口返回的数据
-    return get_http_uart_data();
+    if (isResponseData) {
+        return get_http_uart_data();
+    }
 }
 
 /**
@@ -60,7 +63,7 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC";
-    while (millis() - tm <= 6000) { // 多少秒超时 退出循环
+    while (millis() - tm <= 30000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         Serial.println(incomingByte);
@@ -84,6 +87,7 @@ DynamicJsonDocument get_http_uart_data() {
             return json;
             break;
         }
+        delay(10);
     }
     return json;
     // }
