@@ -34,11 +34,11 @@ float get_temperature() {
  * 获取电量信息
  */
 float get_electricity() {
-    int GPIO = 22; // 监控电池电量IO引脚
+    int GPIO = 7; // 监控电池电量IO引脚
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
     // 获取电量值
-    // analogRead(GPIO);
+    int value = analogRead(GPIO);
     // 获取电量百分比
-    float batteryLevel = map(analogRead(GPIO), 0.0f, 4095.0f, 0, 100);
+    float batteryLevel = map(value, 0.0f, 4095.0f, 0, 100);
     return batteryLevel;
 }

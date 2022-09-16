@@ -298,7 +298,7 @@ void gsm_exec_ota(String version, String jsonUrl) {
     xTaskCreate(
             x_gsm_task_ota,  /* Task function. */
             "x_gsm_task_ota", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            124800,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */

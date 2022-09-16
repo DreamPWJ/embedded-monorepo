@@ -87,7 +87,7 @@ void setup() {
     // WiFi网络版本执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
     // GSM网络版本执行OTA空中升级
-    gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 
@@ -97,6 +97,8 @@ void loop() {
 
     // 开发板LED 闪动的实现
     set_led();
+
+    Serial.printf("电池电量值: %d\n", get_electricity());
 
 #if WIFI_EN
     // 定时检测重新连接WiFi
