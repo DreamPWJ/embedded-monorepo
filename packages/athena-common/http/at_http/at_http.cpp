@@ -36,10 +36,10 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     String path = url.substring(url.indexOf("/"), url.length());
     int pathLength = path.length();
     delay(1000);
-    myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
-    delay(1000);
+   /* myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
+    delay(1000);*/
     myHttpSerial.printf(
-            "AT+HTTPCREATE=0,\042http://%s:80\042\r\n", domain.c_str()); // 创建实例
+            "AT+HTTPCREATE=0,\042http://%s:80\042\r\n", domain.c_str()); // 创建实例 测试地址 如 http://httpbin.org/get
     delay(1000);
     myHttpSerial.printf("AT+HTTPCON=0\r\n"); // 连接服务器
     delay(1000);
@@ -62,7 +62,7 @@ DynamicJsonDocument get_http_uart_data() {
     Serial.println("HTTP获取缓冲区串口返回的数据");
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
-    String flag = "HTTPRESPC";
+    String flag = "HTTPRESPC"; // http请求数据前缀
     while (millis() - tm <= 30000) { // 多少秒超时 退出循环
         String incomingByte;
         incomingByte = myHttpSerial.readString();
@@ -84,11 +84,13 @@ DynamicJsonDocument get_http_uart_data() {
             String file_url = json["file"].as<String>();
             Serial.println(new_version);
             Serial.println(file_url);*/
+            myHttpSerial.printf("AT+HTTPDESTROY=0\r\n"); // 关闭连接
             return json;
             break;
         }
         delay(10);
     }
+    myHttpSerial.printf("AT+HTTPDESTROY=0\r\n"); // 关闭连接
     return json;
     // }
     // }

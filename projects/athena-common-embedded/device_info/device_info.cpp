@@ -35,12 +35,14 @@ float get_temperature() {
  * 参考： https://randomnerdtutorials.com/power-esp32-esp8266-solar-panels-battery-level-monitoring/
  */
 float get_electricity() {
+    // set the resolution to 12 bits (0-4096)
+    // analogReadResolution(12);
     int GPIO = 4; // 监控电池电量IO引脚 必须是模拟输入ADC
     // pinMode(GPIO, ANALOG);
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
-    // 获取电量值
-    int value = analogRead(GPIO);
+    int analogValue = analogRead(GPIO);   // 获取模拟值
+    // int analogVolts = analogReadMilliVolts(2);(GPIO);  // 获取毫伏电压
     // 获取电量百分比
-    float batteryLevel = map(value, 0.0f, 4095.0f, 0, 100);
+    float batteryLevel = map(analogValue, 0.0f, 4095.0f, 0, 100);
     return batteryLevel;
 }

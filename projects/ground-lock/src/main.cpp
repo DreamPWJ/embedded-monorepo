@@ -29,6 +29,8 @@ using namespace std;
 #define MQTT_EN 1 // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
+// This sets Arduino Stack Size - comment this line to use default 8K stack size
+SET_LOOP_TASK_STACK_SIZE(16*1024); // 16KB
 
 void setup() {
     // 初始化设置代码
@@ -97,8 +99,9 @@ void loop() {
 
     // 开发板LED 闪动的实现
     set_led();
-
-    Serial.printf("电池电量值: %d\n", get_electricity());
+    // Print unused stack for the task that is running loop() - the same as for setup()
+    Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
+    Serial.printf("电池电量值: %f\n", get_electricity());
 
 #if WIFI_EN
     // 定时检测重新连接WiFi
