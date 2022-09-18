@@ -59,7 +59,7 @@ DynamicJsonDocument get_http_uart_data() {
     // while (myHttpSerial.available() > 0) {
     // while (1) {
     // 等待数据返回结果
-    Serial.println("HTTP获取缓冲区串口返回的数据");
+    Serial.println("HTTP获取串口缓冲区返回的数据");
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC"; // http请求数据前缀

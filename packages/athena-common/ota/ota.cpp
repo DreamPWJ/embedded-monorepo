@@ -27,7 +27,7 @@ using namespace std;
 * @description 固件OTA空中升级
 * 参考文档：https://blog.51cto.com/u_15284384/3054914
 * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/esp_https_ota.html
-* https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples/HTTPS_OTA_Update
+* https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples/
 * https://github.com/lucadentella/esp32-tutorial/blob/master/30_https_ota/main/main.c
 */
 
