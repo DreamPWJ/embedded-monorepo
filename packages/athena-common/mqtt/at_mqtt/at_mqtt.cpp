@@ -33,7 +33,7 @@ String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
-const char *mqtt_password = "public";
+const char *mqtt_password = "emqx@2022";
 const int mqtt_port = 1883;
 
 /**
