@@ -14,6 +14,7 @@
 * @date 2022/9/16 13:59
 * @description GSM网络OTA空中升级
 * 参考地址: https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/issues/132
+* https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples
 */
 
 #define PIN_RX 19
