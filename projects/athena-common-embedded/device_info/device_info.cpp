@@ -37,12 +37,19 @@ float get_temperature() {
 float get_electricity() {
     // set the resolution to 12 bits (0-4096)
     // analogReadResolution(12);
-    int GPIO = 4; // 监控电池电量IO引脚 必须是模拟输入ADC
+    int GPIO = 4; // 监控电池电量IO引脚 必须是模拟数字输入ADC
+    float in_max = 1145.0f; // 输出最大电压伏
     // pinMode(GPIO, ANALOG);
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
     int analogValue = analogRead(GPIO);   // 获取模拟值
-    // int analogVolts = analogReadMilliVolts(GPIO);  // 获取毫伏电压
+    //  int analogVolts = analogReadMilliVolts(GPIO);  // 获取毫伏电压
+    // Serial.println(analogValue);
     // 获取电量百分比
-    float batteryLevel = map(analogValue, 0.0f, 4095.0f, 0, 100);
-    return batteryLevel;
+    float batteryLevel = map(analogValue, 0.0f, in_max, 0, 100);
+    if (batteryLevel >= 100) {
+        return 100;
+    } else {
+        return batteryLevel;
+    }
+
 }
