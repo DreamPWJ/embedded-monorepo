@@ -5,7 +5,7 @@
 /**
 * @author 潘维吉
 * @date 2022/9/19 9:50
-* @description 红外信号发送接受数据
+* @description 红外信号发送接收数据
 */
 
 IRrecv irrecv(RECV_PIN);

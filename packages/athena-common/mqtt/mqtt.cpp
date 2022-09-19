@@ -119,7 +119,7 @@ void x_task_mqtt(void *pvParameters) {
 }
 
 /**
- * MQTT接受的消息回调
+ * MQTT接收的消息回调
  */
 void mqtt_callback(char *topic, byte *payload, unsigned int length) {
     /*   Serial.print("MQTT订阅主题: ");

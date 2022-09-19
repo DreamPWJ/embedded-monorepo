@@ -47,11 +47,11 @@ xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 8192, NULL, 10, NULL, 
 }
 
 /**
- * 接受RF射频数据
+ * 接收RF射频数据
  */
 void rf_accept_data(void *pvParameters) {
     if (mySwitch.available()) {
-        Serial.print("接受RF射频数据: ");
+        Serial.print("接收RF射频数据: ");
 /*        output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(),
                mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol());*/
         Serial.println(mySwitch.getReceivedValue());

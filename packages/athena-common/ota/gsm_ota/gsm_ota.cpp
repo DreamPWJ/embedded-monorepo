@@ -287,7 +287,7 @@ static String otaJsonUrl;
 void x_gsm_task_ota(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         do_gsm_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(120000); // 多久执行一次 毫秒
+        delay(600000); // 多久执行一次 毫秒
     }
 }
 

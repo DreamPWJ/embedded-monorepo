@@ -65,8 +65,8 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC"; // http请求数据前缀
-    while (millis() - tm <= 60000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
-        Serial.println(myHttpSerial.available());
+    while (millis() - tm <= 600000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
+        // Serial.println(myHttpSerial.available());
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         Serial.println(incomingByte);
@@ -93,6 +93,7 @@ DynamicJsonDocument get_http_uart_data() {
         }
         delay(10);
         if (!json.isNull()) {
+            Serial.println("已获取到数据, 退出HTTP请求数据监听");
             break;
         }
     }
