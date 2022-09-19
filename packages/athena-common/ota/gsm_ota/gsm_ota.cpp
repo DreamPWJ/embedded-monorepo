@@ -198,6 +198,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     // Serial.println("OTA响应数据:");
     String new_version = json["version"].as<String>();
     String file_url = json["file"].as<String>();
+    // String md5 = json["md5"].as<String>();  // 升级json文件中的原始md5值和http请求头中Content-MD5的md5值保持一致
 
     Serial.println(new_version);
     Serial.println(file_url);

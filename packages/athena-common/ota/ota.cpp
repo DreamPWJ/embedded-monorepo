@@ -52,13 +52,14 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     // Serial.println("OTA响应数据:");
     String new_version = json["version"].as<String>();
     String file_url = json["file"].as<String>();
+    // String md5 = json["md5"].as<String>();
 
     Serial.println(new_version);
     Serial.println(file_url);
 
     // 检测到新版本或者指定设备才进行OTA空中升级
     if (new_version != "null" && version_compare(new_version, version) == 1) {
-        // 做固件MD5签名算法 保证固件本身是安全的
+        // 做固件MD5签名算法 保证固件本身是安全的  升级json文件中的原始md5值和http请求头Content-MD5中的md5值保持一致
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),

@@ -28,7 +28,7 @@ char *triStateOff = "0FFF0FFFFFF0";
 void rf_init(void) {
 /*    if (!driver.init()) {
         Serial.println("RF init failed");*/
-    mySwitch.enableReceive(0);  // Receiver on inerrupt 0 => that is pin
+    mySwitch.enableReceive(9);  // Receiver on inerrupt 0 => that is pin
 #if !USE_MULTI_CORE
     const char *params = NULL;
     xTaskCreate(
@@ -50,12 +50,15 @@ xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 8192, NULL, 10, NULL, 
  * 接收RF射频数据
  */
 void rf_accept_data(void *pvParameters) {
-    if (mySwitch.available()) {
-        Serial.print("接收RF射频数据: ");
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+        if (mySwitch.available()) {
+            Serial.print("接收RF射频数据: ");
 /*        output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(),
                mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol());*/
-        Serial.println(mySwitch.getReceivedValue());
-        mySwitch.resetAvailable();
+            Serial.println(mySwitch.getReceivedValue());
+            mySwitch.resetAvailable();
+        }
+        delay(1000); // 多久执行一次 毫秒
     }
 /*    uint8_t buf[24];
     uint8_t buf_len = sizeof(buf);
