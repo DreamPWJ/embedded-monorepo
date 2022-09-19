@@ -20,6 +20,7 @@
 #include <at_http/at_http.h>
 #include <gsm_ota/gsm_ota.h>
 #include <infrared_signals.h>
+#include <radio_frequency.h>
 
 
 using namespace std;
@@ -31,7 +32,7 @@ using namespace std;
 #define PWM_EN 1 // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
-SET_LOOP_TASK_STACK_SIZE(16*1024); // 16KB
+SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
 
 void setup() {
     // 初始化设置代码
@@ -86,6 +87,9 @@ void setup() {
     // WiFi网络版本MQTT心跳服务
     // mqtt_heart_beat();
 #endif
+
+    // 初始化无线射频RF 用于遥控器控制
+    rf_init();
 
     // WiFi网络版本执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
