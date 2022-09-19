@@ -54,8 +54,8 @@ void rf_accept_data(void *pvParameters) {
         if (mySwitch.available()) {
             Serial.print("接收RF射频数据: ");
 /*        output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(),
-               mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol());*/
-            Serial.println(mySwitch.getReceivedValue());
+               mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol()); */
+            Serial.println(mySwitch.getReceivedValue(), HEX); // 使用16进制
             mySwitch.resetAvailable();
         }
         delay(10); // 多久执行一次 毫秒
