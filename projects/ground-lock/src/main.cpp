@@ -19,6 +19,7 @@
 #include <at_mqtt/at_mqtt.h>
 #include <at_http/at_http.h>
 #include <gsm_ota/gsm_ota.h>
+#include <infrared_signals.h>
 
 
 using namespace std;
@@ -96,11 +97,10 @@ void setup() {
 void loop() {
     // 循环执行代码
     delay(2000);
-
     // 开发板LED 闪动的实现
     set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
-    Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
+    // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
     Serial.printf("电池电量值: %f\n", get_electricity());
 
 #if WIFI_EN
