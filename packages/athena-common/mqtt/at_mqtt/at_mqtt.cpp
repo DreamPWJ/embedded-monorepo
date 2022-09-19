@@ -142,9 +142,6 @@ void at_mqtt_callback(void *pvParameters) {
         incomingByte = myMqttSerial.readString();
         // Serial.println(incomingByte);
 
-        // 检测MQTT服务状态 如果失效自动重连
-        at_mqtt_reconnect(incomingByte);
-
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
             String start = incomingByte.substring(startIndex);
@@ -164,6 +161,10 @@ void at_mqtt_callback(void *pvParameters) {
         } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
         }
+
+        // 检测MQTT服务状态 如果失效自动重连
+        at_mqtt_reconnect(incomingByte);
+
         delay(10);
     }
 }
