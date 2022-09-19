@@ -94,7 +94,7 @@ void setup() {
     // WiFi网络版本执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
     // GSM网络版本执行OTA空中升级
-    // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 }
 
@@ -105,7 +105,7 @@ void loop() {
     set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
     // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
-    Serial.printf("电池电量值: %f\n", get_electricity());
+    // Serial.printf("电池电量值: %f\n", get_electricity());
 
 #if WIFI_EN
     // 定时检测重新连接WiFi

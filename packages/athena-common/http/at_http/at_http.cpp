@@ -20,7 +20,6 @@ SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
  */
 DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     Serial.println("HTTP请求GET方法AT指令");
-    yield();
     myHttpSerial.begin(9600);
     if (!myHttpSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
@@ -32,12 +31,13 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     // NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
     url.replace("http://", "");
     url.replace("https://", "");
-    String domain = url.substring(0, url.indexOf("/"));
+    unsigned int endIndex = url.indexOf("/");
+    String domain = url.substring(0, endIndex);
     String path = url.substring(url.indexOf("/"), url.length());
     int pathLength = path.length();
     delay(1000);
-   /* myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
-    delay(1000);*/
+    /* myHttpSerial.printf("AT+ECDNS=\042%s\042\r\n", domain.c_str()); // DNS解析测试
+     delay(1000);*/
     myHttpSerial.printf(
             "AT+HTTPCREATE=0,\042http://%s:80\042\r\n", domain.c_str()); // 创建实例 测试地址 如 http://httpbin.org/get
     delay(1000);
@@ -48,6 +48,8 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     // 获取缓冲区串口返回的数据
     if (isResponseData) {
         return get_http_uart_data();
+    } else {
+        return (const JsonDocument &) "";
     }
 }
 
@@ -63,7 +65,8 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC"; // http请求数据前缀
-    while (millis() - tm <= 30000) { // 多少秒超时 退出循环
+    while (myHttpSerial.available() && millis() - tm <= 30000) { // 多少秒超时 退出循环
+        Serial.println(myHttpSerial.available());
         String incomingByte;
         incomingByte = myHttpSerial.readString();
         Serial.println(incomingByte);
@@ -74,8 +77,8 @@ DynamicJsonDocument get_http_uart_data() {
             int endIndex = start.indexOf("\n");
             String end = start.substring(0, endIndex + 1);
             String data = end.substring(end.lastIndexOf(",") + 1, end.length());
-            // Serial.print("AT Message is: ");
-            // Serial.println(data);
+            Serial.print("AT Message is: ");
+            Serial.println(data);
             String jsonStr = hex_to_string(data.c_str()).c_str();
             // Serial.println(jsonStr);
             json = string_to_json(jsonStr);

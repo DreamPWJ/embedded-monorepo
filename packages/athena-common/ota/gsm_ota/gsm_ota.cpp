@@ -178,7 +178,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     Serial.println("GSM网络OTA空中升级...");
 
     delay(3000);
-    if (!SPIFFS.begin(true)) {
+/*    if (!SPIFFS.begin(true)) {
         Serial.println("SPIFFS Mount Failed");
         return;
     } else {
@@ -191,7 +191,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     Serial.println("Reading header");
     uint32_t contentLength = knownFileSize;
 
-    File file = SPIFFS.open("/update.bin", FILE_APPEND);
+    File file = SPIFFS.open("/update.bin", FILE_APPEND);*/
 
     // 读取OTA升级文件 JSON数据
     DynamicJsonDocument json = at_http_get(jsonUrl);
@@ -204,8 +204,9 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
 
     if (file_url != "null") {
         Serial.println("下载升级固件...");
-        at_http_get(file_url, false);
+        at_http_get(file_url, true);
     }
+/*
 
     long timeout = millis();
     while (1) {
@@ -243,6 +244,7 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     }
 
     file.close();
+*/
 
     // printPercent(readLength, contentLength);
     // timeElapsed = millis() - timeElapsed;
@@ -255,9 +257,11 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl) {
         delay(1000);
     }*/
 
+/*
     readFile(SPIFFS, "/update.bin");
 
     updateFromFS();
+*/
 
     // 检测到新版本或者指定设备才进行OTA空中升级
 /*    if (new_version != "null" && version_compare(new_version, version) == 1) {
@@ -283,7 +287,7 @@ static String otaJsonUrl;
 void x_gsm_task_ota(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         do_gsm_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(60000); // 多久执行一次 毫秒
+        delay(120000); // 多久执行一次 毫秒
     }
 }
 
