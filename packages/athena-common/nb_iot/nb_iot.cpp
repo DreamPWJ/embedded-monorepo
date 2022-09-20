@@ -57,7 +57,7 @@ void init_nb_iot() {
         }
     }
     String isNBInit = get_nvs("is_nb_iot_init");
-    Serial.println(isNBInit);
+    // Serial.println(isNBInit);
     // if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     restart_nb_iot();

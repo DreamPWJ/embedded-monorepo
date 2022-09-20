@@ -40,7 +40,7 @@ void setup() {
 
     // 设置串口波特率
     Serial.begin(115200);
-    delay(1000);
+    // delay(1000);
 
     // 初始化其它UART串口
     // init_uart();
@@ -100,7 +100,7 @@ void setup() {
 
 void loop() {
     // 循环执行代码
-    delay(2000);
+    // delay(2000);
     // 开发板LED 闪动的实现
     set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()

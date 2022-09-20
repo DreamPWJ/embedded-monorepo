@@ -60,7 +60,7 @@ void rf_accept_data(void *pvParameters) {
             Serial.println(code, HEX); // 使用16进制
             mySwitch.resetAvailable();
         }
-        delay(500); // 多久执行一次 毫秒
+        delay(600); // 多久执行一次 毫秒
     }
 /*    uint8_t buf[24];
     uint8_t buf_len = sizeof(buf);

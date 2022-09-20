@@ -306,7 +306,7 @@ void gsm_exec_ota(String version, String jsonUrl) {
     xTaskCreate(
             x_gsm_task_ota,  /* Task function. */
             "x_gsm_task_ota", /* String with name of task. */
-            124800,      /* Stack size in bytes. */
+            8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
@@ -317,8 +317,9 @@ void gsm_exec_ota(String version, String jsonUrl) {
 }
 
 /**
- * AT差分固件升级
+ * AT指令差分固件升级
  */
 void do_gsm_at_diff_firmware_upgrade() {
-
+    // 是将升级文件通过AT 指令下载到FLASH 的指定区域，从而实现固件的更新和升级
+    myOTASerial.printf("AT+NFWUPD=0");
 }
