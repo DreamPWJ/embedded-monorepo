@@ -55,9 +55,9 @@ void rf_accept_data(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         if (mySwitch.available()) {
             Serial.print("接收RF射频数据: ");
-/*        output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(),
-               mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol()); */
-            Serial.println(mySwitch.getReceivedValue(), HEX); // 使用16进制
+/*   output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(), mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol()); */
+            char code = mySwitch.getReceivedValue(); // 固定码 可根据芯片id生成并存储到NVS中
+            Serial.println(code, HEX); // 使用16进制
             mySwitch.resetAvailable();
         }
         delay(500); // 多久执行一次 毫秒

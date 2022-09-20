@@ -172,7 +172,9 @@ void updateFromFS() {
 }
 
 /**
- * 执行固件升级 1. 定时检测HTTP方式 2. 主动触发MQTT方式
+ * 执行固件升级
+ * 1. 定时检测HTTP方式 2. 主动触发MQTT方式
+ * 1. 整包升级 2. 差分包升级
  */
 void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     Serial.println("GSM网络OTA空中升级...");
@@ -312,4 +314,11 @@ void gsm_exec_ota(String version, String jsonUrl) {
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
     xTaskCreatePinnedToCore(x_gsm_task_ota, "x_gsm_task_ota", 8192, NULL, 10, NULL, 0);
 #endif
+}
+
+/**
+ * AT差分固件升级
+ */
+void do_gsm_at_diff_firmware_upgrade() {
+
 }

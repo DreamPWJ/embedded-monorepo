@@ -16,9 +16,9 @@
 - examples: 示例代码 常用代码模板和代码块提炼
 - tests: 测试模块
 
-### 开发工具: CLion
+### 开发工具: CLion、 VSCode
 
-### 开发语言: C 、C++
+### 开发语言: C 、C++ 、MicroPython
 
 ### MCU单片机类型: ESP32(RISC-V精简指令集)或STM32(内核ARM)
 
@@ -35,7 +35,7 @@
 
 ### 云平台: 阿里云IoT物联网平台
 
-### MQTT服务器: EMQX
+### MQTT代理服务器: EMQX
 
 ### 硬件调试烧录工具: EspTool、DapLink、ST-Link/J-Link
 

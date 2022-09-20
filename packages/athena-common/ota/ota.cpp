@@ -44,7 +44,9 @@ using namespace std;
 extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 
 /**
- * 执行固件升级 1. 定时检测HTTP方式 2. 主动触发MQTT方式
+ * 执行固件升级
+ * 1. 定时检测HTTP方式 2. 主动触发MQTT方式
+ * 1. 整包升级 2. 差分包升级
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
     // 读取OTA升级文件 JSON数据
