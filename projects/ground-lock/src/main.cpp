@@ -1,5 +1,6 @@
 #include <common.h>
 #include <Arduino.h>
+#include <BizConstants.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <led_pin.h>
@@ -58,7 +59,6 @@ void setup() {
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     // NB-IoT网络版本HTTP请求
     // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
-
 
 #if WIFI_EN
     // 初始化WiFi无线网络

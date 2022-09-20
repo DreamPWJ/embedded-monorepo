@@ -14,6 +14,8 @@
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define RF_PIN 9  // RF射频接收引脚GPIO
+
 // RH_ASK driver;
 RCSwitch mySwitch = RCSwitch();
 
@@ -27,8 +29,8 @@ char *triStateOff = "7730480";
  */
 void rf_init(void) {
 /*    if (!driver.init()) {
-        Serial.println("RF init failed");*/
-    mySwitch.enableReceive(9);  // Receiver on inerrupt 0 => that is pin
+        Serial.println("RF init failed"); */
+    mySwitch.enableReceive(RF_PIN);  // Receiver on inerrupt 0 => that is pin
 #if !USE_MULTI_CORE
     const char *params = NULL;
     xTaskCreate(
