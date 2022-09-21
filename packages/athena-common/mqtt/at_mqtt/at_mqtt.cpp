@@ -100,7 +100,7 @@ void init_at_mqtt() {
  * MQTT发送消息
  */
 void at_mqtt_publish(String topic, String msg) {
-    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息)
+    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     myMqttSerial.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
 }
