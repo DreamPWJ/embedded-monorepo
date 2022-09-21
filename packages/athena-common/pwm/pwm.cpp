@@ -109,7 +109,7 @@ void set_motor_up() {
             set_motor_down(); // 回落锁
             break;
         }
-        if (costA >= 2) { // 电机运行过半减速
+        if (costA >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             ledcWrite(channel_PWMB, 0);
             channel_PWMA_duty = channel_PWMA_duty - 1;
@@ -145,7 +145,7 @@ void set_motor_down() {
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
-        if (costB >= 2) { // 电机运行过半减速
+        if (costB >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             ledcWrite(channel_PWMA, 0);
             channel_PWMB_duty = channel_PWMB_duty - 1;
@@ -156,6 +156,14 @@ void set_motor_down() {
             break;
         }
     }
+}
+
+/**
+ * 停止电机
+ */
+void stop_motor() {
+    ledcWrite(channel_PWMA, 0);
+    ledcWrite(channel_PWMB, 0);
 }
 
 /**

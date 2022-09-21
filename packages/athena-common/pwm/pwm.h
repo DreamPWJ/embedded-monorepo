@@ -15,6 +15,8 @@ void set_motor_up();
 
 void set_motor_down();
 
+void stop_motor();
+
 void set_pwm();
 
 int get_pwm_status();
