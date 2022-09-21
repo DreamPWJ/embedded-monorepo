@@ -1,6 +1,7 @@
 #include "radio_frequency.h"
 #include <Arduino.h>
 #include <RCSwitch.h>
+#include <pwm.h>
 /*#include <RH_ASK.h>
 #include <SPI.h> */// Not actually used but needed to compile
 
@@ -20,8 +21,8 @@
 RCSwitch mySwitch = RCSwitch();
 
 // Replace with your remote TriState values
-char *triStateOn = "7730444";
-char *triStateOff = "7730480";
+char *triStateOn = "5933330";
+char *triStateOff = "5933336";
 
 
 /**
@@ -54,10 +55,18 @@ xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 8192, NULL, 10, NULL, 
 void rf_accept_data(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         if (mySwitch.available()) {
-            Serial.print("接收RF射频数据: ");
+            Serial.print("接收RF无线射频数据: ");
 /*   output(mySwitch.getReceivedValue(), mySwitch.getReceivedBitlength(), mySwitch.getReceivedDelay(), mySwitch.getReceivedRawdata(), mySwitch.getReceivedProtocol()); */
-            char code = mySwitch.getReceivedValue(); // 固定码 可根据芯片id生成并存储到NVS中
-            Serial.println(code, HEX); // 使用16进制
+            unsigned long code = mySwitch.getReceivedValue(); // 固定码 可根据芯片id生成并存储到NVS中
+            Serial.println(code); // 使用10进制
+            // Serial.println(code, HEX); // 使用16进制
+            if (String(code) == String(triStateOn)) {
+                //Serial.println("车位锁抬起");
+                set_motor_up();
+            } else if (String(code) == String(triStateOff)) {
+                //Serial.println("车位锁下降");
+                set_motor_down();
+            }
             mySwitch.resetAvailable();
         }
         delay(600); // 多久执行一次 毫秒
