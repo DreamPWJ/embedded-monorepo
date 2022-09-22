@@ -35,7 +35,7 @@ float get_temperature() {
  * 参考： https://randomnerdtutorials.com/power-esp32-esp8266-solar-panels-battery-level-monitoring/
  */
 float get_electricity() {
-    // set the resolution to 12 bits (0-4096)
+    // set the resolution bits (0-4096)
     analogReadResolution(6); // 衰减值
     int GPIO = 4; // 监控电池电量IO引脚 必须是模拟数字输入ADC
     float in_max = 1145.0f; // 输出最大电压伏

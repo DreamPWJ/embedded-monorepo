@@ -13,6 +13,6 @@ void do_gsm_firmware_upgrade(String version, String jsonUrl);
 
 void gsm_exec_ota(String version, String jsonUrl);
 
-void do_gsm_at_diff_firmware_upgrade();
+void do_gsm_diff_firmware_upgrade();
 
 #endif

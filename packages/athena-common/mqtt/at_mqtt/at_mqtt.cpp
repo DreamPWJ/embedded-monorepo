@@ -58,7 +58,7 @@ void init_at_mqtt() {
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     // delay(1000);
-    // 设置MQTT连接所需要的的参数
+    // 设置MQTT连接所需要的的参数 不同模组需要适配不同的AT指令
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
     delay(2000);
     myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网

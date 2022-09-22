@@ -14,6 +14,7 @@
 * @date 2022/9/16 13:59
 * @description GSM网络OTA空中升级
 * 参考地址: https://github.com/espressif/esp-idf/tree/master/examples/system/ota
+* https://github.com/espressif/esp-bootloader-plus/blob/master/README_CN.md
 * https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples
 * https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/issues/132
 */
@@ -318,9 +319,9 @@ void gsm_exec_ota(String version, String jsonUrl) {
 }
 
 /**
- * AT指令差分固件升级
+ * 差分固件升级
+ * https://github.com/espressif/esp-bootloader-plus/blob/master/README_CN.md
  */
-void do_gsm_at_diff_firmware_upgrade() {
-    // 是将升级文件通过AT 指令下载到FLASH 的指定区域，从而实现固件的更新和升级
-    myOTASerial.printf("AT+NFWUPD=0");
+void do_gsm_diff_firmware_upgrade() {
+
 }
