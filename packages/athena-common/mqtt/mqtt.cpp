@@ -17,7 +17,8 @@ using namespace std;
 * @author 潘维吉
 * @date 2022/7/29 15:51
 * @description MQTT消息队列遥测传输协议
-* 参考文档： https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
+* 参考文档： https://www.emqx.com/zh/blog/iot-protocols-mqtt-coap-lwm2m
+* https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
 * https://github.com/vshymanskyy/TinyGSM
 */
 

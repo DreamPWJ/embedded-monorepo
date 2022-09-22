@@ -20,7 +20,7 @@
 
 ### 开发语言: C 、C++ 、MicroPython
 
-### MCU单片机类型: ESP32(RISC-V精简指令集)或STM32(内核ARM)
+### MCU主控单片机型号: ESP32(RISC-V精简指令集)或STM32(内核ARM)
 
 ### 嵌入式实时操作系统: FreeRTOS
 

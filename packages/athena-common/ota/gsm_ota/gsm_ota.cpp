@@ -13,8 +13,9 @@
 * @author 潘维吉
 * @date 2022/9/16 13:59
 * @description GSM网络OTA空中升级
-* 参考地址: https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/issues/132
+* 参考地址: https://github.com/espressif/esp-idf/tree/master/examples/system/ota
 * https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples
+* https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/issues/132
 */
 
 #define PIN_RX 19
@@ -174,7 +175,7 @@ void updateFromFS() {
 /**
  * 执行固件升级
  * 1. 定时检测HTTP方式 2. 主动触发MQTT方式
- * 1. 整包升级 2. 差分包升级
+ * 1. 整包升级 2. 差分包升级(自定义bootloader实现)
  */
 void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     Serial.println("GSM网络OTA空中升级...");
@@ -306,7 +307,7 @@ void gsm_exec_ota(String version, String jsonUrl) {
     xTaskCreate(
             x_gsm_task_ota,  /* Task function. */
             "x_gsm_task_ota", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */

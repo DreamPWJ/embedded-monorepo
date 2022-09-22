@@ -25,7 +25,7 @@ using namespace std;
 * @author 潘维吉
 * @date 2022/7/29 15:56
 * @description 固件OTA空中升级
-* 参考文档：https://blog.51cto.com/u_15284384/3054914
+* 参考文档： https://github.com/espressif/esp-idf/tree/master/examples/system/ota
 * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/esp_https_ota.html
 * https://github.com/espressif/arduino-esp32/tree/master/libraries/Update/examples/
 * https://github.com/lucadentella/esp32-tutorial/blob/master/30_https_ota/main/main.c
@@ -33,13 +33,13 @@ using namespace std;
 
 // WebServer server(80);
 
-// 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题 可以使用http协议
+// 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题(URL 的服务器部分必须与生成证书和密钥时使用的CN字段匹配), 可以使用http协议
 /*#define FIRMWARE_VERSION         "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
 #define FIRMWARE_UPDATE_JSON_URL "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议*/
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
-// 生成pem证书文档: https://github.com/espressif/esp-idf/blob/master/examples/system/ota/README.md
+// 生成pem证书文档: https://github.com/espressif/esp-idf/tree/master/examples/system/ota
 // 证书生成命令(Windows系统在Git Bash执行): openssl req -x509 -newkey rsa:2048 -keyout ca_key.pem -out ca_cert.pem -days 3650 -nodes
 extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_cert_pem_start"); // key值为前后固定和pem全路径组合
 
@@ -65,7 +65,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
-                .cert_pem = (char *) server_cert_pem_start,
+                .cert_pem = (char *) server_cert_pem_start, // HTTPS 客户端将检查证书内的CN字段与HTTPS URL中给出的地址是否匹配
                 .timeout_ms = 600000,
                 //.crt_bundle_attach =  esp_crt_bundle_attach,
                 .keep_alive_enable = true,

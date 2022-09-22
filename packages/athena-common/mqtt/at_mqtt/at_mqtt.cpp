@@ -15,12 +15,12 @@
 
 using namespace std;
 
-
 /**
 * @author 潘维吉
 * @date 2022/9/13 15:31
 * @description AT指令编写MQTT消息队列遥测传输协议
-* 参考文章： https://github.com/elementzonline/Arduino-Sample-Codes/tree/master/SIM7600
+* 参考文章： https://www.emqx.com/zh/blog/iot-protocols-mqtt-coap-lwm2m
+* https://github.com/elementzonline/Arduino-Sample-Codes/tree/master/SIM7600
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
@@ -65,7 +65,7 @@ void init_at_mqtt() {
     delay(1000);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), mqtt_username,
                         mqtt_password);
-    delay(1000);
+    delay(2000);
     Serial.println("MQTT Broker 连接: " + client_id);
 
     // 发布MQTT消息
