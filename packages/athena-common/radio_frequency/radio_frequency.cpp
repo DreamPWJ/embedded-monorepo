@@ -60,13 +60,13 @@ void rf_accept_data(void *pvParameters) {
             unsigned long code = mySwitch.getReceivedValue(); // 固定码 可根据芯片id生成并存储到NVS中
             Serial.println(code); // 使用10进制
             // Serial.println(code, HEX); // 使用16进制
-            if (String(code) == String(triStateOn)) {
+/*            if (String(code) == String(triStateOn)) {
                 //Serial.println("车位锁抬起");
                 set_motor_up();
             } else if (String(code) == String(triStateOff)) {
                 //Serial.println("车位锁下降");
                 set_motor_down();
-            }
+            }*/
             mySwitch.resetAvailable();
         }
         delay(600); // 多久执行一次 毫秒
