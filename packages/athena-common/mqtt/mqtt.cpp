@@ -146,7 +146,7 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
  */
 void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     Serial.printf("MQTT订阅主题: %s\n", topic);
-    if (String(topic) == "") { // 针对主题做逻辑处理
+    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
 
     }
     String command = json["command"].as<String>();

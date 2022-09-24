@@ -11,6 +11,8 @@ void init_wifi();
 
 void init_wifi_multi_thread(void *pvParameters);
 
+void scan_wifi();
+
 void reconnect_wifi(void);
 
 
