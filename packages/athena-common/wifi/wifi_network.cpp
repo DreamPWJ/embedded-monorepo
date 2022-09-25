@@ -7,6 +7,7 @@
 * @author 潘维吉
 * @date 2022/7/20 10:36
 * @description WiFI无线网络模块
+* 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
 */
 
 WiFiMulti wifiMulti;
@@ -19,7 +20,6 @@ unsigned long interval = 60000; // 检测wifi状态间隔 毫秒
 
 /**
  * 初始化WiFi
- * 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
  */
 void init_wifi() {
     Serial.println("开始初始化WiFi模块");
@@ -61,18 +61,14 @@ void init_wifi_multi_thread(void *pvParameters) {
 /**
  * 扫码WiFi 选择开放Wifi直接连接
  */
-void scan_wifi() {
+bool scan_wifi() {
     WiFi.mode(WIFI_STA);
-    // Add list of wifi networks
-    wifiMulti.addAP("ssid_from_AP_1", "your_password_for_AP_1");
-    wifiMulti.addAP("ssid_from_AP_2", "your_password_for_AP_2");
-    wifiMulti.addAP("ssid_from_AP_3", "your_password_for_AP_3");
-
     // WiFi.scanNetworks will return the number of networks found
-    int n = WiFi.scanNetworks();
+    int n = WiFi.scanNetworks(); // 可NVS持久化存储扫描结果 避免重复扫描
     Serial.println("scan done");
     if (n == 0) {
         Serial.println("no networks found");
+        return false;
     } else {
         Serial.print(n);
         Serial.println(" networks found");
@@ -85,9 +81,37 @@ void scan_wifi() {
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+            if ((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
+                WiFi.begin(WiFi.RSSI(i), "");
+                // 阻塞程序，直到连接成功
+                while (WiFi.status() != WL_CONNECTED) {
+                    Serial.print(".");
+                    delay(1000);
+                }
+                Serial.println("");
+                if (WiFi.status() == WL_CONNECTED) {
+                    Serial.println("开放WiFi 连接成功！");
+                    Serial.print("开放WiFi连接强度RRSI: ");
+                    Serial.println(WiFi.RSSI());
+                    return true;
+                }
+                break;
+            }
             delay(10);
         }
+        return false;
     }
+}
+
+/**
+ * 多个WiFi网络 选择最强信号自动连接 
+ */
+void multi_wifi() {
+    WiFi.mode(WIFI_STA);
+    // 同时添加多个网络 自动连接RSSI信号最强的网络
+    wifiMulti.addAP("ssid_1", "password_1");
+    wifiMulti.addAP("ssid_2", "password_2");
+    wifiMulti.addAP("ssid_3", "password_3");
 
     // Connect to Wi-Fi using wifiMulti (connects to the SSID with strongest connection)
     Serial.println("Connecting Wifi...");

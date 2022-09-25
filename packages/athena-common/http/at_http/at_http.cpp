@@ -28,6 +28,7 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
             delay(1000);
         }
     }
+    // 不同的调制解调器模组需要适配不同的AT指令
     // NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
     url.replace("http://", "");
     url.replace("https://", "");
@@ -65,7 +66,7 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC"; // http请求数据前缀
-    while (millis() - tm <= 600000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
+    while (millis() - tm <= 60000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
         // Serial.println(myHttpSerial.available());
         String incomingByte;
         incomingByte = myHttpSerial.readString();

@@ -177,7 +177,7 @@ void updateFromFS() {
  * 执行固件升级
  * 1. 定时检测HTTP方式 2. 主动触发MQTT方式
  * 1. 整包升级 2. 差分包升级(自定义bootloader实现)
- * 对于弱网络如NB-IoT(无法下载完整大固件包、差分升级复杂度高)或不使用Wifi作为主网络的OTA升级 可采用不完美的降级方案 检测到有新固件版本时扫描并建立开放WIFI(公网AP、4G路由器、手机热点等)进行OTA下载升级 升级成功后关闭WIFI连接来减少功耗和不稳定网络
+ * 对于弱网络如NB-IoT(无法下载完整大固件包、差分升级复杂度高)或不使用Wifi作为主网络的OTA升级 可采用不完美的降级方案 检测到有新固件版本时扫描并建立开放WIFI连接(公网AP、4G路由器、手机热点等)进行OTA下载升级 升级成功后关闭WIFI连接来减少功耗和不稳定网络
  */
 void do_gsm_firmware_upgrade(String version, String jsonUrl) {
     Serial.println("GSM网络OTA空中升级...");
