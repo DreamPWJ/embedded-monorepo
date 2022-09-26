@@ -65,17 +65,17 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         Serial.println("没有开放WIFI网络, 退出OTA空中升级");
         return;
     } else {
-        if (firmwareUrl.c_str() == "") {
+        if (firmwareUrl != "" && firmwareUrl != "null") {
+            Serial.println("直接根据提供的固件地址强制进行OTA空中升级");
+            new_version = "NEW_VERSION";
+            file_url = firmwareUrl;
+        } else {
             // 读取OTA升级文件 JSON数据
             DynamicJsonDocument json = http_get(jsonUrl);
             // Serial.println("OTA响应数据:");
             new_version = json["version"].as<String>();
             file_url = json["file"].as<String>();
             // String md5 = json["md5"].as<String>();
-        } else {
-            Serial.println("直接根据提供的固件地址强制进行OTA空中升级");
-            new_version = "NEW_VERSION";
-            file_url = firmwareUrl;
         }
 
         Serial.println(new_version);
