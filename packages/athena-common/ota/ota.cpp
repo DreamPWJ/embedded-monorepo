@@ -67,8 +67,8 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         // 读取OTA升级文件 JSON数据
         DynamicJsonDocument json = http_get(jsonUrl);
         // Serial.println("OTA响应数据:");
-        String new_version = json["version"].as<String>();
-        String file_url = json["file"].as<String>();
+        new_version = json["version"].as<String>();
+        file_url = json["file"].as<String>();
         // String md5 = json["md5"].as<String>();
 
         Serial.println(new_version);
