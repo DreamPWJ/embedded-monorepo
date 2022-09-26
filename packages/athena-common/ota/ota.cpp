@@ -18,6 +18,7 @@
 #include <common_utils.h>
 #include <version_utils.h>
 #include <at_http/at_http.h>
+#include <wifi_network.h>
 
 using namespace std;
 
@@ -150,6 +151,6 @@ void x_task_ota(void *pvParameters) {
                Serial.println(version);
                Serial.println(jsonUrl); */
         do_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(60000); // 多久执行一次 毫秒
+        delay(6000); // 多久执行一次 毫秒
     }
 }

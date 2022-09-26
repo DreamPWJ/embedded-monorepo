@@ -81,8 +81,8 @@ bool scan_wifi() {
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
-            if ((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
-                WiFi.begin(WiFi.RSSI(i), "");
+            if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
+                WiFi.begin(reinterpret_cast<char *>(WiFi.RSSI(i)), NULL);
                 // 阻塞程序，直到连接成功
                 while (WiFi.status() != WL_CONNECTED) {
                     Serial.print(".");
