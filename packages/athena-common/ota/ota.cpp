@@ -96,6 +96,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
                 .keep_alive_enable = true,
         };
         esp_err_t ret = esp_https_ota(&config);
+        const char *ota_topic = "ESP32/OTA";
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
@@ -103,7 +104,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             /*    digitalWrite(18, HIGH);
                   delay(5000); */
 #if WIFI_ONLY_OTA
-            at_mqtt_publish("ESP32/OTA", "执行OTA空中升级成功了");
+            at_mqtt_publish(ota_topic, "执行OTA空中升级成功了");
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
@@ -111,7 +112,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         } else {
             Serial.println("执行OTA空中升级失败");
 #if WIFI_ONLY_OTA
-            at_mqtt_publish("ESP32/OTA", "执行OTA空中升级失败");
+            at_mqtt_publish(ota_topic, "执行OTA空中升级失败");
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
