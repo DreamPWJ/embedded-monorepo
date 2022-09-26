@@ -19,7 +19,7 @@
 #include <version_utils.h>
 #include <at_http/at_http.h>
 #include <wifi_network.h>
-#include <mqtt.h>
+#include <at_mqtt/at_mqtt.h>
 
 using namespace std;
 
@@ -102,8 +102,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             /*    digitalWrite(18, HIGH);
                   delay(5000); */
 #if WIFI_ONLY_OTA
-            mqtt_publish("ESP32/OTA", "执行OTA空中升级成功了");
-            delay(1000);
+            at_mqtt_publish("ESP32/OTA", "执行OTA空中升级成功了");
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
@@ -111,8 +110,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         } else {
             Serial.println("执行OTA空中升级失败");
 #if WIFI_ONLY_OTA
-            mqtt_publish("ESP32/OTA", "执行OTA空中升级失败");
-            delay(1000);
+            at_mqtt_publish("ESP32/OTA", "执行OTA空中升级失败");
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
