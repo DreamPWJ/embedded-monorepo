@@ -79,8 +79,8 @@ void init_nb_iot() {
     //  at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
-    // NB模块心跳检测网络
 
+    // NB模块心跳检测网络
 //#if !USE_MULTI_CORE
 //    const char *params = NULL;
 //    xTaskCreate(
