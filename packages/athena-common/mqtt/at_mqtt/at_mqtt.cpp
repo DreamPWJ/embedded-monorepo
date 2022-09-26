@@ -224,6 +224,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
             String firmwareUrl = json["firmwareUrl"].as<String>();
+            Serial.println("MQTT通讯立刻执行OTA升级方法: " + firmwareUrl);
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
         }
     }
