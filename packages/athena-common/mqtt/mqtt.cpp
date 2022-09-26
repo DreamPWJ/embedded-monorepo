@@ -21,6 +21,7 @@ using namespace std;
 * 参考文档： https://www.emqx.com/zh/blog/iot-protocols-mqtt-coap-lwm2m
 * https://www.emqx.com/zh/blog/esp32-connects-to-the-free-public-mqtt-broker
 * https://github.com/vshymanskyy/TinyGSM
+* https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
@@ -165,11 +166,11 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
     // Serial.println("-----------------------");
-    if (topic == "ESP32/OTA") { // 针对主题做逻辑处理
+    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
+            Serial.println("MQTT通讯立刻执行OTA升级方法" );
             String firmwareUrl = json["firmwareUrl"].as<String>();
-            Serial.println("MQTT通讯立刻执行OTA升级方法: " + firmwareUrl);
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
         }
     }

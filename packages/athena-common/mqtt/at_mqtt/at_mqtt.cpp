@@ -22,6 +22,7 @@ using namespace std;
 * @description AT指令编写MQTT消息队列遥测传输协议
 * 参考文章： https://www.emqx.com/zh/blog/iot-protocols-mqtt-coap-lwm2m
 * https://github.com/elementzonline/Arduino-Sample-Codes/tree/master/SIM7600
+* https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
@@ -220,11 +221,12 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     Serial.printf("MQTT订阅主题: %s\n", topic.c_str());
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
-    if (topic == "ESP32/OTA") { // 针对主题做逻辑处理
+    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
+        Serial.println("MQTT通讯立刻执行OTA升级方法666 ");
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
+            Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
-            Serial.println("MQTT通讯立刻执行OTA升级方法: " + firmwareUrl);
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
         }
     }
