@@ -108,6 +108,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
+            delay(1000);
             esp_restart();
         } else {
             Serial.println("执行OTA空中升级失败");
