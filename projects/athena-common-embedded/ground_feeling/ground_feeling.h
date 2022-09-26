@@ -11,6 +11,8 @@ void init_ground_feeling();
 
 int ground_feeling_status();
 
+void x_task_ground_feeling_status(void *pvParameters);
+
 void check_ground_feeling_status();
 
 #endif

@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "at_mqtt/at_mqtt.h"
+#include <device_info.h>
 #include <iostream>
 #include <string>
 
