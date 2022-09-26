@@ -78,20 +78,24 @@ bool scan_wifi() {
         Serial.println(" networks found");
         for (int i = 0; i < n; ++i) {
             // Print SSID and RSSI for each network found
-            Serial.print(i + 1);
+/*          Serial.print(i + 1);
             Serial.print(": ");
             Serial.print(WiFi.SSID(i));
             Serial.print(" (");
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
-            Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+            Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");*/
             if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
-                Serial.println("发现有开放WiFi");
+                Serial.println("扫码发现有开放WiFi网络");
                 String openSsId = WiFi.SSID(i);
                 Serial.println(openSsId);
                 WiFi.begin(openSsId.c_str(), NULL);
-                // 阻塞程序，直到连接成功
+                // 阻塞程序，等待连接
+                unsigned long tm = millis();
                 while (WiFi.status() != WL_CONNECTED) {
+                    if (millis() - tm <= 10000) {
+                        break;
+                    }
                     Serial.print(".");
                     delay(1000);
                 }

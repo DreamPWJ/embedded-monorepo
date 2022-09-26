@@ -11,6 +11,10 @@
 
 void init_mqtt();
 
+void mqtt_publish(String topic, String msg);
+
+void mqtt_subscribe(String topic);
+
 void mqtt_loop();
 
 void mqtt_reconnect();

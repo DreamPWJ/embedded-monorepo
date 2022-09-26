@@ -63,11 +63,26 @@ void init_mqtt() {
         }
     }
     // 订阅与发布 publish and subscribe
-    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机发布的初始化消息 ");
 
-    client.subscribe(topic_device.c_str());
+    client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
+    client.subscribe("ESP32/OTA");  // OTA空中升级主题订阅
+}
+
+/**
+ * MQTT发送消息
+ */
+void mqtt_publish(String topic, String msg) {
+    // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
+    client.publish(topic.c_str(), msg.c_str());
+}
+
+/**
+ * MQTT订阅消息
+ */
+void mqtt_subscribe(String topic) {
+    client.subscribe(topic.c_str());
 }
 
 /**

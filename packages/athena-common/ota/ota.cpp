@@ -19,6 +19,7 @@
 #include <version_utils.h>
 #include <at_http/at_http.h>
 #include <wifi_network.h>
+#include <mqtt.h>
 
 using namespace std;
 
@@ -94,15 +95,22 @@ void do_firmware_upgrade(String version, String jsonUrl) {
             // 升级成功LED 闪动的方便在硬件方式查看
             /*    digitalWrite(18, HIGH);
                   delay(5000); */
+#if WIFI_ONLY_OTA
+            mqtt_publish("ESP32/OTA", "执行OTA空中升级成功了");
+            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
+            WiFi.disconnect();
+#endif
             esp_restart();
         } else {
             Serial.println("执行OTA空中升级失败");
+#if WIFI_ONLY_OTA
+            mqtt_publish("ESP32/OTA", "执行OTA空中升级失败");
+            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
+            WiFi.disconnect();
+#endif
             // return ESP_FAIL;
         }
-#if WIFI_ONLY_OTA
-        // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
-        WiFi.disconnect();
-#endif
+
     } else {
         printf("当前固件版本v%s, 没有检测到新版本OTA固件, 跳过升级 \n", version.c_str());
     }

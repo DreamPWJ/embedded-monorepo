@@ -29,13 +29,13 @@ using namespace std;
 #define PIN_TX 18
 SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
 
-String mqttName = "esp32-mcu-client"; // mqtt客户端名称
+String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
 
-const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
-const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
-const char *mqtt_password = "emqx@2022";
-const int mqtt_port = 1883;
+const char *at_mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
+const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
+const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
+const char *at_mqtt_password = "emqx@2022";
+const int at_mqtt_port = 1883;
 
 /**
  *
@@ -53,7 +53,7 @@ void init_at_mqtt() {
         }
     }
 
-    String client_id = mqttName + "-";
+    String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
@@ -61,23 +61,24 @@ void init_at_mqtt() {
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
     delay(2000);
-    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", mqtt_broker, mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
+    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker, at_mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
     delay(1000);
-    myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), mqtt_username,
-                        mqtt_password);
+    myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), at_mqtt_username,
+                        at_mqtt_password);
     delay(2000);
     Serial.println("MQTT Broker 连接: " + client_id);
 
     // 发布MQTT消息
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", topics,
+            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", at_topics,
             client_id.c_str());
     delay(1000);
 
     // 订阅MQTT主题消息
-    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topics);
+    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str());
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str()); // 设备单独的主题订阅
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/OTA"); // OTA空中升级主题订阅
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -184,7 +185,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"," +
                 "\"electricity\":\"" + to_string(electricityValue) + "\" }";
-        at_mqtt_publish(topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
+        at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
         delay(600000); // 多久执行一次 毫秒
     }
 }
@@ -236,6 +237,6 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         std:
         string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
                           to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
-        at_mqtt_publish(topics, jsonData.c_str());
+        at_mqtt_publish(at_topics, jsonData.c_str());
     }
 }
