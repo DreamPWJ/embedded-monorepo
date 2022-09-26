@@ -111,7 +111,7 @@ static String otaVersion;
 static String otaJsonUrl;
 
 void exec_ota(String version, String jsonUrl) {
-    Serial.println("开始检测OTA空中升级...");
+    Serial.println("开始自动检测OTA空中升级...");
     // do_firmware_upgrade(version, jsonUrl);
     otaVersion = version;
     otaJsonUrl = jsonUrl;
@@ -152,6 +152,6 @@ void x_task_ota(void *pvParameters) {
                Serial.println(version);
                Serial.println(jsonUrl); */
         do_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(6000); // 多久执行一次 毫秒
+        delay(60000); // 多久执行一次 毫秒
     }
 }
