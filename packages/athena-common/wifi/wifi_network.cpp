@@ -2,6 +2,10 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -82,7 +86,10 @@ bool scan_wifi() {
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
             if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
-                WiFi.begin(reinterpret_cast<char *>(WiFi.RSSI(i)), NULL);
+                Serial.println("发现有开放WiFi");
+                String openSsId = WiFi.SSID(i);
+                Serial.println(openSsId);
+                WiFi.begin(openSsId.c_str(), NULL);
                 // 阻塞程序，直到连接成功
                 while (WiFi.status() != WL_CONNECTED) {
                     Serial.print(".");
