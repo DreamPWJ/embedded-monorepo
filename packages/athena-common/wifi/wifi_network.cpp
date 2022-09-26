@@ -86,16 +86,13 @@ bool scan_wifi() {
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");*/
             if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
-                Serial.println("扫码发现有开放WiFi网络");
-                String openSsId = WiFi.SSID(i);
-                Serial.println(openSsId);
-                WiFi.begin(openSsId.c_str(), NULL);
+                Serial.println("扫描发现有开放WiFi网络");
+                String openSSID = WiFi.SSID(i);
+                Serial.println(openSSID);
+                WiFi.begin(openSSID.c_str(), NULL);
                 // 阻塞程序，等待连接
                 unsigned long tm = millis();
-                while (WiFi.status() != WL_CONNECTED) {
-                    if (millis() - tm <= 10000) {
-                        break;
-                    }
+                while (WiFi.status() != WL_CONNECTED && millis() - tm <= 10000) {
                     Serial.print(".");
                     delay(1000);
                 }
