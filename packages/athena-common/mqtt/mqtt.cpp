@@ -165,7 +165,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
     // Serial.println("-----------------------");
-    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
+    if (topic == "ESP32/OTA") { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
             String firmwareUrl = json["firmwareUrl"].as<String>();
