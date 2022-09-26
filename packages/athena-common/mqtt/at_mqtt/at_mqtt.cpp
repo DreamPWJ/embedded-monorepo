@@ -221,7 +221,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
-    if (topic == "ESP32/OTA") { // 针对主题做逻辑处理
+    if (topic.indexOf("ESP32/OTA") != -1) { // 针对主题做逻辑处理
         Serial.println("MQTT通讯立刻执行OTA升级方法666 ");
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
