@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "at_mqtt/at_mqtt.h"
-#include <device_info.h>
+#include "chip_info.h"
 #include <iostream>
 #include <string>
 
@@ -49,10 +49,10 @@ int ground_feeling_status() {
  */
 int lastTimeStatus; // 上次地感状态
 void x_task_ground_feeling_status(void *pvParameters) {
+    uint32_t chipId = get_chip_mac();
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         // 确保上次检测是无车, 本次检测有车才上报 已上报不再上报
         int status = ground_feeling_status();
-        uint32_t chipId = get_chip_mac();
         const char *topic = "ESP32/common";
         if (lastTimeStatus == 0 && status == 1) {
             // 车辆驶入
