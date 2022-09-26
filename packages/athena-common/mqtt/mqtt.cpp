@@ -10,6 +10,7 @@
 #include <exception>
 #include <iostream>
 #include <string>
+#include <ota.h>
 
 using namespace std;
 
@@ -161,12 +162,16 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
  */
 void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     Serial.printf("MQTT订阅主题: %s\n", topic);
-    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
-        // MQTT通讯立刻执行OTA升级方法
-    }
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
-    Serial.println("-----------------------");
+    // Serial.println("-----------------------");
+    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
+        // MQTT通讯立刻执行OTA升级方法
+        if (command == "upgrade") {
+            String firmwareUrl = json["firmwareUrl"].as<String>();
+            do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+        }
+    }
 
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
     uint32_t chipId;

@@ -12,6 +12,7 @@
 #include <ground_feeling.h>
 #include <common_utils.h>
 #include <device_info.h>
+#include <ota.h>
 
 using namespace std;
 
@@ -61,7 +62,8 @@ void init_at_mqtt() {
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
     // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
     delay(2000);
-    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker, at_mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
+    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
+                        at_mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
     delay(1000);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), at_mqtt_username,
                         at_mqtt_password);
@@ -70,7 +72,8 @@ void init_at_mqtt() {
 
     // 发布MQTT消息
     myMqttSerial.printf(
-            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n", at_topics,
+            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n",
+            at_topics,
             client_id.c_str());
     delay(1000);
 
@@ -149,7 +152,7 @@ void at_mqtt_callback(void *pvParameters) {
             int endIndex = start.indexOf("}");
             String end = start.substring(0, endIndex + 1);
             String data = end.substring(end.lastIndexOf("{"), end.length());
-            vector <string> dataArray = split(incomingByte.c_str(), ",");
+            vector<string> dataArray = split(incomingByte.c_str(), ",");
             String topic = dataArray[2].c_str();
             // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
             Serial.println(data);
@@ -215,11 +218,15 @@ void at_mqtt_heart_beat() {
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     Serial.printf("MQTT订阅主题: %s\n", topic.c_str());
+    String command = json["command"].as<String>();
+    // Serial.println("指令类型: " + command);
     if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
+        if (command == "upgrade") {
+            String firmwareUrl = json["firmwareUrl"].as<String>();
+            do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+        }
     }
-    String command = json["command"].as<String>();
-    Serial.println("指令类型: " + command);
     uint32_t chipId;
     try {
         chipId = get_chip_mac();

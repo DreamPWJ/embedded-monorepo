@@ -52,7 +52,7 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
  * 1. 整包升级 2. 差分包升级
  * 对于弱网络如NB-IoT(无法下载完整大固件包、差分升级复杂度高)或不使用Wifi作为主网络的OTA升级 可采用不完美的降级方案 检测到有新固件版本时扫描并建立开放WIFI连接(公网AP、4G路由器、手机热点等)进行OTA下载升级 升级成功后关闭WIFI连接来减少功耗和不稳定网络
  */
-void do_firmware_upgrade(String version, String jsonUrl) {
+void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
 
     String new_version; // 新版本号
     String file_url;  // 固件下载地址
@@ -65,12 +65,18 @@ void do_firmware_upgrade(String version, String jsonUrl) {
         Serial.println("没有开放WIFI网络, 退出OTA空中升级");
         return;
     } else {
-        // 读取OTA升级文件 JSON数据
-        DynamicJsonDocument json = http_get(jsonUrl);
-        // Serial.println("OTA响应数据:");
-        new_version = json["version"].as<String>();
-        file_url = json["file"].as<String>();
-        // String md5 = json["md5"].as<String>();
+        if (firmwareUrl.c_str() == "") {
+            // 读取OTA升级文件 JSON数据
+            DynamicJsonDocument json = http_get(jsonUrl);
+            // Serial.println("OTA响应数据:");
+            new_version = json["version"].as<String>();
+            file_url = json["file"].as<String>();
+            // String md5 = json["md5"].as<String>();
+        } else {
+            Serial.println("直接根据提供的固件地址强制进行OTA空中升级");
+            new_version = "NEW_VERSION";
+            file_url = firmwareUrl;
+        }
 
         Serial.println(new_version);
         Serial.println(file_url);
@@ -97,6 +103,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
                   delay(5000); */
 #if WIFI_ONLY_OTA
             mqtt_publish("ESP32/OTA", "执行OTA空中升级成功了");
+            delay(1000);
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
@@ -105,6 +112,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
             Serial.println("执行OTA空中升级失败");
 #if WIFI_ONLY_OTA
             mqtt_publish("ESP32/OTA", "执行OTA空中升级失败");
+            delay(1000);
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
