@@ -52,27 +52,32 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
  * 对于弱网络如NB-IoT(无法下载完整大固件包、差分升级复杂度高)或不使用Wifi作为主网络的OTA升级 可采用不完美的降级方案 检测到有新固件版本时扫描并建立开放WIFI连接(公网AP、4G路由器、手机热点等)进行OTA下载升级 升级成功后关闭WIFI连接来减少功耗和不稳定网络
  */
 void do_firmware_upgrade(String version, String jsonUrl) {
-    // 读取OTA升级文件 JSON数据
-    DynamicJsonDocument json = at_http_get(jsonUrl);
-    // Serial.println("OTA响应数据:");
-    String new_version = json["version"].as<String>();
-    String file_url = json["file"].as<String>();
-    // String md5 = json["md5"].as<String>();
 
-    Serial.println(new_version);
-    Serial.println(file_url);
+    String new_version; // 新版本号
+    String file_url;  // 固件下载地址
+
+#if WIFI_ONLY_OTA
+    // 扫描并建立开放WIFI连接
+    Serial.println("自动扫描并建立开放WIFI网络连接...");
+    bool isHasWiFi = scan_wifi();
+    if (!isHasWiFi) {
+        Serial.println("没有开放WIFI网络, 退出OTA空中升级");
+        return;
+    } else {
+        // 读取OTA升级文件 JSON数据
+        DynamicJsonDocument json = http_get(jsonUrl);
+        // Serial.println("OTA响应数据:");
+        String new_version = json["version"].as<String>();
+        String file_url = json["file"].as<String>();
+        // String md5 = json["md5"].as<String>();
+
+        Serial.println(new_version);
+        Serial.println(file_url);
+    }
+#endif
 
     // 检测到新版本或者指定设备才进行OTA空中升级
     if (new_version != "null" && version_compare(new_version, version) == 1) {
-#if WIFI_ONLY_OTA
-        // 扫描并建立开放WIFI连接
-        Serial.println("自动扫描并建立开放WIFI网络连接...");
-        bool isHasWiFi = scan_wifi();
-        if (!isHasWiFi) {
-            Serial.println("没有WIFI网络, 退出OTA空中升级");
-            return;
-        }
-#endif
         // 做固件MD5签名算法 保证固件本身是安全的  升级json文件中的原始md5值和http请求头Content-MD5中的md5值保持一致
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
         esp_http_client_config_t config = {
