@@ -190,7 +190,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"," +
                 "\"electricity\":\"" + to_string(electricityValue) + "\" }";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(600000); // 多久执行一次 毫秒
+        delay(60000); // 多久执行一次 毫秒
     }
 }
 

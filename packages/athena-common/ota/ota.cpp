@@ -20,6 +20,7 @@
 #include <at_http/at_http.h>
 #include <wifi_network.h>
 #include <at_mqtt/at_mqtt.h>
+#include <chip_info.h>
 
 using namespace std;
 
@@ -97,6 +98,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         };
         esp_err_t ret = esp_https_ota(&config);
         const char *ota_topic = "ESP32/OTA";
+        // uint32_t chipId = get_chip_mac();
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
@@ -119,7 +121,6 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
 #endif
             // return ESP_FAIL;
         }
-
     } else {
         printf("当前固件版本v%s, 没有检测到新版本OTA固件, 跳过升级 \n", version.c_str());
     }
