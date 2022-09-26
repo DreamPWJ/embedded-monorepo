@@ -65,7 +65,7 @@ DynamicJsonDocument get_http_uart_data() {
     unsigned long tm = millis();
     DynamicJsonDocument json(2048);
     String flag = "HTTPRESPC"; // http请求数据前缀
-    while (millis() - tm <= 600000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
+    while (millis() - tm <= 6000) { // 多少秒超时 退出循环 myHttpSerial.available() &&
         // Serial.println(myHttpSerial.available());
         String incomingByte;
         incomingByte = myHttpSerial.readString();
