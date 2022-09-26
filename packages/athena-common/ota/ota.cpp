@@ -66,7 +66,7 @@ void do_firmware_upgrade(String version, String jsonUrl) {
     if (new_version != "null" && version_compare(new_version, version) == 1) {
 #if WIFI_ONLY_OTA
         // 扫描并建立开放WIFI连接
-        Serial.println("扫描并建立开放WIFI连接...");
+        Serial.println("自动扫描并建立开放WIFI网络连接...");
         bool isHasWiFi = scan_wifi();
         if (!isHasWiFi) {
             Serial.println("没有WIFI网络, 退出OTA空中升级");
