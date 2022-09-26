@@ -220,6 +220,13 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
     String command = json["command"].as<String>();
+    pinMode(4, OUTPUT);
+/* 开发板LED 闪动的实现 */
+    digitalWrite(4, HIGH);
+    delay(1000);
+    digitalWrite(4, LOW);
+    delay(1000);
+
     // Serial.println("指令类型: " + command);
     if (topic.indexOf("ESP32/OTA") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
