@@ -33,7 +33,6 @@ SoftwareSerial myNBSerial(PIN_RX, PIN_TX);
 #define MODEM_RST             6
 //#define MODEM_PWKEY          10
 
-
 /**
  * 初始化NB网络协议
  */
@@ -63,22 +62,24 @@ void init_nb_iot() {
     restart_nb_iot();
     Serial.println("给NB模组发送AT指令, 配置网络...");
     // myNBSerial.write("AT\r\n"); // 测试AT指令
-    delay(3000);
+    delay(2000);
 /*    myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(1000);*/
     //  at_command_response();
     myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
     delay(2000);
-    myNBSerial.write("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+    myNBSerial.write(
+            "AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     delay(1000);
     myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);
     myNBSerial.write("AT+CREG=1\r\n"); // 注册网络
     delay(1000);
-    myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量
+    myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量 如RSSI
     //  at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
+    // }
 
     // NB模块心跳检测网络
 //#if !USE_MULTI_CORE
@@ -94,7 +95,6 @@ void init_nb_iot() {
 //    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
 //    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
 //#endif
-    // }
 }
 
 /**
@@ -113,14 +113,13 @@ void nb_iot_heart_beat(void *pvParameters) {
     myNBSerial.printf("AT+CREG?\r\n"); // 查询命令返回当前网络注册状态
     // 等待数据返回结果
     String flag = "+CME ERROR:";
-    while (1) {
+    while (myNBSerial.available()) {
         String incomingByte;
         incomingByte = myNBSerial.readString();
         if (incomingByte.indexOf(flag) != -1) {
             // 心跳检测NB网络 异常重启NB模块芯片
             restart_nb_iot();
         }
-        delay(10000);
     }
 }
 

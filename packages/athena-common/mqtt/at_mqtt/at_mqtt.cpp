@@ -190,7 +190,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"," +
                 "\"electricity\":\"" + to_string(electricityValue) + "\" }";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(60000); // 多久执行一次 毫秒
+        delay(10000); // 多久执行一次 毫秒
     }
 }
 
@@ -220,12 +220,12 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
     String command = json["command"].as<String>();
-    pinMode(4, OUTPUT);
-/* 开发板LED 闪动的实现 */
-    digitalWrite(4, HIGH);
+    int pin = 4;
+    pinMode(pin, OUTPUT);
+    /* 开发板LED 闪动的实现 */
+    digitalWrite(pin, HIGH);
     delay(1000);
-    digitalWrite(4, LOW);
-    delay(1000);
+    digitalWrite(pin, LOW);
 
     // Serial.println("指令类型: " + command);
     if (topic.indexOf("ESP32/OTA") != -1) { // 针对主题做逻辑处理

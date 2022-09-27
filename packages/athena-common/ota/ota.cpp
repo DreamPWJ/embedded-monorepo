@@ -104,7 +104,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
             // 升级成功LED 闪动的方便在硬件方式查看
             /*    digitalWrite(18, HIGH);
-                  delay(5000); */
+                  delay(2000); */
 #if WIFI_ONLY_OTA
             at_mqtt_publish(ota_topic, "执行OTA空中升级成功了");
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
