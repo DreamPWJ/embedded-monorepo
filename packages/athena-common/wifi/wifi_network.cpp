@@ -44,6 +44,7 @@ void init_wifi() {
 /*      digitalWrite(18, HIGH);
         delay(2000);
         digitalWrite(18, LOW);
+        delay(1000);
     */
         Serial.println("IP Address: ");
         Serial.println(WiFi.localIP());
@@ -67,14 +68,19 @@ void init_wifi_multi_thread(void *pvParameters) {
  */
 bool scan_wifi() {
     WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
     // WiFi.scanNetworks will return the number of networks found
     int n = WiFi.scanNetworks(); // 可NVS持久化存储扫描结果 避免重复扫描
     Serial.println("scan done");
-    if (n == 0 || n == -2) { // -2 扫码失败
+    if (n == 0) {
         Serial.println("no networks found");
         return false;
+    } else if (n == -2) {
+        WiFi.scanNetworks(true, false);   // async, show_hidden
+        Serial.println("WIFI_SCAN_FAILED");
+        return false;
     } else {
-        Serial.print(n);
+        Serial.print(n);  // -2 扫码失败
         Serial.println(" networks found");
         for (int i = 0; i < n; ++i) {
             // Print SSID and RSSI for each network found
@@ -101,11 +107,11 @@ bool scan_wifi() {
                     Serial.println("开放WiFi 连接成功！");
                     Serial.print("开放WiFi连接强度RRSI: ");
                     Serial.println(WiFi.RSSI());
+                    WiFi.scanDelete();
                     return true;
                 }
                 break;
             }
-            WiFi.scanDelete();
             delay(10);
         }
         return false;
