@@ -140,14 +140,14 @@ void at_mqtt_callback(void *pvParameters) {
     /* +ECMTRECV: 0,0,"ESP32/common",{
             "command": "upgrade"
     }*/
-    String flag = "ECMTRECV";
+    String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     while (1) {
         Serial.println("------------------------------------");
         Serial.println(myMqttSerial.available());
-/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
-            // 因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理
-            delay(100);
-        }*/
+        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
+            Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
+            delay(200);
+        }
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         Serial.println(incomingByte);
@@ -176,7 +176,7 @@ void at_mqtt_callback(void *pvParameters) {
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        delay(100);
+        delay(10);
     }
 }
 
