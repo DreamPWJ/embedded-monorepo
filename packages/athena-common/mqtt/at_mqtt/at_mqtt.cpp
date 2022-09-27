@@ -82,7 +82,7 @@ void init_at_mqtt() {
     // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str()); // 设备单独的主题订阅
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/system"); // OTA空中升级主题订阅
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/system"); // 系统相关主题订阅
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -143,7 +143,7 @@ void at_mqtt_callback(void *pvParameters) {
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     while (1) {
         Serial.println("------------------------------------");
-        Serial.println(myMqttSerial.available());
+        // Serial.println(myMqttSerial.available());
         if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
             delay(200);
