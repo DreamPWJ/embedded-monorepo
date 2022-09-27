@@ -236,6 +236,10 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
+        /*    {
+                "command": "upgrade",
+                "firmwareUrl":"http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin"
+            }*/
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
