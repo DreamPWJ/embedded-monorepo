@@ -142,20 +142,22 @@ void at_mqtt_callback(void *pvParameters) {
     }*/
     String flag = "ECMTRECV";
     while (1) {
-        // Serial.println(myMqttSerial.available());
+        Serial.println("------------------------------------");
+        Serial.println(myMqttSerial.available());
         String incomingByte;
         incomingByte = myMqttSerial.readString();
-        // Serial.println(incomingByte);
+        Serial.println(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
             String start = incomingByte.substring(startIndex);
-            int endIndex = start.indexOf("}");
+            int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
             String end = start.substring(0, endIndex + 1);
             String data = end.substring(end.lastIndexOf("{"), end.length());
             vector<string> dataArray = split(incomingByte.c_str(), ",");
             String topic = dataArray[2].c_str();
             // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
+            Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
             Serial.println(data);
 
             if (!data.isEmpty()) {
@@ -163,14 +165,14 @@ void at_mqtt_callback(void *pvParameters) {
                 // 获取MQTT订阅消息后执行任务
                 do_at_mqtt_subscribe(json, topic);
             }
-        } else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
+        }/* else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
-        }
+        }*/
 
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        delay(10);
+        delay(100);
     }
 }
 
@@ -218,7 +220,6 @@ void at_mqtt_heart_beat() {
  */
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
-    Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
     String command = json["command"].as<String>();
     int pin = 4;
     pinMode(pin, OUTPUT);
@@ -227,7 +228,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     delay(1000);
     digitalWrite(pin, LOW);
 
-    // Serial.println("指令类型: " + command);
+    Serial.println("指令类型: " + command);
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
