@@ -146,9 +146,9 @@ void exec_ota(String version, String jsonUrl) {
     xTaskCreate(
             x_task_ota,  /* Task function. */
             "x_task_ota", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            0,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.

@@ -70,7 +70,7 @@ bool scan_wifi() {
     // WiFi.scanNetworks will return the number of networks found
     int n = WiFi.scanNetworks(); // 可NVS持久化存储扫描结果 避免重复扫描
     Serial.println("scan done");
-    if (n == 0) {
+    if (n == 0 || n == -2) { // -2 扫码失败
         Serial.println("no networks found");
         return false;
     } else {
@@ -105,6 +105,7 @@ bool scan_wifi() {
                 }
                 break;
             }
+            WiFi.scanDelete();
             delay(10);
         }
         return false;

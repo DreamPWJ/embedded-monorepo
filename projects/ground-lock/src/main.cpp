@@ -50,14 +50,14 @@ void setup() {
 
     // 初始化非易失性存储
     int_nvs();
-    //set_nvs("name", "panweiji");
+    // set_nvs("name", "panweiji");
 
     // 初始化NB-IoT网络协议
     init_nb_iot();
 
     // WiFi网络版本HTTP请求
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
-    // NB-IoT网络版本HTTP请求
+    // AT指令网络版本HTTP请求
     // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
 
 #if WIFI_EN

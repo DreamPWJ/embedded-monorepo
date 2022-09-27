@@ -188,13 +188,12 @@ void x_at_task_mqtt(void *pvParameters) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
-        float electricityValue = get_electricity(); // 电量值
+        // float electricityValue = get_electricity(); // 电量值
 
         // 发送心跳消息
         string jsonData =
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
-                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"," +
-                "\"electricity\":\"" + to_string(electricityValue) + "\" }";
+                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
         delay(10000); // 多久执行一次 毫秒
     }
@@ -231,6 +230,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     digitalWrite(pin, HIGH);
     delay(1000);
     digitalWrite(pin, LOW);
+    delay(1000);
 
     Serial.println("指令类型: " + command);
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理

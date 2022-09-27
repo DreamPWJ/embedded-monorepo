@@ -82,19 +82,19 @@ void init_nb_iot() {
     // }
 
     // NB模块心跳检测网络
-#if !USE_MULTI_CORE
-    const char *params = NULL;
-    xTaskCreate(
-            nb_iot_heart_beat,  //* Task function. *//*
-            "nb_iot_heart_beat", //* String with name of task. *//*
-            8192,      //* Stack size in bytes. *//*
-            (void *) params,      //* Parameter passed as input of the task *//*
-            3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
-            NULL);     //* Task handle. *//*
-#else
-    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
-#endif
+//#if !USE_MULTI_CORE
+//    const char *params = NULL;
+//    xTaskCreate(
+//            nb_iot_heart_beat,  //* Task function. *//*
+//            "nb_iot_heart_beat", //* String with name of task. *//*
+//            8192,      //* Stack size in bytes. *//*
+//            (void *) params,      //* Parameter passed as input of the task *//*
+//            3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
+//            NULL);     //* Task handle. *//*
+//#else
+//    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+//    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
+//#endif
 }
 
 /**
