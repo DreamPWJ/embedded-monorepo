@@ -176,7 +176,7 @@ void at_mqtt_callback(void *pvParameters) {
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        delay(10);
+        delay(50);
     }
 }
 
