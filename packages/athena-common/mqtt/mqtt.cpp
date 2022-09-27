@@ -69,7 +69,7 @@ void init_mqtt() {
     client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机发布的初始化消息 ");
 
     client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
-    client.subscribe("ESP32/OTA");  // OTA空中升级主题订阅
+    client.subscribe("ESP32/system");  // OTA空中升级主题订阅
 }
 
 /**
@@ -166,12 +166,14 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
     // Serial.println("-----------------------");
-    if (String(topic) == "ESP32/OTA") { // 针对主题做逻辑处理
+    if (String(topic) == "ESP32/system") { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
-            Serial.println("MQTT通讯立刻执行OTA升级方法" );
+            Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+        } else if (command == "restart") {
+            esp_restart();
         }
     }
 

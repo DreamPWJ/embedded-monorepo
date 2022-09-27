@@ -97,7 +97,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
                 .keep_alive_enable = true,
         };
         esp_err_t ret = esp_https_ota(&config);
-        const char *ota_topic = "ESP32/OTA";
+        const char *ota_topic = "ESP32/system";
         // uint32_t chipId = get_chip_mac();
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚

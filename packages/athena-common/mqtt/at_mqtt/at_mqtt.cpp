@@ -82,7 +82,7 @@ void init_at_mqtt() {
     // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str()); // 设备单独的主题订阅
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/OTA"); // OTA空中升级主题订阅
+    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/system"); // OTA空中升级主题订阅
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -228,14 +228,17 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     digitalWrite(pin, LOW);
 
     // Serial.println("指令类型: " + command);
-    if (topic.indexOf("ESP32/OTA") != -1) { // 针对主题做逻辑处理
+    if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+        } else if (command == "restart") {
+            esp_restart();
         }
     }
+
     uint32_t chipId;
     try {
         chipId = get_chip_mac();
