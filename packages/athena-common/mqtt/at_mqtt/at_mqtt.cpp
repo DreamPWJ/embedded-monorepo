@@ -92,7 +92,7 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             8192,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            -1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
@@ -138,12 +138,16 @@ void at_mqtt_callback(void *pvParameters) {
 
     // MQTT服务订阅返回AT指令数据
     /* +ECMTRECV: 0,0,"ESP32/common",{
-            "command": "putdown"
+            "command": "upgrade"
     }*/
     String flag = "ECMTRECV";
     while (1) {
         Serial.println("------------------------------------");
         Serial.println(myMqttSerial.available());
+/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
+            // 因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理
+            delay(100);
+        }*/
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         Serial.println(incomingByte);
