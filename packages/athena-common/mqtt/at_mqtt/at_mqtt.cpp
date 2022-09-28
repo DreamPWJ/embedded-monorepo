@@ -142,6 +142,7 @@ void at_mqtt_callback(void *pvParameters) {
             "command": "upgrade"
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
+    // String flagRSSI = "CSQ"; // 并发情况下 串口可能返回多条数据
     while (1) {
         Serial.println("------------------------------------");
         // Serial.println(myMqttSerial.available());
@@ -170,7 +171,15 @@ void at_mqtt_callback(void *pvParameters) {
                 // 获取MQTT订阅消息后执行任务
                 do_at_mqtt_subscribe(json, topic);
             }
-        }/* else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
+        } /*else if (incomingByte.indexOf(flagRSSI) != -1) {
+            int startIndex = incomingByte.indexOf(flagRSSI);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("\n");
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(0, end.length());
+            at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
+        }*/
+        /* else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
             printf("MQTT服务器连接成功");
         }*/
 
