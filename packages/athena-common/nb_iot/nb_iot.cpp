@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <common_utils.h>
+#include <at_mqtt/at_mqtt.h>
 
 using namespace std;
 
@@ -82,19 +83,19 @@ void init_nb_iot() {
     // }
 
     // NB模块心跳检测网络
-//#if !USE_MULTI_CORE
-//    const char *params = NULL;
-//    xTaskCreate(
-//            nb_iot_heart_beat,  //* Task function. *//*
-//            "nb_iot_heart_beat", //* String with name of task. *//*
-//            8192,      //* Stack size in bytes. *//*
-//            (void *) params,      //* Parameter passed as input of the task *//*
-//            3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
-//            NULL);     //* Task handle. *//*
-//#else
-//    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-//    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
-//#endif
+#if !USE_MULTI_CORE
+    const char *params = NULL;
+    xTaskCreate(
+            nb_iot_heart_beat,  //* Task function. *//*
+            "nb_iot_heart_beat", //* String with name of task. *//*
+            8192,      //* Stack size in bytes. *//*
+            (void *) params,      //* Parameter passed as input of the task *//*
+            3,         //* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) *//*
+            NULL);     //* Task handle. *//*
+#else
+    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
+#endif
 }
 
 /**
@@ -114,21 +115,28 @@ void nb_iot_heart_beat(void *pvParameters) {
         /* myNBSerial.printf("AT+CREG?\r\n"); // 查询命令返回当前网络注册状态
          delay(1000);*/
         myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量 如RSSI
-        // delay(1000);
-/*        // 等待数据返回结果
-        String flag1 = "+CME ERROR:";
-        String flag2 = "+CSQ";
-        String incomingByte;
-        incomingByte = myNBSerial.readString();
-        Serial.println(incomingByte);
-        if (incomingByte.indexOf(flag1) != -1) {
-            // 心跳检测NB网络 异常重启NB模块芯片
-            restart_nb_iot();
-        } else if (incomingByte.indexOf(flag2) != -1) {
-            vector<string> dataArray = split(incomingByte.c_str(), ",");
-            // NVS存储信号信息 用于MQTT上报
-            set_nvs("network_rssi", dataArray[0].c_str());
-        }*/
+        unsigned long tm = millis();
+        while (millis() - tm <= 3000) {
+            // 等待数据返回结果
+            String flag1 = "+CME ERROR:";
+            String flag2 = "+CSQ";
+            String incomingByte;
+            incomingByte = myNBSerial.readString();
+            Serial.println(incomingByte);
+            if (incomingByte.indexOf(flag1) != -1) {
+                // 心跳检测NB网络 异常重启NB模块芯片
+                restart_nb_iot();
+            } else if (incomingByte.indexOf(flag2) != -1) {
+                vector<string> dataArray = split(incomingByte.c_str(), ",");
+                String rssi = dataArray[0].c_str();
+                Serial.println(rssi);
+                // NVS存储信号信息 用于MQTT上报
+                set_nvs("network_rssi", rssi);
+                const char *topics = "ESP32/common";
+                at_mqtt_publish(topics, rssi); // 我是AT指令 MQTT心跳发的消息
+            }
+            delay(10);
+        }
         delay(1000 * 5);
     }
 }

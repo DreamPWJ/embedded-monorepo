@@ -71,7 +71,7 @@ void gsm_http_get() {
     // digitalWrite(MODEM_POWER_ON, HIGH);
 
     // Set GSM module baud rate and UART pins
-    SerialAT.begin(9600, SERIAL_8N1, MODEM_RX, MODEM_TX);
+    SerialAT.begin(115200, SERIAL_8N1, MODEM_RX, MODEM_TX);
     delay(3000);
     // Restart SIM800 module, it takes quite some time
     // To skip it, call init() instead of restart()

@@ -240,10 +240,12 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         if (command == "upgrade") {
             /*    {
                     "command": "upgrade",
-                    "firmwareUrl":"http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin"
+                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
+                     "chipIds" : ""
                 }*/
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
+            // String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
         } else if (command == "restart") {
             esp_restart();
