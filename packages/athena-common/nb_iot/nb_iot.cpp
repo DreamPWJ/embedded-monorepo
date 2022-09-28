@@ -8,6 +8,7 @@
 #include <mcu_nvs.h>
 #include <iostream>
 #include <string>
+#include <common_utils.h>
 
 using namespace std;
 
@@ -75,7 +76,6 @@ void init_nb_iot() {
     delay(1000);
     myNBSerial.write("AT+CREG=1\r\n"); // 注册网络
     delay(1000);
-    myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量 如RSSI
     // at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
@@ -111,17 +111,25 @@ void at_command_response() {
  */
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) { // myNBSerial.available()
-        myNBSerial.printf("AT+CREG?\r\n"); // 查询命令返回当前网络注册状态
-        delay(100);
-        // 等待数据返回结果
-        String flag = "+CME ERROR:";
+        /* myNBSerial.printf("AT+CREG?\r\n"); // 查询命令返回当前网络注册状态
+         delay(1000);*/
+        myNBSerial.write("AT+CSQ\r\n"); // 获取信号质量 如RSSI
+        // delay(1000);
+/*        // 等待数据返回结果
+        String flag1 = "+CME ERROR:";
+        String flag2 = "+CSQ";
         String incomingByte;
         incomingByte = myNBSerial.readString();
-        if (incomingByte.indexOf(flag) != -1) {
+        Serial.println(incomingByte);
+        if (incomingByte.indexOf(flag1) != -1) {
             // 心跳检测NB网络 异常重启NB模块芯片
             restart_nb_iot();
-        }
-        delay(1000);
+        } else if (incomingByte.indexOf(flag2) != -1) {
+            vector<string> dataArray = split(incomingByte.c_str(), ",");
+            // NVS存储信号信息 用于MQTT上报
+            set_nvs("network_rssi", dataArray[0].c_str());
+        }*/
+        delay(1000 * 5);
     }
 }
 
