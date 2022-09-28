@@ -224,13 +224,13 @@ void at_mqtt_heart_beat() {
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
-    int pin = 4;
+/*    int pin = 4;
     pinMode(pin, OUTPUT);
-    /* 开发板LED 闪动的实现 */
+    *//* 开发板LED 闪动的实现 方便观测程序运行 *//*
     digitalWrite(pin, HIGH);
     delay(1000);
     digitalWrite(pin, LOW);
-    delay(1000);
+    delay(1000);*/
 
     Serial.println("指令类型: " + command);
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
