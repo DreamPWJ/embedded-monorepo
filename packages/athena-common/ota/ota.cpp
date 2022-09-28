@@ -21,6 +21,8 @@
 #include <wifi_network.h>
 #include <at_mqtt/at_mqtt.h>
 #include <chip_info.h>
+#include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -106,7 +108,9 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             /*    digitalWrite(18, HIGH);
                   delay(2000); */
 #if WIFI_ONLY_OTA
-            at_mqtt_publish(ota_topic, "执行OTA空中升级成功了: " + chipId);
+            // 上报MQTT消息
+            string jsonDataSuccess = "{\"msg\":\"执行OTA空中升级成功了\",\"chipId\":\"" + to_string(chipId) + "\"}";
+            at_mqtt_publish(ota_topic, jsonDataSuccess.c_str());
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
@@ -115,7 +119,9 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         } else {
             Serial.println("执行OTA空中升级失败: " + chipId);
 #if WIFI_ONLY_OTA
-            at_mqtt_publish(ota_topic, "执行OTA空中升级失败");
+            // 上报MQTT消息
+            string jsonDataFail = "{\"msg\":\"执行OTA空中升级失败了\",\"chipId\":\"" + to_string(chipId) + "\"}";
+            at_mqtt_publish(ota_topic, jsonDataFail.c_str());
             // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
             WiFi.disconnect();
 #endif
@@ -175,6 +181,6 @@ void x_task_ota(void *pvParameters) {
                Serial.println(version);
                Serial.println(jsonUrl); */
         do_firmware_upgrade(otaVersion, otaJsonUrl);
-        delay(360 * 1000); // 多久执行一次 毫秒
+        delay(3600 * 1000); // 多久执行一次 毫秒
     }
 }

@@ -195,7 +195,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(10000); // 多久执行一次 毫秒
+        delay(1000 * 60); // 多久执行一次 毫秒
     }
 }
 
@@ -236,10 +236,10 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
-        /*    {
-                "command": "upgrade",
-                "firmwareUrl":"http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin"
-            }*/
+            /*    {
+                    "command": "upgrade",
+                    "firmwareUrl":"http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin"
+                }*/
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
             do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
