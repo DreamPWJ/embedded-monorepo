@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <ota.h>
+#include <ground_feeling.h>
 
 using namespace std;
 
@@ -28,10 +29,10 @@ using namespace std;
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
-const char *mqtt_broker = "192.168.1.200"; // 设置MQTT的IP或域名
+const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
-const char *mqtt_password = "public";
+const char *mqtt_password = "emqx@2022";
 const int mqtt_port = 1883;
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
@@ -130,9 +131,18 @@ void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         mqtt_reconnect();
+        int deviceStatus = get_pwm_status(); // 设备电机状态
+        int parkingStatus = ground_feeling_status(); // 是否有车
+        // String networkRSSI = get_nvs("network_rssi"); // 是否有车
+        // float electricityValue = get_electricity(); // 电量值
+
         // 发送心跳消息
-        client.publish(topics, " 我是MQTT心跳发的消息 ");
-        delay(60000); // 多久执行一次 毫秒
+        string jsonData =
+                "{\"command\":\"WIFI-heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
+                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
+        // 发送心跳消息
+        client.publish(topics, jsonData.c_str());
+        delay(1000 * 10); // 多久执行一次 毫秒
     }
 }
 
