@@ -77,6 +77,7 @@ void init_nb_iot() {
     delay(1000);
     myNBSerial.write("AT+CREG=1\r\n"); // 注册网络
     delay(1000);
+    myNBSerial.write("AT+ECIPR=115200\r\n"); // 设置模组AT串口通信波特率
     // at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络

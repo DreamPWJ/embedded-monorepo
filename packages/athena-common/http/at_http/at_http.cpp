@@ -20,7 +20,7 @@ SoftwareSerial myHttpSerial(PIN_RX, PIN_TX);
  */
 DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     Serial.println("HTTP请求GET方法AT指令");
-    myHttpSerial.begin(9600);
+    myHttpSerial.begin(115200);
     if (!myHttpSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
