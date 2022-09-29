@@ -71,7 +71,7 @@ void init_nb_iot() {
     myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
     delay(2000);
     myNBSerial.write(
-            "AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+            "AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     delay(1000);
     myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);

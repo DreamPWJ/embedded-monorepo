@@ -8,10 +8,13 @@
 #include <pwm.h>
 #include <chip_info.h>
 #include <exception>
+#include <vector>
+#include <iostream>
 #include <iostream>
 #include <string>
 #include <ota.h>
 #include <ground_feeling.h>
+#include <common_utils.h>
 
 using namespace std;
 
@@ -138,7 +141,8 @@ void x_task_mqtt(void *pvParameters) {
 
         // 发送心跳消息
         string jsonData =
-                "{\"command\":\"WIFI-heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
+                "{\"command\":\"WIFI-heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) +
+                "\",\"deviceStatus\":\"" +
                 to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         // 发送心跳消息
         client.publish(topics, jsonData.c_str());
@@ -174,23 +178,39 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     String command = json["command"].as<String>();
     // Serial.println("指令类型: " + command);
     // Serial.println("-----------------------");
-    if (String(topic) == "ESP32/system") { // 针对主题做逻辑处理
-        // MQTT通讯立刻执行OTA升级方法
-        if (command == "upgrade") {
-            Serial.println("MQTT通讯立刻执行OTA升级方法");
-            String firmwareUrl = json["firmwareUrl"].as<String>();
-            do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
-        } else if (command == "restart") {
-            esp_restart();
-        }
-    }
 
-    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令  MQTT判断设备唯一码后处理 并设置心跳检测
-    uint32_t chipId;
+    uint64_t chipId;
     try {
         chipId = get_chip_mac();
     } catch (exception &e) {
         cout << &e << endl;
+    }
+
+    // MQTT订阅消息处理
+    if (String(topic) == "ESP32/system") { // 针对主题做逻辑处理
+        // MQTT通讯立刻执行OTA升级方法
+        if (command == "upgrade") {
+            /*    {
+                    "command": "upgrade",
+                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
+                     "chipIds" : ""
+                }*/
+            Serial.println("MQTT通讯立刻执行OTA升级方法");
+            String firmwareUrl = json["firmwareUrl"].as<String>();
+            String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
+            vector<string> array = split(chipIds.c_str(), ",");
+            bool isUpdateByDevice = false;
+            if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
+                Serial.println("根据设备标识进行指定设备升级");
+                isUpdateByDevice = true;
+            }
+
+            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+            }
+        } else if (command == "restart") {
+            esp_restart();
+        }
     }
 
     if (command == "raise") {

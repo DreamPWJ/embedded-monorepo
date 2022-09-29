@@ -12,5 +12,6 @@ using namespace std;
 
 vector<string> split(const string &str, const string &pattern);
 
+int indexOf(std::string &text, std::string &pattern);
 
 #endif

@@ -5,7 +5,9 @@
 #include <ArduinoJson.h>
 #include <SoftwareSerial.h>
 #include <json_utils.h>
+#include <vector>
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <chip_info.h>
 #include <pwm.h>
@@ -244,6 +246,15 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     delay(1000);*/
 
     Serial.println("指令类型: " + command);
+
+    uint64_t chipId;
+    try {
+        chipId = get_chip_mac();
+    } catch (exception &e) {
+        cout << &e << endl;
+    }
+
+    // MQTT订阅消息处理
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         // MQTT通讯立刻执行OTA升级方法
         if (command == "upgrade") {
@@ -254,18 +265,20 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                 }*/
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
-            // String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级
-            do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+            String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
+            vector<string> array = split(chipIds.c_str(), ",");
+            bool isUpdateByDevice = false;
+            if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
+                Serial.println("根据设备标识进行指定设备升级");
+                isUpdateByDevice = true;
+            }
+
+            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+            }
         } else if (command == "restart") {
             esp_restart();
         }
-    }
-
-    uint32_t chipId;
-    try {
-        chipId = get_chip_mac();
-    } catch (exception &e) {
-        cout << &e << endl;
     }
 
     if (command == "raise") { // 电机升起指令
@@ -280,4 +293,5 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                           to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str());
     }
+
 }

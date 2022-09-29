@@ -63,8 +63,8 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
 #if WIFI_ONLY_OTA
     // 扫描并建立开放WIFI连接
     Serial.println("自动扫描并建立开放WIFI网络连接...");
-    bool isHasWiFi = scan_wifi();
-    if (!isHasWiFi) {
+    bool is_has_wifi = scan_wifi();
+    if (!is_has_wifi) {
         Serial.println("没有开放WIFI网络, 退出OTA空中升级");
         return;
     } else {
@@ -100,7 +100,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         };
         esp_err_t ret = esp_https_ota(&config);
         const char *ota_topic = "ESP32/system";
-        uint32_t chipId = get_chip_mac();
+        uint64_t chipId = get_chip_mac();
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");
