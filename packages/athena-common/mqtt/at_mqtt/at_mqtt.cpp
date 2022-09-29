@@ -138,7 +138,6 @@ void at_mqtt_reconnect(String incomingByte) {
  */
 void at_mqtt_callback(void *pvParameters) {
     Serial.println("AT指令MQTT订阅接收的消息: ");
-    delay(10);
     // MQTT服务订阅返回AT指令数据
     /* +ECMTRECV: 0,0,"ESP32/common",{
             "command": "upgrade"
@@ -188,6 +187,7 @@ void at_mqtt_callback(void *pvParameters) {
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
+        delay(10);
     }
 }
 
