@@ -93,9 +93,9 @@ void init_at_mqtt() {
     xTaskCreate(
             at_mqtt_callback,  /* Task function. */
             "at_mqtt_callback", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            -1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
@@ -138,7 +138,7 @@ void at_mqtt_reconnect(String incomingByte) {
  */
 void at_mqtt_callback(void *pvParameters) {
     Serial.println("AT指令MQTT订阅接收的消息: ");
-
+    delay(10);
     // MQTT服务订阅返回AT指令数据
     /* +ECMTRECV: 0,0,"ESP32/common",{
             "command": "upgrade"
@@ -188,7 +188,6 @@ void at_mqtt_callback(void *pvParameters) {
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        delay(50);
     }
 }
 
