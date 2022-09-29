@@ -1,6 +1,12 @@
 #include "json_utils.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
+//#include <json.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -51,3 +57,17 @@ String json_to_string(JsonObject data) {
     serializeJson(doc, jsonStr);
     return jsonStr;
 }
+
+/**
+* 获取Json文件内的数据
+*/
+/*
+DynamicJsonDocument read_json_file(String filePath) {
+    Json::Value json;
+    std::ifstream json_file(filePath.c_str(), std::ifstream::binary);
+    json_file >> json;
+    Serial.println(json);
+    Serial.println(json["version"]);
+    Serial.println(json["file"]);
+    return (const JsonDocument &) "";
+}*/

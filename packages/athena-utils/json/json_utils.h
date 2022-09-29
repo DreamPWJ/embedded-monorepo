@@ -13,4 +13,6 @@ DynamicJsonDocument string_to_json(String data);
 
 String json_to_string(JsonObject data);
 
+// DynamicJsonDocument read_json_file(String filePath);
+
 #endif

@@ -22,6 +22,7 @@
 #include <gsm_ota/gsm_ota.h>
 #include <infrared_signals.h>
 #include <radio_frequency.h>
+#include <json_utils.h>
 
 
 using namespace std;
