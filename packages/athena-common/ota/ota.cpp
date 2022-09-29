@@ -60,6 +60,9 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
     String new_version; // 新版本号
     String file_url;  // 固件下载地址
 
+    const char *ota_topic = "ESP32/system";
+    uint64_t chipId = get_chip_mac();
+
 #if WIFI_ONLY_OTA
     // 扫描并建立开放WIFI连接
     Serial.println("自动扫描并建立开放WIFI网络连接...");
@@ -91,6 +94,11 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         (new_version.indexOf("NEW_VERSION") != -1)) {
         // 做固件MD5签名算法 保证固件本身是安全的  升级json文件中的原始md5值和http请求头Content-MD5中的md5值保持一致
         printf("当前固件版本v%s, 有新v%s版本OTA固件, 正在下载... \n", version.c_str(), new_version.c_str());
+#if WIFI_ONLY_OTA
+        // 上报MQTT消息
+        string jsonDataDo = "{\"msg\":\"发现新版本了, 开始执行OTA空中升级\",\"chipId\":\"" + to_string(chipId) + "\"}";
+        at_mqtt_publish(ota_topic, jsonDataDo.c_str());
+#endif
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
                 .cert_pem = (char *) server_cert_pem_start, // HTTPS 客户端将检查证书内的CN字段与HTTPS URL中给出的地址是否匹配
@@ -99,8 +107,6 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
                 .keep_alive_enable = true,
         };
         esp_err_t ret = esp_https_ota(&config);
-        const char *ota_topic = "ESP32/system";
-        uint64_t chipId = get_chip_mac();
         if (ret == ESP_OK) {
             // 检测固件是否正常  设计失败恢复方案 如果固件启动失败回滚
             Serial.println("执行OTA空中升级成功了, 重启单片机...");

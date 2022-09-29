@@ -201,7 +201,8 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
             vector<string> array = split(chipIds.c_str(), ",");
             bool isUpdateByDevice = false;
             if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
-                Serial.println("根据设备标识进行指定设备升级");
+                Serial.print("根据设备标识进行指定设备OTA升级: ");
+                Serial.println(chipId);
                 isUpdateByDevice = true;
             }
 
