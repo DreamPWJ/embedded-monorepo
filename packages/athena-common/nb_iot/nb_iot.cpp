@@ -62,22 +62,25 @@ void init_nb_iot() {
     // if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     restart_nb_iot();
-    Serial.println("给NB模组发送AT指令, 配置网络...");
+    Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
     // myNBSerial.write("AT\r\n"); // 测试AT指令
-    delay(2000);
+    delay(3000);
 /*    myNBSerial.write("AT+ECICCID\r\n"); // 查看SIM ID号
     delay(1000);*/
     // at_command_response();
     myNBSerial.write("AT+CGATT=1\r\n"); // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
     delay(2000);
     myNBSerial.write(
-            "AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+            "AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n"); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     delay(1000);
     myNBSerial.write("AT+CGACT=1\r\n"); // 激活网络
     delay(1000);
     myNBSerial.write("AT+CREG=1\r\n"); // 注册网络
     delay(1000);
+    myNBSerial.write("AT+CSQ\r\n"); // 信号质量
+    delay(1000);
     myNBSerial.write("AT+ECIPR=115200\r\n"); // 设置模组AT串口通信波特率
+    delay(1000);
     // at_command_response();
     //myNBSerial.write("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络

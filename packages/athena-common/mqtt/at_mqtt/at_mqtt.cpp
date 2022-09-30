@@ -63,11 +63,14 @@ void init_at_mqtt() {
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     // delay(1000);
-    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
-    // myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,120\r\n");
     delay(2000);
+    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
+    myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,0,120\r\n"); // 配置心跳时间
+    delay(1000);
+    myMqttSerial.printf("AT+ECMTCFG=\042timeout\042,0,20\r\n"); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
+    delay(1000);
     myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
-                        at_mqtt_port);  // GSM无法连接局域网, 因为NB、4G等本身就是广域网
+                        at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
     delay(1000);
     myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), at_mqtt_username,
                         at_mqtt_password);
@@ -132,6 +135,20 @@ void at_mqtt_publish(String topic, String msg) {
  */
 void at_mqtt_subscribe(String topic) {
     myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
+}
+
+/**
+ * 取消MQTT主题订阅
+ */
+void at_mqtt_unsubscribe(String topic) {
+    myMqttSerial.printf("AT+ECMTUNS=0,1,\"%s\"\r\n", topic.c_str());
+}
+
+/**
+ * MQTT断开连接
+ */
+void at_mqtt_disconnect() {
+    myMqttSerial.printf("AT+ECMTDISC=0\\r\\n\r\n");
 }
 
 /**

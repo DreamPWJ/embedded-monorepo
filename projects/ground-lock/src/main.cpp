@@ -1,5 +1,6 @@
 #include <common.h>
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #include <BizConstants.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -27,6 +28,10 @@
 
 using namespace std;
 
+/*#define PIN_RX 19
+#define PIN_TX 18
+SoftwareSerial myMainSerial(PIN_RX, PIN_TX);*/
+
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
@@ -42,9 +47,6 @@ void setup() {
     // 设置串口波特率
     Serial.begin(115200);
     // delay(1000);
-
-    // 初始化其它UART串口
-    init_uart();
 
     // 将LED数字引脚初始化为输出
     set_pin_mode();
@@ -65,6 +67,9 @@ void setup() {
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     // AT指令网络版本HTTP请求
     // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
+
+    // 初始化其它UART串口
+    // init_uart();
 
 #if PWM_EN
     // 初始化电机马达
@@ -124,3 +129,11 @@ void loop() {
 #endif
 
 }
+
+/*
+void serialEvent() {
+    // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
+    while (myMainSerial.available()) {
+        Serial.println("serialEvent()作为串口中断回调函数");
+    }
+}*/

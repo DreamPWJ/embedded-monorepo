@@ -17,6 +17,10 @@ void at_mqtt_publish(String topic, String msg);
 
 void at_mqtt_subscribe(String topic);
 
+void at_mqtt_unsubscribe(String topic);
+
+void at_mqtt_disconnect();
+
 void at_mqtt_callback(void *pvParameters); // void *pvParameters
 
 void at_mqtt_reconnect(String incomingByte);
