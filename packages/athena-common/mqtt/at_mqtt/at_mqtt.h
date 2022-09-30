@@ -11,11 +11,13 @@
 
 void init_at_mqtt();
 
+void at_attach_mqtt_callback();
+
 void at_mqtt_publish(String topic, String msg);
 
 void at_mqtt_subscribe(String topic);
 
-void at_mqtt_callback(void *pvParameters);
+void at_mqtt_callback(void *pvParameters); // void *pvParameters
 
 void at_mqtt_reconnect(String incomingByte);
 

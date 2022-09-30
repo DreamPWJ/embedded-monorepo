@@ -44,7 +44,7 @@ void setup() {
     // delay(1000);
 
     // 初始化其它UART串口
-    // init_uart();
+    init_uart();
 
     // 将LED数字引脚初始化为输出
     set_pin_mode();
@@ -53,18 +53,18 @@ void setup() {
     int_nvs();
     // set_nvs("name", "panweiji");
 
+#if WIFI_EN
+    // 初始化WiFi无线网络
+    init_wifi();
+#else
     // 初始化NB-IoT网络协议
     init_nb_iot();
+#endif
 
     // WiFi网络版本HTTP请求
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     // AT指令网络版本HTTP请求
     // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
-
-#if WIFI_EN
-    // 初始化WiFi无线网络
-    init_wifi();
-#endif
 
 #if PWM_EN
     // 初始化电机马达

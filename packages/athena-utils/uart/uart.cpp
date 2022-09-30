@@ -38,6 +38,7 @@ static void set_uart(void *pvParameters) {
     ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
     uart_set_pin(uart_num, UART_ESP_TXD, UART_ESP_RXD, UART_ESP_RTS, UART_ESP_CTS);
 
+    // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
     while (1) {
@@ -45,7 +46,7 @@ static void set_uart(void *pvParameters) {
         int len = uart_read_bytes(uart_num, data, BUF_SIZE, 20 / portTICK_RATE_MS);
         // 写入UART数据
         uart_write_bytes(uart_num, (const char *) data, len);
-       // delay(1000);
+        // delay(1000);
     }
 
 }
@@ -55,11 +56,15 @@ void init_uart(void) {
     xTaskCreate(
             set_uart,  /* Task function. */
             "set_uart", /* String with name of task. */
-            1024,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             NULL,      /* Parameter passed as input of the task */
             10,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 
     // 初始化NB-IoT网络协议
     //init_nb_iot();
+
+    // 串口回环输出
+
+    // 串口队列接收
 }

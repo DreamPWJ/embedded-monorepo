@@ -102,6 +102,20 @@ void init_at_mqtt() {
     xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 2, NULL, 0);
 #endif
 
+    // 中断机制  MQTT订阅消息回调
+    // at_attach_mqtt_callback();
+
+}
+
+/**
+ * MQTT订阅消息回调 中断机制
+ */
+void at_attach_mqtt_callback() {
+    // 使用中断机制 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测
+    // //将中断触发引脚 设置为INPUT_PULLUP（输入上拉）模式
+    //pinMode(PIN_RX, INPUT_PULLUP);
+    // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
+    //attachInterrupt(digitalPinToInterrupt(PIN_RX), at_mqtt_callback, FALLING);
 }
 
 /**
