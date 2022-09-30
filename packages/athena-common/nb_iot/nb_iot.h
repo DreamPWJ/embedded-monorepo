@@ -13,7 +13,7 @@ void init_nb_iot();
 
 void at_command_response();
 
-void nb_iot_heart_beat(void *pvParameters);
+void nb_iot_heart_beat(); // void *pvParameters
 
 void restart_nb_iot();
 
