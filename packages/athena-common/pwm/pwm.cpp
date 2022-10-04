@@ -1,6 +1,12 @@
 #include "pwm.h"
 #include <Arduino.h>
 #include <ground_feeling.h>
+#include <at_mqtt/at_mqtt.h>
+#include <chip_info.h>
+#include <iostream>
+#include <string>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -56,6 +62,9 @@ int freq_PWM = 5000;
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
+const char *common_topic = "ESP32/common";
+uint64_t chipMacId = get_chip_mac();
+
 /**
  * 初始化PWM电机马达
  */
@@ -79,8 +88,13 @@ void init_motor() {
  * 控制电机马达抬起
  */
 void set_motor_up() {
+    // 上报MQTT消息
+    string jsonData = "{\"msg\":\"开始控制电机正向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
+    at_mqtt_publish(common_topic, jsonData.c_str());
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
+        string jsonDataGF = "{\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
+        at_mqtt_publish(common_topic, jsonDataGF.c_str());
         Serial.println("地感判断有车地锁不能抬起");
         return;
     }
@@ -127,6 +141,10 @@ void set_motor_up() {
  * 控制电机马达落下
  */
 void set_motor_down() {
+    // 上报MQTT消息
+    string jsonData = "{\"msg\":\"开始控制电机反向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
+    at_mqtt_publish(common_topic, jsonData.c_str());
+
     if (get_pwm_status() == 0) { // 如果已经在下限位 不触发电机
         return;
     }
