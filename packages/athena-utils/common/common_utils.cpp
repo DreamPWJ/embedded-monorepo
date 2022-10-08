@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <vector>
 #include <locale>
+#include <string>
 #include <iostream>
 
 using namespace std;
@@ -15,8 +16,8 @@ using namespace std;
 /**
  * 字符串分割转数组
  */
-vector <string> split(const string &str, const string &pattern) {
-    vector <string> res;
+vector<string> split(const string &str, const string &pattern) {
+    vector<string> res;
     if (str == "")
         return res;
     //在字符串末尾也加入分隔符，方便截取最后一段
@@ -34,7 +35,19 @@ vector <string> split(const string &str, const string &pattern) {
     return res;
 }
 
-int indexOf(std::string &text, std::string &pattern) {
+/**
+ * 字符串拼接
+ */
+template<typename ... Args>
+String str_format(String format, Args ... args) {
+    //  std::cout << std::format("Hello {}!\n", "World");
+    return format(format, args ...);
+}
+
+/**
+ * 字符串下标
+ */
+int index_of(std::string &text, std::string &pattern) {
     // where appears the pattern in the text?
     std::string::size_type loc = text.find(pattern, 0);
     if (loc != std::string::npos) {

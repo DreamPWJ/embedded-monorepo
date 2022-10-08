@@ -11,7 +11,7 @@
 
 void init_at_mqtt();
 
-String send_mqtt_at_command(String command, const int timeout, boolean debug);
+String send_mqtt_at_command(String command, const int timeout, boolean debug, String successResult = "OK");
 
 void at_attach_mqtt_callback();
 

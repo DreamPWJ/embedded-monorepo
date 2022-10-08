@@ -70,7 +70,7 @@ void init_mqtt() {
     }
     // 订阅与发布 publish and subscribe
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-    client.publish(topic_device.c_str(), " 你好, MQTT服务器 , 我是ESP32单片机发布的初始化消息 ");
+    client.publish(topic_device.c_str(), " 你好, MQTT服务器, 我是ESP32单片机发布的初始化消息 ");
 
     client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
     client.subscribe("ESP32/system");  // 系统相关主题订阅

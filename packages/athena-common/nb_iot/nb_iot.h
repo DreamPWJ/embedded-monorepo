@@ -11,7 +11,7 @@
 
 void init_nb_iot();
 
-String send_at_command(String command, const int timeout, boolean debug);
+String send_at_command(String command, const int timeout, boolean debug, String successResult = "OK");
 
 void at_command_response();
 

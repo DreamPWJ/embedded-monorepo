@@ -66,29 +66,27 @@ void init_at_mqtt() {
     // delay(1000);
 
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
-    send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 2000, DEBUG); // 配置心跳时间
-    send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 2000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
+    send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, DEBUG); // 配置心跳时间
+    send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
-    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
-                        at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
-    delay(1000);
-    myMqttSerial.printf("AT+ECMTCONN=0,\042%s\042,\042%s\042,\042%s\042\r\n", client_id.c_str(), at_mqtt_username,
-                        at_mqtt_password);
-    delay(2000);
+    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
+                         DEBUG);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
+/*    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
+                        at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网*/
+    send_mqtt_at_command(
+            "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
+            "\042\r\n", 30000, DEBUG);
     Serial.println("MQTT Broker 连接: " + client_id);
 
     // 发布MQTT消息
-    myMqttSerial.printf(
-            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042你好, MQTT服务器 , 我是%s单片机AT指令发布的初始化消息\042\r\n",
-            at_topics,
-            client_id.c_str());
+    at_mqtt_publish(at_topics, "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息");
     delay(1000);
-
     // 订阅MQTT主题消息
     // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic_device.c_str()); // 设备单独的主题订阅
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", "ESP32/system"); // 系统相关主题订阅
+    at_mqtt_subscribe(topic_device.c_str()); // 设备单独的主题订阅
+    delay(1000);
+    at_mqtt_subscribe("ESP32/system"); // 系统相关主题订阅
 
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
@@ -98,7 +96,7 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            -1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
@@ -113,7 +111,7 @@ void init_at_mqtt() {
 /**
  * 发送AT指令
  */
-String send_mqtt_at_command(String command, const int timeout, boolean debug) {
+String send_mqtt_at_command(String command, const int timeout, boolean debug, String successResult) {
     String response = "";
     myMqttSerial.print(command);
     long int time = millis();
@@ -121,6 +119,9 @@ String send_mqtt_at_command(String command, const int timeout, boolean debug) {
         while (myMqttSerial.available()) {
             char c = myMqttSerial.read();
             response += c;
+        }
+        if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
+            break;
         }
     }
     if (debug) {
@@ -147,6 +148,7 @@ void at_mqtt_publish(String topic, String msg) {
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     myMqttSerial.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
+    delay(10);
 }
 
 /**
@@ -194,7 +196,8 @@ void at_mqtt_callback(void *pvParameters) {
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     // String flagRSSI = "CSQ"; // 并发情况下 串口可能返回多条数据
-    while (1 && myMqttSerial.available() > 0) {
+    bool isHasData = myMqttSerial.available() > 0 ? true : false;
+    while (isHasData) {
         Serial.println("------------------------------------");
         // Serial.println(myMqttSerial.available());
 /*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
@@ -203,7 +206,7 @@ void at_mqtt_callback(void *pvParameters) {
         }*/
         String incomingByte;
         incomingByte = myMqttSerial.readString();
-        Serial.println(incomingByte);
+        // Serial.println(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);
