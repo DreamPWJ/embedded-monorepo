@@ -59,6 +59,9 @@ void setup() {
     // 初始化WiFi无线网络
     init_wifi();
 #else
+    // 初始化其它UART串口通信
+    init_uart();
+
     // 初始化NB-IoT网络协议
     init_nb_iot();
 #endif
@@ -67,9 +70,6 @@ void setup() {
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
     // AT指令网络版本HTTP请求
     // at_http_get("archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json");
-
-    // 初始化其它UART串口
-    // init_uart();
 
 #if PWM_EN
     // 初始化电机马达

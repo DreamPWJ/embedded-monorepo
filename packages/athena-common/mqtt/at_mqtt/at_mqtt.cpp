@@ -29,6 +29,7 @@ using namespace std;
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define DEBUG true
 
 #define PIN_RX 19
 #define PIN_TX 18
@@ -63,12 +64,11 @@ void init_at_mqtt() {
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
     // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     // delay(1000);
-    delay(2000);
+
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
-    myMqttSerial.printf("AT+ECMTCFG=\042keepalive\042,0,120\r\n"); // 配置心跳时间
-    delay(1000);
-    myMqttSerial.printf("AT+ECMTCFG=\042timeout\042,0,20\r\n"); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
-    delay(1000);
+    send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 2000, DEBUG); // 配置心跳时间
+    send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 2000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
+
     myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
     delay(1000);
@@ -108,6 +108,25 @@ void init_at_mqtt() {
     // 中断机制  MQTT订阅消息回调
     // at_attach_mqtt_callback();
 
+}
+
+/**
+ * 发送AT指令
+ */
+String send_mqtt_at_command(String command, const int timeout, boolean debug) {
+    String response = "";
+    myMqttSerial.print(command);
+    long int time = millis();
+    while ((time + timeout) > millis()) {
+        while (myMqttSerial.available()) {
+            char c = myMqttSerial.read();
+            response += c;
+        }
+    }
+    if (debug) {
+        Serial.println(command + "AT指令响应数据: " + response);
+    }
+    return response;
 }
 
 /**
@@ -175,13 +194,13 @@ void at_mqtt_callback(void *pvParameters) {
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     // String flagRSSI = "CSQ"; // 并发情况下 串口可能返回多条数据
-    while (1) {
+    while (1 && myMqttSerial.available() > 0) {
         Serial.println("------------------------------------");
         // Serial.println(myMqttSerial.available());
-        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
+/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
             delay(200);
-        }
+        }*/
         String incomingByte;
         incomingByte = myMqttSerial.readString();
         Serial.println(incomingByte);
@@ -218,7 +237,7 @@ void at_mqtt_callback(void *pvParameters) {
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        delay(10);
+        // delay(10);
     }
 }
 

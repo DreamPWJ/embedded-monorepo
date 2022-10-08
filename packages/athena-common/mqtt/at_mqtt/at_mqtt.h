@@ -11,6 +11,8 @@
 
 void init_at_mqtt();
 
+String send_mqtt_at_command(String command, const int timeout, boolean debug);
+
 void at_attach_mqtt_callback();
 
 void at_mqtt_publish(String topic, String msg);

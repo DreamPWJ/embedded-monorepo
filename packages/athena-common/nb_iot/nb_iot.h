@@ -11,6 +11,8 @@
 
 void init_nb_iot();
 
+String send_at_command(String command, const int timeout, boolean debug);
+
 void at_command_response();
 
 void nb_iot_heart_beat(); // void *pvParameters
