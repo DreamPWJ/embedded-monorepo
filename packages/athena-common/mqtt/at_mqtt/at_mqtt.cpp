@@ -50,7 +50,7 @@ const int at_mqtt_port = 1883;
 void init_at_mqtt() {
     Serial.println("初始化MQTT客户端AT指令");
 
-    myMqttSerial.begin(115200, SWSERIAL_8N1);
+    myMqttSerial.begin(9600, SWSERIAL_8N1);
     if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
@@ -70,12 +70,12 @@ void init_at_mqtt() {
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
     send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 10000,
-                         DEBUG);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
+                         DEBUG, "+ECMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
 /*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
     send_mqtt_at_command(
             "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
-            "\042\r\n", 30000, DEBUG, "+ECMTCONN: 0,0,0");
+            "\042\r\n", 10000, DEBUG, "+ECMTCONN: 0,0,0");
     Serial.println("MQTT Broker 连接: " + client_id);
 
     // 发布MQTT消息
@@ -96,7 +96,7 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            0,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
@@ -205,7 +205,7 @@ void at_mqtt_callback(void *pvParameters) {
         }*/
         String incomingByte;
         incomingByte = myMqttSerial.readString();
-        // Serial.println(incomingByte);
+        Serial.println(incomingByte);
 
         if (incomingByte.indexOf(flag) != -1) {
             int startIndex = incomingByte.indexOf(flag);

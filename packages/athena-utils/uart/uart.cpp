@@ -118,7 +118,7 @@ static void set_uart_rx(void *pvParameters) {
 void init_uart(void) {
     Serial.println("UART通用异步收发送器初始化");
     uart_config_t uart_config = {
-            .baud_rate = 115200,
+            .baud_rate = 9600,
             .data_bits = UART_DATA_8_BITS,
             .parity = UART_PARITY_DISABLE,
             .stop_bits = UART_STOP_BITS_1,

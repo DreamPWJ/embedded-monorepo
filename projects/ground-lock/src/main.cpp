@@ -60,7 +60,7 @@ void setup() {
     init_wifi();
 #else
     // 初始化其它UART串口通信
-    init_uart();
+    // init_uart();
 
     // 初始化NB-IoT网络协议
     init_nb_iot();
