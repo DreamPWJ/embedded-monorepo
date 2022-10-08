@@ -61,9 +61,9 @@ void init_nb_iot() {
     }
     String isNBInit = get_nvs("is_nb_iot_init");
     // Serial.println(isNBInit);
-    //  if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
+    // if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
-    restart_nb_iot();
+    // restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
     // myNBSerial.printf("AT\r\n"); // 测试AT指令
     // send_at_command("AT+ECICCID\r\n", 5000, DEBUG); // 查看SIM ID号
@@ -77,11 +77,11 @@ void init_nb_iot() {
     // send_at_command("AT+ECIPR=115200\r\n", 2000, DEBUG); // 设置模组AT串口通信波特率
     //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
-    //   }
+    //  }
 
     // NB模块心跳检测网络
     // nb_iot_heart_beat();
-#if !USE_MULTI_CORE
+/*#if !USE_MULTI_CORE
     xTaskCreate(
             nb_iot_heart_beat,
             "nb_iot_heart_beat",
@@ -92,7 +92,7 @@ void init_nb_iot() {
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
     xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
-#endif
+#endif*/
 
 }
 
@@ -159,17 +159,7 @@ void nb_iot_heart_beat(void *pvParameters) {
        }*/
     while (1) {
         delay(1000 * 20);
-        String incomingByte = send_at_command("AT+CSQ\r\n", 10000, DEBUG, "+CSQ");  // 获取信号质量 如RSSI
-        const char *topics = "ESP32/common";
-        if (incomingByte.indexOf("+CSQ:") != -1) {
-            vector<string> dataArray = split(incomingByte.c_str(), ",");
-            String rssi = dataArray[0].c_str();
-            Serial.println(rssi);
-            // NVS存储信号信息 用于MQTT上报
-            set_nvs("network_rssi", rssi);
-            at_mqtt_publish(topics, rssi);
-        }
-
+        myNBSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
     }
 
 }

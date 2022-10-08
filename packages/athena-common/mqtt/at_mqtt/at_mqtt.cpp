@@ -195,6 +195,7 @@ void at_mqtt_callback(void *pvParameters) {
             "command": "upgrade"
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
+    String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     int isHasData = myMqttSerial.available() > 0 ? 1 : 0;
     while (1) {
         Serial.println("------------------------------------");
@@ -224,6 +225,13 @@ void at_mqtt_callback(void *pvParameters) {
                 // 获取MQTT订阅消息后执行任务
                 do_at_mqtt_subscribe(json, topic);
             }
+        } else if (incomingByte.indexOf(flagRSSI) != -1) {
+            int startIndex = incomingByte.indexOf(flagRSSI);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("\n");
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(0, end.length());
+            at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
         }
 
         // 检测MQTT服务状态 如果失效自动重连
@@ -241,9 +249,9 @@ void x_at_task_mqtt(void *pvParameters) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
-        // String networkRSSI = get_nvs("network_rssi"); // 是否有车
+        // String networkRSSI = get_nvs("network_rssi"); // 信号质量
         // float electricityValue = get_electricity(); // 电量值
-
+        myMqttSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
         // 发送心跳消息
         string jsonData =
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
