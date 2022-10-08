@@ -214,7 +214,7 @@ void at_mqtt_callback(void *pvParameters) {
                 int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
                 String end = start.substring(0, endIndex + 1);
                 String data = end.substring(end.lastIndexOf("{"), end.length());
-                vector<string> dataArray = split(incomingByte.c_str(), ",");
+                vector<string> dataArray = split(start.c_str(), ",");
                 String topic = dataArray[2].c_str();
                 // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
                 Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
