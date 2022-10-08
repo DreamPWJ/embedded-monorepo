@@ -34,6 +34,7 @@ using namespace std;
 ** ledc: 15 => Group: 1, Channel: 7, Timer: 3
 */
 
+#define DEBUG true
 
 // PWM控制引脚GPIO
 const int PWM_PinA = 3;
@@ -88,14 +89,19 @@ void init_motor() {
  * 控制电机马达抬起
  */
 void set_motor_up() {
+#if DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机正向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
     at_mqtt_publish(common_topic, jsonData.c_str());
+#endif
+
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
+#if DEBUG
         string jsonDataGF = "{\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
         at_mqtt_publish(common_topic, jsonDataGF.c_str());
         Serial.println("地感判断有车地锁不能抬起");
+#endif
         return;
     }
     if (get_pwm_status() == 1) { // 如果已经在上限位 不触发电机
@@ -141,9 +147,11 @@ void set_motor_up() {
  * 控制电机马达落下
  */
 void set_motor_down() {
+#if DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机反向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
     at_mqtt_publish(common_topic, jsonData.c_str());
+#endif
 
     if (get_pwm_status() == 0) { // 如果已经在下限位 不触发电机
         return;

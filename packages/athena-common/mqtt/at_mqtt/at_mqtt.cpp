@@ -62,20 +62,20 @@ void init_at_mqtt() {
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
-    // myMqttSerial.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
-    // delay(1000);
+    send_mqtt_at_command("AT+CEREG?\r\n", 3000, DEBUG); // 判断附着网络 参数1或5标识附着正常
+    delay(3000);
 
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
-    send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, DEBUG); // 配置心跳时间
-    send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
+    //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, DEBUG); // 配置心跳时间
+    //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
-    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
+    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 10000,
                          DEBUG);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
-/*    myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
-                        at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网*/
+/*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
+                        at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
     send_mqtt_at_command(
             "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
-            "\042\r\n", 30000, DEBUG);
+            "\042\r\n", 30000, DEBUG, "+ECMTCONN: 0,0,0");
     Serial.println("MQTT Broker 连接: " + client_id);
 
     // 发布MQTT消息
@@ -96,14 +96,14 @@ void init_at_mqtt() {
             "at_mqtt_callback", /* String with name of task. */
             1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            -1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            0,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
     xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 2, NULL, 0);
 #endif
 
-    // 中断机制  MQTT订阅消息回调
+    // 外部中断机制  MQTT订阅消息回调
     // at_attach_mqtt_callback();
 
 }
@@ -195,9 +195,8 @@ void at_mqtt_callback(void *pvParameters) {
             "command": "upgrade"
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
-    // String flagRSSI = "CSQ"; // 并发情况下 串口可能返回多条数据
-    bool isHasData = myMqttSerial.available() > 0 ? true : false;
-    while (isHasData) {
+    int isHasData = myMqttSerial.available() > 0 ? 1 : 0;
+    while (1) {
         Serial.println("------------------------------------");
         // Serial.println(myMqttSerial.available());
 /*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
@@ -225,22 +224,12 @@ void at_mqtt_callback(void *pvParameters) {
                 // 获取MQTT订阅消息后执行任务
                 do_at_mqtt_subscribe(json, topic);
             }
-        } /*else if (incomingByte.indexOf(flagRSSI) != -1) {
-            int startIndex = incomingByte.indexOf(flagRSSI);
-            String start = incomingByte.substring(startIndex);
-            int endIndex = start.indexOf("\n");
-            String end = start.substring(0, endIndex + 1);
-            String data = end.substring(0, end.length());
-            at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
-        }*/
-        /* else if (incomingByte.indexOf("+ECMTCONN: 0,0,0") != -1) {  // MQTT连接成功
-            printf("MQTT服务器连接成功");
-        }*/
+        }
 
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
 
-        // delay(10);
+        delay(10);
     }
 }
 
