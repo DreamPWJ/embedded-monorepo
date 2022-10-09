@@ -62,8 +62,8 @@ void init_at_mqtt() {
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
-    send_mqtt_at_command("AT+CEREG?\r\n", 3000, DEBUG); // 判断附着网络 参数1或5标识附着正常
-    delay(3000);
+    // send_mqtt_at_command("AT+CEREG?\r\n", 3000, DEBUG); // 判断附着网络 参数1或5标识附着正常
+    // delay(3000);
 
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, DEBUG); // 配置心跳时间
@@ -73,10 +73,16 @@ void init_at_mqtt() {
                          DEBUG, "+ECMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
 /*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
-    send_mqtt_at_command(
+    String conFlag = "+ECMTCONN: 0,0,0";
+    String connectResult = send_mqtt_at_command(
             "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
-            "\042\r\n", 10000, DEBUG, "+ECMTCONN: 0,0,0");
-    Serial.println("MQTT Broker 连接: " + client_id);
+            "\042\r\n", 10000, DEBUG, conFlag);
+    if (connectResult.indexOf(conFlag) != -1) {
+        Serial.println("MQTT Broker 连接成功: " + client_id);
+    } else {
+        Serial.println("初始化网络连接失败, 自动重启单片机设备...");
+        esp_restart();
+    }
 
     // 发布MQTT消息
     at_mqtt_publish(at_topics, "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息");
@@ -104,7 +110,7 @@ void init_at_mqtt() {
 #endif
 
     // 外部中断机制  MQTT订阅消息回调
-    // at_attach_mqtt_callback();
+   // at_interrupt_mqtt_callback();
 
 }
 
@@ -133,12 +139,24 @@ String send_mqtt_at_command(String command, const int timeout, boolean debug, St
 /**
  * MQTT订阅消息回调 中断机制
  */
-void at_attach_mqtt_callback() {
-    // 使用中断机制 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测
+void at_interrupt_mqtt_callback() {
+    // 参考文章: https://lastminuteengineers.com/handling-esp32-gpio-interrupts-tutorial/
+    //  https://dreamsourcelab.cn/%e6%8a%80%e6%9c%af%e6%96%87%e7%ab%a0/%e6%9c%80%e8%af%a6%e7%bb%86%e7%9a%84-%e9%80%9a%e8%ae%af%e5%8d%8f%e8%ae%ae-uart%e5%88%86%e6%9e%90-%e5%9c%a8%e8%bf%99%e9%87%8c/
+    // 使用外部中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测。 持续监控某种事件、时效性和资源使用情况更好
     // //将中断触发引脚 设置为INPUT_PULLUP（输入上拉）模式
-    //pinMode(PIN_RX, INPUT_PULLUP);
+    pinMode(PIN_RX, INPUT_PULLUP);
     // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
-    //attachInterrupt(digitalPinToInterrupt(PIN_RX), at_mqtt_callback, FALLING);
+    //   LOW：当针脚输入为低时，触发中断。
+    //   HIGH：当针脚输入为高时，触发中断。
+    //   CHANGE：当针脚输入发生改变时，触发中断。
+    //   RISING：当针脚输入由低变高时，触发中断。
+    //   FALLING：当针脚输入由高变低时，触发中断。
+/*    中断服务程序 (ISR) 是每次在 GPIO 引脚上发生中断时调用的函数
+    // 1. ISR 不能有任何参数，它们不应该返回任何东西 2. ISR 应该尽可能短和快，因为它们会阻止正常的程序执行 3. IRAM_ATTR 编译后的代码被放置在单片机的内部 RAM (IRAM)中, 因Flash 比内部 RAM 慢得多
+    void IRAM_ATTR ISR() {
+        Statements;
+    }*/
+    // attachInterrupt(PIN_RX, at_mqtt_callback, FALLING);
 }
 
 /**
@@ -203,44 +221,44 @@ void at_mqtt_callback(void *pvParameters) {
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
             delay(200);
         }*/
-            String incomingByte;
-            incomingByte = myMqttSerial.readString();
+        String incomingByte;
+        incomingByte = myMqttSerial.readString();
 #if DEBUG
-            Serial.println("------------------------------------");
-            Serial.println(incomingByte);
-            std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-            // at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
+        Serial.println("------------------------------------");
+        Serial.println(incomingByte);
+        std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
+        // at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
 #endif
 
-            if (incomingByte.indexOf(flag) != -1) {
-                int startIndex = incomingByte.indexOf(flag);
-                String start = incomingByte.substring(startIndex);
-                int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
-                String end = start.substring(0, endIndex + 1);
-                String data = end.substring(end.lastIndexOf("{"), end.length());
-                vector<string> dataArray = split(start.c_str(), ",");
-                String topic = dataArray[2].c_str();
-                // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
+        if (incomingByte.indexOf(flag) != -1) {
+            int startIndex = incomingByte.indexOf(flag);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(end.lastIndexOf("{"), end.length());
+            vector<string> dataArray = split(start.c_str(), ",");
+            String topic = dataArray[2].c_str();
+            // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
 #if DEBUG
-                Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
-                Serial.println(data);
+            Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
+            Serial.println(data);
 #endif
 
-                if (!data.isEmpty()) {
-                    DynamicJsonDocument json = string_to_json(data);
-                    // 获取MQTT订阅消息后执行任务
-                    do_at_mqtt_subscribe(json, topic);
-                }
-            } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
-                int startIndex = incomingByte.indexOf(flagRSSI);
-                String start = incomingByte.substring(startIndex);
-                int endIndex = start.indexOf("\n");
-                String end = start.substring(0, endIndex + 1);
-                String data = end.substring(0, end.length());
-                // NVS存储信号信息 用于MQTT上报
-                set_nvs("network_rssi", data.c_str());
-                // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
+            if (!data.isEmpty()) {
+                DynamicJsonDocument json = string_to_json(data);
+                // 获取MQTT订阅消息后执行任务
+                do_at_mqtt_subscribe(json, topic);
             }
+        } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
+            int startIndex = incomingByte.indexOf(flagRSSI);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("\n");
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(0, end.length());
+            // NVS存储信号信息 用于MQTT上报
+            set_nvs("network_rssi", data.c_str());
+            // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
+        }
 
             // 检测MQTT服务状态 如果失效自动重连
             at_mqtt_reconnect(incomingByte);
