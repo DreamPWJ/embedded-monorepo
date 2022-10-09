@@ -122,13 +122,22 @@ void init_uart(void) {
             .data_bits = UART_DATA_8_BITS,
             .parity = UART_PARITY_DISABLE,
             .stop_bits = UART_STOP_BITS_1,
-            .flow_ctrl = UART_HW_FLOWCTRL_CTS,
-            .source_clk = UART_SCLK_APB,
+            .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };
-    uart_driver_install(uart_num, BUF_SIZE * 2, 0, 0, NULL, 0);
+
     // Configure UART parameters
     ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
     uart_set_pin(uart_num, UART_ESP_TXD, UART_ESP_RXD, UART_ESP_RTS, UART_ESP_CTS);
+    // 必须要先uart_driver_install安装驱动
+    uart_driver_install(uart_num, BUF_SIZE * 2, 0, 0, NULL, 0);
+/*    // 在把串口中断服务给释放掉
+    uart_isr_free(uart_num);
+    // 重新注册串口中断服务函数
+    uart_isr_handle_t handle;
+    // 注册中断处理函数
+    uart_isr_register(uart_num, uart2_irq_handler, NULL, ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM, &handle);
+    //使能串口接收中断
+    uart_enable_rx_intr(uart_num); */
 
 /*    // 串口回环输出
     xTaskCreate(

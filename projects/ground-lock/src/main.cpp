@@ -25,10 +25,7 @@
 #include <radio_frequency.h>
 #include <json_utils.h>
 
-
 using namespace std;
-
-/*SoftwareSerial myMainSerial(PIN_RX, PIN_TX);*/
 
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
@@ -104,8 +101,8 @@ void setup() {
     // GSM网络版本执行OTA空中升级
     // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
-/*    pinMode(19, INPUT_PULLUP);
-    attachInterrupt(19, isr, FALLING);*/
+/*  pinMode(19, INPUT_PULLUP);
+    attachInterrupt(19, isr, FALLING); */
 }
 
 void loop() {
@@ -134,10 +131,16 @@ void loop() {
 
 }
 
-/*
-void serialEvent() {
+/**
+ * 串口中断入口
+ */
+/*void serialEvent() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
-    while (myMainSerial.available()) {
+    String rxData = "";
+    while (Serial.available()) {
         Serial.println("serialEvent()作为串口中断回调函数");
+        rxData += char(Serial.read());
+        delay(2); //这里不能去掉，要给串口处理数据的时间
     }
+    Serial.println(rxData);
 }*/
