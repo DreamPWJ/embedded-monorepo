@@ -209,7 +209,7 @@ void at_mqtt_callback(void *pvParameters) {
             Serial.println("------------------------------------");
             Serial.println(incomingByte);
             std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-            at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
+            // at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
 #endif
 
             if (incomingByte.indexOf(flag) != -1) {
@@ -257,8 +257,8 @@ void x_at_task_mqtt(void *pvParameters) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
-        String networkRSSI = get_nvs("network_rssi"); // 信号质量
         String firmwareVersion = get_nvs("firmware_version"); // 固件版本
+        String networkRSSI = get_nvs("network_rssi"); // 信号质量
         // float electricityValue = get_electricity(); // 电量值
         myMqttSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
         // 发送心跳消息
@@ -333,13 +333,15 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                     "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
                      "chipIds" : ""
                 }*/
-            Serial.println("MQTT通讯立刻执行OTA升级方法");
+
             String firmwareUrl = json["firmwareUrl"].as<String>();
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                Serial.println("MQTT通讯立刻执行OTA升级");
                 do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
             }
         } else if (command == "restart") { // 远程重启设备
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                Serial.println("远程重启单片机设备...");
                 esp_restart();
             }
         }

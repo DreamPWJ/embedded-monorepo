@@ -203,14 +203,14 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
                     "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
                      "chipIds" : ""
                 }*/
-            Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
-
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                Serial.println("MQTT通讯立刻执行OTA升级");
                 do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
             }
         } else if (command == "restart") {  // 远程重启设备
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                Serial.println("远程重启单片机设备...");
                 esp_restart();
             }
         }
