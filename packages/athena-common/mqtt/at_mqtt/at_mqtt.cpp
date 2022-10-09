@@ -286,7 +286,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
                 "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(1000 * 10); // 多久执行一次 毫秒
+        delay(1000 * 15); // 多久执行一次 毫秒
     }
 }
 

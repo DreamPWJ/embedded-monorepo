@@ -28,9 +28,7 @@
 
 using namespace std;
 
-/*#define PIN_RX 19
-#define PIN_TX 18
-SoftwareSerial myMainSerial(PIN_RX, PIN_TX);*/
+/*SoftwareSerial myMainSerial(PIN_RX, PIN_TX);*/
 
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
@@ -40,6 +38,10 @@ SoftwareSerial myMainSerial(PIN_RX, PIN_TX);*/
 
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
 SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
+
+/*void IRAM_ATTR isr() {
+    Serial.println("进入外部中断了");
+}*/
 
 void setup() {
     // 初始化设置代码
@@ -102,6 +104,8 @@ void setup() {
     // GSM网络版本执行OTA空中升级
     // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
+/*    pinMode(19, INPUT_PULLUP);
+    attachInterrupt(19, isr, FALLING);*/
 }
 
 void loop() {
