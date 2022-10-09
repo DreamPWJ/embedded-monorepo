@@ -318,8 +318,16 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
 
     // MQTT订阅消息处理
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
-        // MQTT通讯立刻执行OTA升级方法
-        if (command == "upgrade") {
+        String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
+        vector<string> array = split(chipIds.c_str(), ",");
+        bool isUpdateByDevice = false;
+        if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
+            Serial.print("根据设备标识进行指定设备OTA升级: ");
+            Serial.println(chipId);
+            isUpdateByDevice = true;
+        }
+
+        if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
             /*    {
                     "command": "upgrade",
                     "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
@@ -327,20 +335,13 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                 }*/
             Serial.println("MQTT通讯立刻执行OTA升级方法");
             String firmwareUrl = json["firmwareUrl"].as<String>();
-            String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
-            vector<string> array = split(chipIds.c_str(), ",");
-            bool isUpdateByDevice = false;
-            if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
-                Serial.print("根据设备标识进行指定设备OTA升级: ");
-                Serial.println(chipId);
-                isUpdateByDevice = true;
-            }
-
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
                 do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
             }
-        } else if (command == "restart") {
-            esp_restart();
+        } else if (command == "restart") { // 远程重启设备
+            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                esp_restart();
+            }
         }
     }
 
