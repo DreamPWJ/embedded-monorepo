@@ -11,11 +11,11 @@
 
 void init_nb_iot();
 
-String send_at_command(String command, const int timeout, boolean debug, String successResult = "OK");
+String send_at_command(String command, const int timeout, boolean isDebug, String successResult = "OK");
 
 void at_command_response();
 
-void nb_iot_heart_beat( void *pvParameters); // void *pvParameters
+void nb_iot_heart_beat(void *pvParameters); // void *pvParameters
 
 void restart_nb_iot();
 

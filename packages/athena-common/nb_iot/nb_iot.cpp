@@ -13,7 +13,7 @@
 
 using namespace std;
 
-#define DEBUG true
+#define IS_DEBUG true
 
 #define PIN_RX 19
 #define PIN_TX 18
@@ -66,15 +66,15 @@ void init_nb_iot() {
     restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
     // myNBSerial.printf("AT\r\n"); // 测试AT指令
-    // send_at_command("AT+ECICCID\r\n", 5000, DEBUG); // 查看SIM ID号
+    // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
 
-    send_at_command("AT+CGATT=1\r\n", 6000, DEBUG); // // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
+    send_at_command("AT+CGATT=1\r\n", 6000, IS_DEBUG); // // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
     send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 8000,
-                    DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
-    send_at_command("AT+CGACT=1\r\n", 3000, DEBUG); // 激活网络
-    send_at_command("AT+CREG=1\r\n", 3000, DEBUG); // 注册网络
-    send_at_command("AT+CSQ\r\n", 2000, DEBUG); // 信号质量
-    // send_at_command("AT+ECIPR=115200\r\n", 2000, DEBUG); // 设置模组AT串口通信波特率
+                    IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+    send_at_command("AT+CGACT=1\r\n", 3000, IS_DEBUG); // 激活网络
+    send_at_command("AT+CREG=1\r\n", 3000, IS_DEBUG); // 注册网络
+    send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
+    // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
     //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
     //  }
@@ -99,7 +99,7 @@ void init_nb_iot() {
 /**
  * 发送AT指令
  */
-String send_at_command(String command, const int timeout, boolean debug, String successResult) {
+String send_at_command(String command, const int timeout, boolean isDebug, String successResult) {
     String response = "";
     myNBSerial.print(command);
     long int time = millis();
@@ -112,7 +112,7 @@ String send_at_command(String command, const int timeout, boolean debug, String 
             break;
         }
     }
-    if (debug) {
+    if (isDebug) {
         Serial.println(command + "AT指令响应数据: " + response);
     }
     return response;
