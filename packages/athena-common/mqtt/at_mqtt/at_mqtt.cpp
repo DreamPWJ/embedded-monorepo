@@ -198,7 +198,6 @@ void at_mqtt_callback(void *pvParameters) {
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     while (1) {
         if (myMqttSerial.available() > 0) {
-            Serial.println("------------------------------------");
             // Serial.println(myMqttSerial.available());
 /*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
@@ -206,7 +205,12 @@ void at_mqtt_callback(void *pvParameters) {
         }*/
             String incomingByte;
             incomingByte = myMqttSerial.readString();
+#if DEBUG
+            Serial.println("------------------------------------");
             Serial.println(incomingByte);
+            std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
+            at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
+#endif
 
             if (incomingByte.indexOf(flag) != -1) {
                 int startIndex = incomingByte.indexOf(flag);
@@ -217,21 +221,25 @@ void at_mqtt_callback(void *pvParameters) {
                 vector<string> dataArray = split(start.c_str(), ",");
                 String topic = dataArray[2].c_str();
                 // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
+#if DEBUG
                 Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
                 Serial.println(data);
+#endif
 
                 if (!data.isEmpty()) {
                     DynamicJsonDocument json = string_to_json(data);
                     // 获取MQTT订阅消息后执行任务
                     do_at_mqtt_subscribe(json, topic);
                 }
-            } else if (incomingByte.indexOf(flagRSSI) != -1) {
+            } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
                 int startIndex = incomingByte.indexOf(flagRSSI);
                 String start = incomingByte.substring(startIndex);
                 int endIndex = start.indexOf("\n");
                 String end = start.substring(0, endIndex + 1);
                 String data = end.substring(0, end.length());
-                at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
+                // NVS存储信号信息 用于MQTT上报
+                set_nvs("network_rssi", data.c_str());
+                // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
             }
 
             // 检测MQTT服务状态 如果失效自动重连
@@ -249,13 +257,16 @@ void x_at_task_mqtt(void *pvParameters) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
-        // String networkRSSI = get_nvs("network_rssi"); // 信号质量
+        String networkRSSI = get_nvs("network_rssi"); // 信号质量
+        String firmwareVersion = get_nvs("firmware_version"); // 固件版本
         // float electricityValue = get_electricity(); // 电量值
         myMqttSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
         // 发送心跳消息
         string jsonData =
                 "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
-                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
+                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
+                "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
+                "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
         delay(1000 * 10); // 多久执行一次 毫秒
     }
@@ -294,7 +305,9 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     digitalWrite(pin, LOW);
     delay(1000);*/
 
+#if DEBUG
     Serial.println("指令类型: " + command);
+#endif
 
     uint64_t chipId;
     try {
