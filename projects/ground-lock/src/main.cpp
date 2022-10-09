@@ -52,7 +52,7 @@ void setup() {
 
     // 初始化非易失性存储
     int_nvs();
-    set_nvs("firmware_version", String(FIRMWARE_VERSION));
+    bool isVersion = set_nvs("version", FIRMWARE_VERSION);
 
 #if WIFI_EN
     // 初始化WiFi无线网络

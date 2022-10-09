@@ -38,7 +38,7 @@ float get_electricity() {
     // set the resolution bits (0-4096)
     analogReadResolution(6); // 衰减值
     int GPIO = 4; // 监控电池电量IO引脚 必须是模拟数字输入ADC
-    float in_max = 1145.0f; // 输出最大电压伏
+    float in_max = 12.0f; // 输出最大电压伏
     // pinMode(GPIO, ANALOG);
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
     int analogValue = analogRead(GPIO);   // 获取模拟值
