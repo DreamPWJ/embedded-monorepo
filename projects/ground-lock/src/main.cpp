@@ -32,6 +32,7 @@ using namespace std;
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1   // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
+#define IS_DEBUG true  // 是否调试模式
 
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
 SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB

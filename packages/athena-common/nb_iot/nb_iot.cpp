@@ -13,7 +13,7 @@
 
 using namespace std;
 
-#define IS_DEBUG true
+#define IS_DEBUG true // 是否调试模式
 
 #define PIN_RX 19
 #define PIN_TX 18
