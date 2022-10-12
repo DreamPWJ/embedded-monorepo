@@ -55,9 +55,9 @@ void setup() {
     // key关键字与系统默认内置关键字冲突 会导致存储失败
     bool isVersion = set_nvs("version", FIRMWARE_VERSION);
 
-    // 常量类调用
-/*    const BizConstants constants;
-    Serial.println(constants.AGE);*/
+    // 常量类调用示例
+    const BizConstants bizConstants;
+    Serial.println(bizConstants.NAME.c_str());
 
 #if WIFI_EN
     // 初始化WiFi无线网络

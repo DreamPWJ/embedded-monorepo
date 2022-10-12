@@ -1,5 +1,9 @@
 #include "BizConstants.h"
 
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 /**
 * @author 潘维吉
@@ -13,3 +17,5 @@
 */
 
 const int BizConstants::AGE;
+
+const string BizConstants::NAME("潘维吉");
