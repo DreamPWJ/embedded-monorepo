@@ -17,6 +17,9 @@ String get_nvs(String key) {
     return NVS.getString(key);
 }
 
+/**
+ * key关键字与系统默认内置关键字冲突 会导致存储失败
+ */
 bool set_nvs(String key, String data) {
     return NVS.setString(key, data);
 }
