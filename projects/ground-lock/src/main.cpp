@@ -1,6 +1,7 @@
 #include <common.h>
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <BizConstants.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <led_pin.h>
@@ -53,6 +54,10 @@ void setup() {
     int_nvs();
     // key关键字与系统默认内置关键字冲突 会导致存储失败
     bool isVersion = set_nvs("version", FIRMWARE_VERSION);
+
+    // 常量类调用
+/*    const BizConstants constants;
+    Serial.println(constants.AGE);*/
 
 #if WIFI_EN
     // 初始化WiFi无线网络

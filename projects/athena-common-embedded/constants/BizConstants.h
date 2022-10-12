@@ -10,7 +10,7 @@ using namespace std;
 */
 
 class BizConstants {
-
+public:
     static const int AGE = 18;
 
 };
