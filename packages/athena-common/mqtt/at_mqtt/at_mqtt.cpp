@@ -140,6 +140,7 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
  * MQTT发送消息
  */
 void at_mqtt_publish(String topic, String msg) {
+    // 并发控制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     myMqttSerial.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
@@ -264,7 +265,7 @@ void x_at_task_mqtt(void *pvParameters) {
                 "\"electricity\":\"" + electricityValue.c_str() + "\"," +
                 "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
-        delay(1000 * 30); // 多久执行一次 毫秒
+        delay(1000 * 600); // 多久执行一次 毫秒
     }
 }
 
