@@ -91,7 +91,7 @@ bool scan_wifi() {
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
             Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");*/
-            if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络
+            if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络 无密码
                 Serial.println("扫描发现有开放WiFi网络");
                 String openSSID = WiFi.SSID(i);
                 Serial.println(openSSID);

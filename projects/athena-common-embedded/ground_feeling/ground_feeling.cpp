@@ -58,14 +58,14 @@ void x_task_ground_feeling_status(void *pvParameters) {
         if (lastTimeStatus == 0 && status == 1) {
             // 车辆驶入
             string jsonData =
-                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"\"" + to_string(chipId) +
+                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
                     "\",\"parkingStatus\":\"" + to_string(status) +
                     "\"}";
             at_mqtt_publish(topic, jsonData.c_str());
         } else if (lastTimeStatus == 1 && status == 0) {
             // 车辆驶出
             string jsonData =
-                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"\"" + to_string(chipId) +
+                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
                     "\",\"parkingStatus\":\"" + to_string(status) +
                     "\"}";
             at_mqtt_publish(topic, jsonData.c_str());
