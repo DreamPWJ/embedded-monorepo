@@ -98,6 +98,7 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         // 上报MQTT消息
         string jsonDataDo = "{\"msg\":\"发现新版本了, 开始执行OTA空中升级\",\"chipId\":\"" + to_string(chipId) + "\"}";
         at_mqtt_publish(ota_topic, jsonDataDo.c_str());
+        delay(1000);
 #endif
         esp_http_client_config_t config = {
                 .url = file_url.c_str(),
@@ -114,12 +115,12 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
             /*    digitalWrite(18, HIGH);
                   delay(2000); */
 #if WIFI_ONLY_OTA
+            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
+            WiFi.disconnect();
             // 上报MQTT消息
             string jsonDataSuccess = "{\"msg\":\"执行OTA空中升级成功了\",\"chipId\":\"" + to_string(chipId) + "\"}";
             at_mqtt_publish(ota_topic, jsonDataSuccess.c_str());
             delay(1000);
-            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
-            WiFi.disconnect();
 #endif
             esp_restart();
         } else {
