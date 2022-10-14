@@ -29,7 +29,7 @@ using namespace std;
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
-#define IS_DEBUG true  // 是否调试模式
+#define IS_DEBUG false  // 是否调试模式
 
 #define PIN_RX 19
 #define PIN_TX 18
