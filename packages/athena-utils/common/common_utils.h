@@ -12,7 +12,6 @@ using namespace std;
 * @description 通用工具类
 */
 
-
 vector<string> split(const string &str, const string &pattern);
 
 template<typename ... Args>

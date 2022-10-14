@@ -27,7 +27,7 @@ vector<string> split(const string &str, const string &pattern) {
     while (pos != strs.npos) {
         string temp = strs.substr(0, pos);
         res.push_back(temp);
-        // 去掉已分割的字符串,在剩下的字符串中进行分割
+        // 去掉已分割的字符串, 在剩下的字符串中进行分割
         strs = strs.substr(pos + 1, strs.size());
         pos = strs.find(pattern);
     }

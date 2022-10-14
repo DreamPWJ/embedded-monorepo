@@ -88,7 +88,7 @@ void init_at_mqtt() {
     at_mqtt_publish(at_topics, "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息");
     delay(1000);
     // 订阅MQTT主题消息
-    // myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", at_topics);
+    // at_mqtt_subscribe(at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     at_mqtt_subscribe(topic_device.c_str()); // 设备单独的主题订阅
     delay(1000);
@@ -143,7 +143,7 @@ void at_mqtt_publish(String topic, String msg) {
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     myMqttSerial.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
-    delay(10);
+    delay(20); // 处理弱网络下并发问题
 }
 
 /**
