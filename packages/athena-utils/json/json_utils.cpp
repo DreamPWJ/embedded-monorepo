@@ -47,14 +47,14 @@ DynamicJsonDocument string_to_json(String data) {
 /**
 * 将Json格式转换成String
 */
-String json_to_string(JsonObject data) {
-    DynamicJsonDocument doc(2048);
+String json_to_string(JsonObject json) {
+/*    DynamicJsonDocument doc(2048);
     JsonObject obj = doc.as<JsonObject>();
     // 将数据键值对赋值
     obj["name"] = "潘维吉";
-    obj["age"] = 18;
+    obj["age"] = 18;*/
     String jsonStr;
-    serializeJson(doc, jsonStr);
+    serializeJson(json, jsonStr);
     return jsonStr;
 }
 

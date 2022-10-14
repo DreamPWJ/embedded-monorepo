@@ -214,6 +214,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
                 esp_restart();
             }
         }
+        return;
     }
 
     if (command == "raise") {

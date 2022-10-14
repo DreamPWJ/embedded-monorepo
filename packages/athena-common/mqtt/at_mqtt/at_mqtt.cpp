@@ -85,9 +85,7 @@ void init_at_mqtt() {
     }
 
     // 发布MQTT消息
-    string initJsonData =
-            "{\"type\":\"init\",\"msg\":\"你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息\"}";
-    at_mqtt_publish(at_topics, initJsonData.c_str());
+    at_mqtt_publish(at_topics, "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息");
     delay(1000);
     // 订阅MQTT主题消息
     // at_mqtt_subscribe(at_topics);
@@ -215,7 +213,7 @@ void at_mqtt_callback(void *pvParameters) {
                 int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
                 String end = start.substring(0, endIndex + 1);
                 String data = end.substring(end.lastIndexOf("{"), end.length());
-                vector <string> dataArray = split(start.c_str(), ",");
+                vector<string> dataArray = split(start.c_str(), ",");
                 String topic = dataArray[2].c_str();
                 // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
 #if IS_DEBUG
@@ -256,7 +254,7 @@ void x_at_task_mqtt(void *pvParameters) {
         int parkingStatus = ground_feeling_status(); // 是否有车
         String firmwareVersion = get_nvs("version"); // 固件版本
         String networkRSSI = get_nvs("network_rssi"); // 信号质量
-        vector <string> array = split(to_string(get_electricity()), "."); // 电量值
+        vector<string> array = split(to_string(get_electricity()), "."); // 电量值
         String electricityValue = array[0].c_str();
         myMqttSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
         // 发送心跳消息
@@ -318,7 +316,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
-        vector <string> array = split(chipIds.c_str(), ",");
+        vector<string> array = split(chipIds.c_str(), ",");
         bool isUpdateByDevice = false;
         if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
             Serial.print("根据设备标识进行指定设备OTA升级: ");
@@ -343,6 +341,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                 esp_restart();
             }
         }
+        return;
     }
 
     if (command == "raise") { // 电机升起指令
