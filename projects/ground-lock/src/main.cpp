@@ -60,7 +60,6 @@ void setup() {
     // 常量与工具类调用示例
     const BizConstants bizConstants;
     Serial.println(bizConstants.NAME.c_str());
-    Serial.println(TimeUtil::getDateTime().c_str());
 
 #if WIFI_EN
     // 初始化WiFi无线网络
@@ -72,6 +71,8 @@ void setup() {
     // 初始化NB-IoT网络协议
     init_nb_iot();
 #endif
+
+    Serial.println(TimeUtil::getDateTime().c_str());
 
     // WiFi网络版本HTTP请求
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
@@ -115,7 +116,7 @@ void setup() {
 
 void loop() {
     // 循环执行代码
-    // delay(2000);
+    // delay(1000);
     // 开发板LED 闪动的实现
     set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
