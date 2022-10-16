@@ -15,6 +15,8 @@
 #include <ota.h>
 #include <ground_feeling.h>
 #include <common_utils.h>
+#include <mcu_nvs.h>
+#include <device_info.h>
 
 using namespace std;
 
@@ -53,7 +55,7 @@ void init_mqtt() {
     Serial.println("初始化MQTT客户端");
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
-    client.setKeepAlive(90); // 保持连接多少秒
+    client.setKeepAlive(120); // 保持连接多少秒
     client.setCallback(mqtt_callback);
     String client_id = mqttName + "-";
     string chip_id = to_string(get_chip_mac());
@@ -133,21 +135,31 @@ void mqtt_heart_beat() {
 void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
-        mqtt_reconnect();
-        int deviceStatus = get_pwm_status(); // 设备电机状态
-        int parkingStatus = ground_feeling_status(); // 是否有车
-        // String networkRSSI = get_nvs("network_rssi"); // 是否有车
-        // float electricityValue = get_electricity(); // 电量值
-
-        // 发送心跳消息
-        string jsonData =
-                "{\"command\":\"WIFI-heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) +
-                "\",\"deviceStatus\":\"" +
-                to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
-        // 发送心跳消息
-        client.publish(topics, jsonData.c_str());
-        delay(1000 * 10); // 多久执行一次 毫秒
+        do_mqtt_heart_beat();
+        delay(1000 * 30); // 多久执行一次 毫秒
     }
+}
+
+/**
+ * 执行MQTT心跳
+ */
+void do_mqtt_heart_beat() {
+    mqtt_reconnect();
+    int deviceStatus = get_pwm_status(); // 设备电机状态
+    int parkingStatus = ground_feeling_status(); // 是否有车
+    String firmwareVersion = get_nvs("version"); // 固件版本
+    String networkRSSI = get_nvs("network_rssi"); // 信号质量
+    vector<string> array = split(to_string(get_electricity()), "."); // 电量值
+    String electricityValue = array[0].c_str();
+    // 发送心跳消息
+    string jsonData =
+            "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +
+            to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
+            "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
+            "\"electricity\":\"" + electricityValue.c_str() + "\"," +
+            "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
+    // 发送心跳消息
+    client.publish(topics, jsonData.c_str());
 }
 
 /**
@@ -217,7 +229,9 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
         return;
     }
 
-    if (command == "raise") {
+    if (command == "heartbeat") { // 心跳指令
+        do_mqtt_heart_beat();
+    } else if (command == "raise") {
         set_motor_up();
     } else if (command == "putdown") {
         set_motor_down();
