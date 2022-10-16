@@ -24,6 +24,7 @@
 #include <infrared_signals.h>
 #include <radio_frequency.h>
 #include <json_utils.h>
+#include <TimeUtil.h>
 
 using namespace std;
 
@@ -56,9 +57,10 @@ void setup() {
     // key关键字与系统默认内置关键字冲突 会导致存储失败
     bool isVersion = set_nvs("version", FIRMWARE_VERSION);
 
-    // 常量类调用示例
+    // 常量与工具类调用示例
     const BizConstants bizConstants;
     Serial.println(bizConstants.NAME.c_str());
+    Serial.println(TimeUtil::getDateTime().c_str());
 
 #if WIFI_EN
     // 初始化WiFi无线网络

@@ -29,6 +29,8 @@ void at_mqtt_reconnect(String incomingByte);
 
 void at_mqtt_heart_beat();
 
+void do_at_mqtt_heart_beat();
+
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic);
 
 #endif
