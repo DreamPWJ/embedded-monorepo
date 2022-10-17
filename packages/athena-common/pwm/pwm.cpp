@@ -144,7 +144,6 @@ void set_motor_up() {
             break;
         }
     }
-
 }
 
 /**
@@ -224,9 +223,6 @@ int get_pwm_status() {
         return 1;
     } else if (upper_limit == 1 && lower_limit == 0) {
         ledcWrite(channel_PWMB, 0);
-        // 两个高电平制动模式
-/*      digitalWrite(PWM_PinA, HIGH);
-        digitalWrite(PWM_PinB, HIGH);*/
         //Serial.println("电机下限位状态触发");
         return 0;
     } else if (upper_limit == 1 && lower_limit == 1) {
