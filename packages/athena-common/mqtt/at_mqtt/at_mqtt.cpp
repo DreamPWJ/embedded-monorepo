@@ -85,7 +85,12 @@ void init_at_mqtt() {
     }
 
     // 发布MQTT消息
-    at_mqtt_publish(at_topics, "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息");
+    DynamicJsonDocument doc(200);
+    doc["type"] = "initMQTT";
+    doc["msg"] = "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息";
+    String initStr;
+    serializeJson(doc, initStr);
+    at_mqtt_publish(at_topics, initStr.c_str());
     delay(1000);
     // 订阅MQTT主题消息
     // at_mqtt_subscribe(at_topics);
