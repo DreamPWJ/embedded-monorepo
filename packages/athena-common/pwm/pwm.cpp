@@ -34,7 +34,7 @@ using namespace std;
 ** ledc: 15 => Group: 1, Channel: 7, Timer: 3
 */
 
-#define IS_DEBUG false  // 是否调试模式
+#define IS_DEBUG true  // 是否调试模式
 
 // PWM控制引脚GPIO
 const int PWM_PinA = 3;
@@ -136,6 +136,8 @@ void set_motor_up() {
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
+            string jsonDataUP = "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机抬起运行超时了\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
+            at_mqtt_publish(common_topic, jsonDataUP.c_str());
             ledcWrite(channel_PWMA, 0); // 停止电机
             break;
         }
@@ -178,6 +180,8 @@ void set_motor_down() {
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
+            string jsonDataDown = "{\"command\":\"exception\",\"code\":\"1002\",\"msg\":\"车位锁电机降落运行超时了\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
+            at_mqtt_publish(common_topic, jsonDataDown.c_str());
             ledcWrite(channel_PWMB, 0); // 停止电机
             break;
         }
