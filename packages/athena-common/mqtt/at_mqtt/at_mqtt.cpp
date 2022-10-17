@@ -80,7 +80,7 @@ void init_at_mqtt() {
     if (connectResult.indexOf(conFlag) != -1) {
         Serial.println("MQTT Broker 连接成功: " + client_id);
     } else {
-        Serial.println("初始化网络连接失败, 自动重启单片机设备...");
+        Serial.println("MQTT初始化网络连接失败, 自动重启单片机设备...");
         esp_restart();
     }
 
@@ -270,7 +270,6 @@ void do_at_mqtt_heart_beat() {
     String networkRSSI = get_nvs("network_rssi"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
-    myMqttSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
     // 发送心跳消息
     string jsonData =
             "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +

@@ -73,26 +73,25 @@ void init_nb_iot() {
                     IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     send_at_command("AT+CGACT=1\r\n", 3000, IS_DEBUG); // 激活网络
     send_at_command("AT+CREG=1\r\n", 3000, IS_DEBUG); // 注册网络
-    send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
+    // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
     // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
     //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
     //  }
 
     // NB模块心跳检测网络
-    // nb_iot_heart_beat();
-/*#if !USE_MULTI_CORE
+#if !USE_MULTI_CORE
     xTaskCreate(
             nb_iot_heart_beat,
             "nb_iot_heart_beat",
-            8192,
+            1024 * 2,
             NULL,
-            7,
+            8,
             NULL);
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
     xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
-#endif*/
+#endif
 
 }
 
@@ -131,37 +130,18 @@ void at_command_response() {
  * NB模块心跳检测网络
  */
 void nb_iot_heart_beat(void *pvParameters) {
-    /*   unsigned long tm = millis();
-       while (millis() - tm <= 10000) { // myNBSerial.available()
-           myNBSerial.printf("AT+CREG?\r\n"); // 查询命令返回当前网络注册状态
-           delay(1000);
-           myNBSerial.printf("AT+CSQ\r\n"); // 获取信号质量 如RSSI
-           delay(1000);
-           // 等待数据返回结果
-           String flag1 = "+CME ERROR:";
-           String flag2 = "+CSQ";
-           String incomingByte;
-           incomingByte = myNBSerial.readString();
-           Serial.println(incomingByte);
-           if (incomingByte.indexOf(flag1) != -1) {
-               // 心跳检测NB网络 异常重启NB模块芯片
-               init_nb_iot();
-           } else if (incomingByte.indexOf(flag2) != -1) {
-               vector<string> dataArray = split(incomingByte.c_str(), ",");
-               String rssi = dataArray[0].c_str();
-               Serial.println(rssi);
-               // NVS存储信号信息 用于MQTT上报
-               set_nvs("network_rssi", rssi);
-               const char *topics = "ESP32/common";
-               at_mqtt_publish(topics, rssi);
-           }
-
-       }*/
     while (1) {
-        delay(1000 * 20);
         myNBSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
+        delay(2000);
+        String networkRSSI = get_nvs("network_rssi"); // 信号质量
+        vector<string> dataArray = split(networkRSSI.c_str(), ",");
+        String rssi = dataArray[0].c_str();
+        // Serial.println(rssi);
+        if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
+            init_nb_iot();
+        }
+        delay(1000 * 30);
     }
-
 }
 
 /**
