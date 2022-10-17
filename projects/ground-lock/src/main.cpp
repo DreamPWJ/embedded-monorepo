@@ -72,7 +72,7 @@ void setup() {
     init_nb_iot();
 #endif
 
-    Serial.println(TimeUtil::getDateTime().c_str());
+    // Serial.println(TimeUtil::getDateTime().c_str());
 
     // WiFi网络版本HTTP请求
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
