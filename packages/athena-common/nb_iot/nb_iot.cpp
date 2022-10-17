@@ -140,7 +140,7 @@ void nb_iot_heart_beat(void *pvParameters) {
         if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
             init_nb_iot();
         }
-        delay(1000 * 30);
+        delay(1000 * 60);
     }
 }
 
