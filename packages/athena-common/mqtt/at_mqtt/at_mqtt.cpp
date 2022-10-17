@@ -88,6 +88,7 @@ void init_at_mqtt() {
     DynamicJsonDocument doc(200);
     doc["type"] = "initMQTT";
     doc["msg"] = "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息";
+    doc["version"] = get_nvs("version");
     String initStr;
     serializeJson(doc, initStr);
     at_mqtt_publish(at_topics, initStr.c_str());
@@ -191,15 +192,14 @@ void at_mqtt_reconnect(String incomingByte) {
 void at_mqtt_callback(void *pvParameters) {
     Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据
-    /* +ECMTRECV: 0,0,"ESP32/common",{
+    /* +ECMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     while (1) {
         if (myMqttSerial.available() > 0) {
-            // Serial.println(myMqttSerial.available());
-/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据
+/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
             delay(200);
         }*/
@@ -306,13 +306,6 @@ void at_mqtt_heart_beat() {
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
-/*  int pin = 4;
-    pinMode(pin, OUTPUT);
-    *//* 开发板LED 闪动的实现 方便观测程序运行 *//*
-    digitalWrite(pin, HIGH);
-    delay(1000);
-    digitalWrite(pin, LOW);
-    delay(1000); */
 
 #if IS_DEBUG
     Serial.println("指令类型: " + command);

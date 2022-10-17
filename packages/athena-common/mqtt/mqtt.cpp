@@ -65,15 +65,21 @@ void init_mqtt() {
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("MQTT Broker 已连接成功");
         } else {
-            Serial.print("MQTT状态失败 ");
+            Serial.print("MQTT连接失败 ");
             Serial.print(client.state());
             delay(2000);
         }
     }
     // 订阅与发布 publish and subscribe
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-    client.publish(topic_device.c_str(), " 你好, MQTT服务器, 我是ESP32单片机发布的初始化消息 ");
-
+    DynamicJsonDocument doc(200);
+    doc["type"] = "initMQTT";
+    doc["msg"] = "你好, MQTT服务器, 我是" + client_id + "单片机发布的初始化消息";
+    doc["version"] = get_nvs("version");
+    String initStr;
+    serializeJson(doc, initStr);
+    client.publish(topics, initStr.c_str());
+    delay(1000);
     client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
     client.subscribe("ESP32/system");  // 系统相关主题订阅
 }
@@ -136,7 +142,7 @@ void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         do_mqtt_heart_beat();
-        delay(1000 * 30); // 多久执行一次 毫秒
+        delay(1000 * 60); // 多久执行一次 毫秒
     }
 }
 
