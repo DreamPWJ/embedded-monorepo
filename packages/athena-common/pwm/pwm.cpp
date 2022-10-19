@@ -75,7 +75,7 @@ void init_motor() {
     pinMode(motor_upper_limit, INPUT_PULLUP);
     pinMode(motor_lower_limit, INPUT_PULLUP);
 /*    pinMode(Motor_INA1, OUTPUT);
-    pinMode(Motor_INA2, OUTPUT);*/
+      pinMode(Motor_INA2, OUTPUT); */
     /*  pinMode(Motor_INB1, OUTPUT);
       pinMode(Motor_INB2, OUTPUT); */
 
@@ -88,6 +88,8 @@ void init_motor() {
 /**
  * 控制电机马达抬起
  */
+int channel_PWMA_duty;
+
 void set_motor_up() {
 #if IS_DEBUG
     // 上报MQTT消息
@@ -107,18 +109,20 @@ void set_motor_up() {
     if (get_pwm_status() == 1) { // 如果已经在上限位 不触发电机
         return;
     }
-    int overtime = 10;// 超时时间 秒s
+
+    channel_PWMA_duty = 1024; // PWM速度值
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
+    stop_down_motor(); // 停止反向电机
+
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
-    int channel_PWMA_duty = 1024;
     ledcWrite(channel_PWMA, channel_PWMA_duty);
-    ledcWrite(channel_PWMB, 0);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     delay(600);
-    while (get_pwm_status() == 2) {
+    while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
         costA = difftime(endA, startA);
@@ -130,9 +134,9 @@ void set_motor_up() {
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
-            ledcWrite(channel_PWMA, channel_PWMA_duty);
             ledcWrite(channel_PWMB, 0);
-            channel_PWMA_duty = channel_PWMA_duty - 1;
+            ledcWrite(channel_PWMA, channel_PWMA_duty);
+            channel_PWMA_duty = channel_PWMA_duty - 2;
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
@@ -149,6 +153,8 @@ void set_motor_up() {
 /**
  * 控制电机马达落下
  */
+int channel_PWMB_duty;
+
 void set_motor_down() {
 #if IS_DEBUG
     // 上报MQTT消息
@@ -159,25 +165,27 @@ void set_motor_down() {
     if (get_pwm_status() == 0) { // 如果已经在下限位 不触发电机
         return;
     }
-    int overtime = 10;// 超时时间 秒s
+
+    channel_PWMB_duty = 1024; // PWM速度值
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
+    stop_up_motor(); // 停止正向电机
+
     time_t startB = 0, endB = 0;
     double costB; // 时间差 秒
     time(&startB);
-    int channel_PWMB_duty = 1024;
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    ledcWrite(channel_PWMA, 0);
     delay(600);
-    while (get_pwm_status() == 2) {
+    while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
         if (costB >= 3) { // 电机运行过半减速
-            ledcWrite(channel_PWMB, channel_PWMB_duty);
             ledcWrite(channel_PWMA, 0);
-            channel_PWMB_duty = channel_PWMB_duty - 1;
+            ledcWrite(channel_PWMB, channel_PWMB_duty);
+            channel_PWMB_duty = channel_PWMB_duty - 2;
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
@@ -197,6 +205,22 @@ void set_motor_down() {
 void stop_motor() {
     ledcWrite(channel_PWMA, 0);
     ledcWrite(channel_PWMB, 0);
+}
+
+/**
+ * 停止正向电机
+ */
+void stop_up_motor() {
+    channel_PWMA_duty = 0;
+    ledcWrite(channel_PWMA, channel_PWMA_duty);
+}
+
+/**
+ * 停止反向电机
+ */
+void stop_down_motor() {
+    channel_PWMB_duty = 0;
+    ledcWrite(channel_PWMB, channel_PWMB_duty);
 }
 
 /**
