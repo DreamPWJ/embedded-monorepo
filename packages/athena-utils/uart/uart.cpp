@@ -136,7 +136,7 @@ void init_uart(void) {
     uart_isr_handle_t handle;
     // 注册中断处理函数
     uart_isr_register(uart_num, uart2_irq_handler, NULL, ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM, &handle);
-    //使能串口接收中断
+    // 使能串口接收中断
     uart_enable_rx_intr(uart_num); */
 
 /*    // 串口回环输出

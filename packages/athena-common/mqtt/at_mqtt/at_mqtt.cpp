@@ -208,11 +208,13 @@ void at_mqtt_callback(void *pvParameters) {
 #if IS_DEBUG
             Serial.println("------------------------------------");
             Serial.println(incomingByte);
-            std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-            // at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());
 #endif
 
             if (incomingByte.indexOf(flag) != -1) {
+#if IS_DEBUG
+                std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
+                at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
+#endif
                 int startIndex = incomingByte.indexOf(flag);
                 String start = incomingByte.substring(startIndex);
                 int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
