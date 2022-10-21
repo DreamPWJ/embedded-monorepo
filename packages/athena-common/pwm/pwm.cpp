@@ -99,11 +99,11 @@ void set_motor_up() {
 
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
+        Serial.println("地感判断有车地锁不能抬起");
         string jsonDataGF =
                 "{\"command\":\"exception\",\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
                 "\"}";
         at_mqtt_publish(common_topic, jsonDataGF.c_str());
-        Serial.println("地感判断有车地锁不能抬起");
         return;
     }
     if (get_pwm_status() == 1) { // 如果已经在上限位 不触发电机
