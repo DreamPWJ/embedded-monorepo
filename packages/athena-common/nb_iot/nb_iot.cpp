@@ -10,6 +10,7 @@
 #include <string>
 #include <common_utils.h>
 #include <at_mqtt/at_mqtt.h>
+#include <chip_info.h>
 
 using namespace std;
 
@@ -139,6 +140,15 @@ void nb_iot_heart_beat(void *pvParameters) {
         String rssi = dataArray[0].c_str();
         // Serial.println(rssi);
         if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
+            string chip_id = to_string(get_chip_mac());
+            DynamicJsonDocument doc(200);
+            doc["type"] = "reconnectNBIoT";
+            doc["msg"] = "检测重连NB-IoT网络服务: " + chip_id + "单片机发布的消息";
+            String initStr;
+            serializeJson(doc, initStr);
+            std::string mcu_topic = "ESP32/common";
+            at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
+
             init_nb_iot();
         }
         delay(1000 * 60);

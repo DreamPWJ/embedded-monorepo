@@ -183,6 +183,13 @@ void at_mqtt_reconnect(String incomingByte) {
     if (incomingByte.indexOf(flag) != -1) {
         Serial.println("AT指令重连MQTT服务");
         init_at_mqtt(); // 重连MQTT服务
+
+        DynamicJsonDocument doc(200);
+        doc["type"] = "reconnectMQTT";
+        doc["msg"] = "检测重连MQTT服务完成: " + to_string(get_chip_mac()) + "单片机发布的消息";
+        String initStr;
+        serializeJson(doc, initStr);
+        at_mqtt_publish(at_topics, initStr.c_str());
     }
 }
 

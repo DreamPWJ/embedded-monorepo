@@ -103,7 +103,7 @@ void setup() {
     doc["msg"] = "你好, 我是" + chip_id + "单片机MCU嵌入式程序开始启动消息";
     String initStr;
     serializeJson(doc, initStr);
-    std::string mcu_topic = "ESP32/" + chip_id;
+    std::string mcu_topic = "ESP32/common"; // + chip_id
     at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
 #endif
 
