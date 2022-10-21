@@ -95,6 +95,18 @@ void setup() {
     // MQTT心跳服务
     at_mqtt_heart_beat();
 
+#if IS_DEBUG
+    // 上报启动信息 用于调试查看
+    DynamicJsonDocument doc(200);
+    string chip_id = to_string(get_chip_mac());
+    doc["type"] = "initMCU";
+    doc["msg"] = "你好, 我是" + chip_id + "单片机MCU嵌入式程序开始启动消息";
+    String initStr;
+    serializeJson(doc, initStr);
+    std::string mcu_topic = "ESP32/" + chip_id;
+    at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
+#endif
+
     // WiFi网络版本初始化MQTT消息协议
     // init_mqtt();
 
@@ -113,18 +125,6 @@ void setup() {
 /*  pinMode(19, INPUT_PULLUP);
     attachInterrupt(19, isr, FALLING); */
 
-#if IS_DEBUG
-    // 上报启动信息 用于调试查看
-    DynamicJsonDocument doc(200);
-    string chip_id = to_string(get_chip_mac());
-    doc["type"] = "initMCU";
-    doc["msg"] = "你好, 我是" + chip_id + "单片机MCU嵌入式程序开始启动消息";
-    String initStr;
-    serializeJson(doc, initStr);
-    std::string mcu_topic = "ESP32/" + chip_id;
-    at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
-#endif
-    
 }
 
 void loop() {
