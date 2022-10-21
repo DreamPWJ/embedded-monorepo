@@ -49,6 +49,18 @@ void setup() {
     Serial.begin(115200);
     // delay(1000);
 
+#if IS_DEBUG
+    // 上报启动信息 用于调试查看
+    DynamicJsonDocument doc(200);
+    string chip_id = to_string(get_chip_mac());
+    doc["type"] = "initMCU";
+    doc["msg"] = "你好, 我是" + chip_id + "单片机MCU嵌入式程序开始启动消息";
+    String initStr;
+    serializeJson(doc, initStr);
+    std::string mcu_topic = "ESP32/" + chip_id;
+    at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
+#endif
+
     // 将LED数字引脚初始化为输出
     set_pin_mode();
 
@@ -72,7 +84,7 @@ void setup() {
     init_nb_iot();
 #endif
 
-   // Serial.println(TimeUtil::getDateTime().c_str());
+    // Serial.println(TimeUtil::getDateTime().c_str());
 
     // WiFi网络版本HTTP请求
     // http_get("http://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=18863302302");
