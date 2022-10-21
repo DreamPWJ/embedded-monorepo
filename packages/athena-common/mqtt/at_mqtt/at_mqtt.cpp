@@ -211,7 +211,7 @@ void at_mqtt_callback(void *pvParameters) {
 #endif
 
             if (incomingByte.indexOf(flag) != -1) {
-#if IS_DEBUG
+#if true
                 std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
                 at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
 #endif
