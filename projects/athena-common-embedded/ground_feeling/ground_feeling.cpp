@@ -84,7 +84,7 @@ void check_ground_feeling_status() {
     xTaskCreate(
             x_task_ground_feeling_status,  /* Task function. */
             "x_task_ground_feeling_status", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 2,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */

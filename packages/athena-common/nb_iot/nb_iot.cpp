@@ -73,6 +73,7 @@ void init_nb_iot() {
                     IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     send_at_command("AT+CGACT=1\r\n", 3000, IS_DEBUG); // 激活网络
     send_at_command("AT+CREG=1\r\n", 3000, IS_DEBUG); // 注册网络
+    // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
     // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
     // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
     //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
@@ -140,7 +141,7 @@ void nb_iot_heart_beat(void *pvParameters) {
         if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
             init_nb_iot();
         }
-        delay(1000 * 30);
+        delay(1000 * 60);
     }
 }
 
