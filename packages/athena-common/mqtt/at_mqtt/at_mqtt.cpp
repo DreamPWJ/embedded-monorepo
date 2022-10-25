@@ -197,7 +197,8 @@ void at_mqtt_callback(void *pvParameters) {
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
-    while (1) {
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+        // delay(10);
         if (myMqttSerial.available() > 0) {
 /*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
@@ -247,7 +248,6 @@ void at_mqtt_callback(void *pvParameters) {
             // 检测MQTT服务状态 如果失效自动重连
             at_mqtt_reconnect(incomingByte);
         }
-        // delay(10);
     }
 }
 
