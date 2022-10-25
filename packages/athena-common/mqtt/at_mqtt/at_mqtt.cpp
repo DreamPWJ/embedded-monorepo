@@ -112,7 +112,7 @@ void init_at_mqtt() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 8192, NULL, 2, NULL, 0);
+    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 1024 * 8, NULL, 2, NULL, 0);
 #endif
 
     // 外部中断机制  MQTT订阅消息回调
@@ -206,10 +206,10 @@ void at_mqtt_callback(void *pvParameters) {
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     while (1) {
         if (myMqttSerial.available() > 0) {
-/*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
-            Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
-            delay(200);
-        }*/
+            /*  if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
+                 Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
+                 delay(200);
+             }  */
             String incomingByte;
             incomingByte = myMqttSerial.readString();
 #if IS_DEBUG
@@ -298,7 +298,7 @@ void at_mqtt_heart_beat() {
     xTaskCreate(
             x_at_task_mqtt,  /* Task function. */
             "x_at_task_mqtt", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             8,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
@@ -342,7 +342,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                     "command": "upgrade",
                     "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
                      "chipIds" : ""
-                }*/
+                } */
             String firmwareUrl = json["firmwareUrl"].as<String>();
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
                 Serial.println("MQTT通讯立刻执行OTA升级");

@@ -34,7 +34,7 @@ using namespace std;
 ** ledc: 15 => Group: 1, Channel: 7, Timer: 3
 */
 
-#define IS_DEBUG false  // 是否调试模式
+#define IS_DEBUG true  // 是否调试模式
 
 // PWM控制引脚GPIO
 const int PWM_PinA = 3;
