@@ -199,7 +199,6 @@ void at_mqtt_callback(void *pvParameters) {
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         // yeild(); // 调用时将控制权传递给其他任务。理想情况下yield()，应该在需要一段时间才能完成的功能中使用
-        delay(10);
         if (myMqttSerial.available() > 0) {
 /*        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
@@ -207,7 +206,7 @@ void at_mqtt_callback(void *pvParameters) {
         }*/
             String incomingByte;
             incomingByte = myMqttSerial.readString();
-#if IS_DEBUG
+#if true
             Serial.println("------------------------------------");
             Serial.println(incomingByte);
 #endif
@@ -225,7 +224,7 @@ void at_mqtt_callback(void *pvParameters) {
                 vector<string> dataArray = split(start.c_str(), ",");
                 String topic = dataArray[2].c_str();
                 // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
-#if IS_DEBUG
+#if true
                 Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
                 Serial.println(data);
 #endif
