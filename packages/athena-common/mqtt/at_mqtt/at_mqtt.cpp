@@ -292,7 +292,7 @@ void at_mqtt_heart_beat() {
     xTaskCreate(
             x_at_task_mqtt,  /* Task function. */
             "x_at_task_mqtt", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             8,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
