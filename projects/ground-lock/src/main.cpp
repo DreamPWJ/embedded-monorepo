@@ -132,7 +132,7 @@ void loop() {
     // 循环执行代码
     // delay(1000);
     // 开发板LED 闪动的实现
-    // set_led();
+    set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
     // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
     // Serial.printf("电池电量值: %f\n", get_electricity());
@@ -173,7 +173,7 @@ void serialEvent1() {
     Serial.println("************************************");
 #endif
 
-   at_mqtt_callback(rxData);
+    at_mqtt_callback(rxData);
 }
 
 /**

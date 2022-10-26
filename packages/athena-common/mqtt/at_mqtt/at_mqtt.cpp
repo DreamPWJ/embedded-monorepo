@@ -223,10 +223,10 @@ void at_mqtt_callback(String rxData) {
            incomingByte += myMqttSerial.readString();
            delay(2);
        } */
-#if true
-    Serial.println("------------------------------------");
+#if IS_DEBUG
+    Serial.println("------------------MQTT------------------");
     Serial.println(incomingByte);
-    Serial.println("************************************");
+    Serial.println("******************MQTT******************");
 #endif
 
     if (incomingByte.indexOf(flag) != -1) {
