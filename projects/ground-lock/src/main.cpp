@@ -155,9 +155,10 @@ void loop() {
 /**
  * 串口中断入口
  */
-/*void serialEvent() {
+/*
+String rxData = "";
+ void serialEvent() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
-    String rxData = "";
     while (mySerial.available()) {
         Serial.println("serialEvent()作为串口中断回调函数");
         rxData += char(mySerial.read());
