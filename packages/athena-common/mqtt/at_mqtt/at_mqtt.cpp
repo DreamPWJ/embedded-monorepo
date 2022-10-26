@@ -146,7 +146,7 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
  * MQTT发送消息
  */
 void at_mqtt_publish(String topic, String msg) {
-    // 并发控制
+    // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     myMqttSerial.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
@@ -190,7 +190,6 @@ void at_mqtt_reconnect(String incomingByte) {
         String initStr;
         serializeJson(doc, initStr);
         at_mqtt_publish(at_topics, initStr.c_str());
-        incomingByte = "";
     }
 }
 
@@ -242,7 +241,6 @@ void at_mqtt_callback(void *pvParameters) {
                     DynamicJsonDocument json = string_to_json(data);
                     // 获取MQTT订阅消息后执行任务
                     do_at_mqtt_subscribe(json, topic);
-                    incomingByte = "";
                 }
             } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
                 int startIndex = incomingByte.indexOf(flagRSSI);
@@ -253,7 +251,6 @@ void at_mqtt_callback(void *pvParameters) {
                 // NVS存储信号信息 用于MQTT上报
                 set_nvs("network_rssi", data.c_str());
                 // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
-                incomingByte = "";
             }
 
             // 检测MQTT服务状态 如果失效自动重连
