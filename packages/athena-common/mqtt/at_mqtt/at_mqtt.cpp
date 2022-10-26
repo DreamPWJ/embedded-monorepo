@@ -205,13 +205,13 @@ void at_mqtt_callback(void *pvParameters) {
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
-        yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
         // delay(10);
         if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             /*
               Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
               delay(200);
             */
+            yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
             String incomingByte;
             incomingByte = myMqttSerial.readString();
 #if true
