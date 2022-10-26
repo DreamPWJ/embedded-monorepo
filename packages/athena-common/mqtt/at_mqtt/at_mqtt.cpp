@@ -201,7 +201,7 @@ void at_mqtt_reconnect(String incomingByte) {
 /**
  * MQTT订阅消息回调
  */
-void at_mqtt_callback() {
+void at_mqtt_callback(String rxData) {
     //Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据格式
     /* +ECMTRECV: 0,0,"ESP32/system",{
@@ -210,63 +210,63 @@ void at_mqtt_callback() {
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
 
-   // while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
-    while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
-            /*
-              Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
-              delay(200);
-            */
-            yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
-            String incomingByte = ""; // 串口数据
-            incomingByte = myMqttSerial.readString();
-            /*  for (uint8_t i = 0; i < 2; i++) {  // 循环保证数据全部取出
-                   incomingByte += myMqttSerial.readString();
-                   delay(2);
-               } */
+    // while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+    //  while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
+    /*
+      Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
+      delay(200);
+    */
+    // yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
+    String incomingByte = rxData; // 串口数据
+    // incomingByte = myMqttSerial.readString();
+    /*  for (uint8_t i = 0; i < 2; i++) {  // 循环保证数据全部取出
+           incomingByte += myMqttSerial.readString();
+           delay(2);
+       } */
 #if true
-            Serial.println("------------------------------------");
-            Serial.println(incomingByte);
-            Serial.println("************************************");
+    Serial.println("------------------------------------");
+    Serial.println(incomingByte);
+    Serial.println("************************************");
 #endif
 
-            if (incomingByte.indexOf(flag) != -1) {
+    if (incomingByte.indexOf(flag) != -1) {
 #if IS_DEBUG
-                std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-                at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
+        std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
+        at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
 #endif
-                int startIndex = incomingByte.indexOf(flag);
-                String start = incomingByte.substring(startIndex);
-                int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
-                String end = start.substring(0, endIndex + 1);
-                String data = end.substring(end.lastIndexOf("{"), end.length());
-                vector<string> dataArray = split(start.c_str(), ",");
-                String topic = dataArray[2].c_str();
-                // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
+        int startIndex = incomingByte.indexOf(flag);
+        String start = incomingByte.substring(startIndex);
+        int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
+        String end = start.substring(0, endIndex + 1);
+        String data = end.substring(end.lastIndexOf("{"), end.length());
+        vector<string> dataArray = split(start.c_str(), ",");
+        String topic = dataArray[2].c_str();
+        // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
 #if IS_DEBUG
-                Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
-                Serial.println(data);
+        Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
+        Serial.println(data);
 #endif
 
-                if (!data.isEmpty()) {
-                    DynamicJsonDocument json = string_to_json(data);
-                    // 获取MQTT订阅消息后执行任务
-                    do_at_mqtt_subscribe(json, topic);
-                }
-            } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
-                int startIndex = incomingByte.indexOf(flagRSSI);
-                String start = incomingByte.substring(startIndex);
-                int endIndex = start.indexOf("\n");
-                String end = start.substring(0, endIndex + 1);
-                String data = end.substring(0, end.length());
-                // NVS存储信号信息 用于MQTT上报
-                set_nvs("network_rssi", data.c_str());
-                // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
-            }
-
-            // 检测MQTT服务状态 如果失效自动重连
-            at_mqtt_reconnect(incomingByte);
+        if (!data.isEmpty()) {
+            DynamicJsonDocument json = string_to_json(data);
+            // 获取MQTT订阅消息后执行任务
+            do_at_mqtt_subscribe(json, topic);
         }
-   // }
+    } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
+        int startIndex = incomingByte.indexOf(flagRSSI);
+        String start = incomingByte.substring(startIndex);
+        int endIndex = start.indexOf("\n");
+        String end = start.substring(0, endIndex + 1);
+        String data = end.substring(0, end.length());
+        // NVS存储信号信息 用于MQTT上报
+        set_nvs("network_rssi", data.c_str());
+        // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
+    }
+
+    // 检测MQTT服务状态 如果失效自动重连
+    at_mqtt_reconnect(incomingByte);
+    //  }
+    // }
 }
 
 /**

@@ -155,17 +155,37 @@ void loop() {
 }
 
 /**
- * UART串口几的中断入口
+ * UART1串口中断入口
  */
 void serialEvent1() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
     // 使用串口中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测。 持续监控某种事件、时效性和资源使用情况更好
-    // at_mqtt_callback();
+
     String rxData = "";
     while (Serial1.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
         rxData += char(Serial1.read());
         delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
+#if IS_DEBUG
+    Serial.println("------------------------------------");
     Serial.println(rxData);
+    Serial.println("************************************");
+#endif
+
+   at_mqtt_callback(rxData);
 }
+
+/**
+ * UART0串口中断入口
+ */
+/*void serialEvent() {
+    String rxData = "";
+    while (Serial.available()) {
+        // Serial.println("serialEvent()作为串口中断回调函数");
+        rxData += char(Serial.read());
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
+    }
+    Serial.println(rxData);
+}*/
+
