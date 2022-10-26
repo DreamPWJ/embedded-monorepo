@@ -59,7 +59,7 @@ void setup() {
 
     // 常量与工具类调用示例
     const BizConstants bizConstants;
-    Serial.println(bizConstants.NAME.c_str());
+    //Serial.println(bizConstants.NAME.c_str());
 
 #if WIFI_EN
     // 初始化WiFi无线网络
