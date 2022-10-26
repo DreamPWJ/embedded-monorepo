@@ -38,6 +38,8 @@ using namespace std;
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
 SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
 
+// SoftwareSerial mySerial(PIN_RX, PIN_TX);
+
 /*void IRAM_ATTR isr() {
     Serial.println("进入外部中断了");
 }*/
@@ -159,10 +161,10 @@ void loop() {
 /*void serialEvent() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
     String rxData = "";
-    while (Serial.available()) {
+    while (mySerial.available()) {
         Serial.println("serialEvent()作为串口中断回调函数");
-        rxData += char(Serial.read());
-        delay(2); //这里不能去掉，要给串口处理数据的时间
+        rxData += char(mySerial.read());
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
     Serial.println(rxData);
 }*/
