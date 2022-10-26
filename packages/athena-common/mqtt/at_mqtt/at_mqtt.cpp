@@ -101,20 +101,20 @@ void init_at_mqtt() {
     at_mqtt_subscribe("ESP32/system"); // 系统相关主题订阅
 
     delay(1000);
-#if !USE_MULTI_CORE
-    // MQTT订阅消息回调
-    const char *params = NULL;
-    xTaskCreate(
-            at_mqtt_callback,  /* Task function. */
-            "at_mqtt_callback", /* String with name of task. */
-            1024 * 16,      /* Stack size in bytes. */
-            (void *) params,      /* Parameter passed as input of the task */
-            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
-            NULL);     /* Task handle. */
-#else
-    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 1024 * 8, NULL, 2, NULL, 0);
-#endif
+//#if !USE_MULTI_CORE
+//    // MQTT订阅消息回调
+//    const char *params = NULL;
+//    xTaskCreate(
+//            at_mqtt_callback,  /* Task function. */
+//            "at_mqtt_callback", /* String with name of task. */
+//            1024 * 16,      /* Stack size in bytes. */
+//            (void *) params,      /* Parameter passed as input of the task */
+//            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+//            NULL);     /* Task handle. */
+//#else
+//    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
+//    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 1024 * 8, NULL, 2, NULL, 0);
+//#endif
 
     // 外部中断机制  MQTT订阅消息回调
     // at_interrupt_mqtt_callback();
@@ -201,8 +201,8 @@ void at_mqtt_reconnect(String incomingByte) {
 /**
  * MQTT订阅消息回调
  */
-void at_mqtt_callback(void *pvParameters) {
-    Serial.println("AT指令MQTT订阅接收的消息: ");
+void at_mqtt_callback() {
+    //Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据格式
     /* +ECMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
@@ -210,8 +210,8 @@ void at_mqtt_callback(void *pvParameters) {
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
 
-    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
-        if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
+   // while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+    while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             /*
               Serial.println("因为NB-IOT窄带宽蜂窝网络为半双工 导致MQTT消息发布和订阅不能同时 此处做延迟处理");
               delay(200);
@@ -266,7 +266,7 @@ void at_mqtt_callback(void *pvParameters) {
             // 检测MQTT服务状态 如果失效自动重连
             at_mqtt_reconnect(incomingByte);
         }
-    }
+   // }
 }
 
 /**

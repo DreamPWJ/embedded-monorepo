@@ -49,6 +49,11 @@ void setup() {
 
     // 设置串口波特率
     Serial.begin(115200);
+
+    // 初始化其它UART串口通信
+    //init_uart();
+    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
+
     // delay(1000);
 
     // 将LED数字引脚初始化为输出
@@ -67,9 +72,6 @@ void setup() {
     // 初始化WiFi无线网络
     init_wifi();
 #else
-    // 初始化其它UART串口通信
-    // init_uart();
-
     // 初始化NB-IoT网络协议
     init_nb_iot();
 #endif
@@ -130,7 +132,7 @@ void loop() {
     // 循环执行代码
     // delay(1000);
     // 开发板LED 闪动的实现
-    set_led();
+    // set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
     // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
     // Serial.printf("电池电量值: %f\n", get_electricity());
@@ -153,16 +155,17 @@ void loop() {
 }
 
 /**
- * 串口中断入口
+ * UART串口几的中断入口
  */
-/*
-String rxData = "";
- void serialEvent() {
+void serialEvent1() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
-    while (mySerial.available()) {
-        Serial.println("serialEvent()作为串口中断回调函数");
-        rxData += char(mySerial.read());
+    // 使用串口中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测。 持续监控某种事件、时效性和资源使用情况更好
+    // at_mqtt_callback();
+    String rxData = "";
+    while (Serial1.available()) {
+        // Serial.println("serialEvent()作为串口中断回调函数");
+        rxData += char(Serial1.read());
         delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
     Serial.println(rxData);
-}*/
+}

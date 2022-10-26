@@ -51,7 +51,7 @@ void init_nb_iot() {
     pinMode(PIN_RX, INPUT);
     pinMode(PIN_TX, OUTPUT);
     // 参考文档： https://github.com/plerup/espsoftwareserial
-    //myNBSerial.begin(9600, SWSERIAL_8N1, PIN_RX, PIN_TX, false); // NB模组的波特率
+    //myNBSerial.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX, false); // NB模组的波特率
     myNBSerial.begin(9600);
     if (!myNBSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");

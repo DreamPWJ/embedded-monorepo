@@ -23,7 +23,7 @@ void at_mqtt_unsubscribe(String topic);
 
 void at_mqtt_disconnect();
 
-void at_mqtt_callback(void *pvParameters); // void *pvParameters
+void at_mqtt_callback(); // void *pvParameters
 
 void at_mqtt_reconnect(String incomingByte);
 
