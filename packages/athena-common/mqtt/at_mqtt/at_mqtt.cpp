@@ -50,7 +50,7 @@ const int at_mqtt_port = 1883;
 void init_at_mqtt() {
     Serial.println("初始化MQTT客户端AT指令");
 
-    myMqttSerial.begin(9600, SWSERIAL_8N1);
+    myMqttSerial.begin(9600);
     if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
