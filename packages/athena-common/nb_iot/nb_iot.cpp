@@ -70,6 +70,7 @@ void init_nb_iot() {
     // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
 
     send_at_command("AT+CGATT=1\r\n", 6000, IS_DEBUG); // // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
+    delay(1000);
     send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 8000,
                     IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     delay(1000);
