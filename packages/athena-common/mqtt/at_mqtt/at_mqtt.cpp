@@ -100,6 +100,7 @@ void init_at_mqtt() {
     delay(1000);
     at_mqtt_subscribe("ESP32/system"); // 系统相关主题订阅
 
+    delay(1000);
 #if !USE_MULTI_CORE
     // MQTT订阅消息回调
     const char *params = NULL;
@@ -117,6 +118,10 @@ void init_at_mqtt() {
 
     // 外部中断机制  MQTT订阅消息回调
     // at_interrupt_mqtt_callback();
+
+    delay(1000);
+    // MQTT心跳服务
+    at_mqtt_heart_beat();
 
 }
 
@@ -204,7 +209,7 @@ void at_mqtt_callback(void *pvParameters) {
     }*/
     String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
-    String incomingByte = "";
+
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         if (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
             /*
@@ -212,7 +217,11 @@ void at_mqtt_callback(void *pvParameters) {
               delay(200);
             */
             yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
-            incomingByte = myMqttSerial.readString();
+            String incomingByte = ""; // 串口数据
+            for (uint8_t i = 0; i < 3; i++) {  // 循环保证数据全部取出
+                incomingByte += myMqttSerial.readString();
+                delay(2);
+            }
 #if true
             Serial.println("------------------------------------");
             Serial.println(incomingByte);
@@ -255,7 +264,7 @@ void at_mqtt_callback(void *pvParameters) {
 
             // 检测MQTT服务状态 如果失效自动重连
             at_mqtt_reconnect(incomingByte);
-            delay(2); // 这里不能去掉，要给串口处理数据的时间
+            delay(10); // 这里不能去掉，要给串口处理数据的时间 延迟到10ms及以上，就不会报看门狗watchdog的问题，9ms还是会报watchdog的错
         }
     }
 }
