@@ -140,6 +140,10 @@ void nb_iot_heart_beat(void *pvParameters) {
         String rssi = dataArray[0].c_str();
         // Serial.println(rssi);
         if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
+            // 重新初始化网络
+            init_nb_iot();
+            init_at_mqtt();
+
             string chip_id = to_string(get_chip_mac());
             DynamicJsonDocument doc(200);
             doc["type"] = "reconnectNBIoT";
@@ -148,10 +152,6 @@ void nb_iot_heart_beat(void *pvParameters) {
             serializeJson(doc, initStr);
             std::string mcu_topic = "ESP32/common";
             at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
-
-            // 重新初始化网络
-            init_nb_iot();
-            init_at_mqtt();
         }
         delay(1000 * 60);
     }
