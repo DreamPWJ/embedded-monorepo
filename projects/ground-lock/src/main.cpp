@@ -1,6 +1,6 @@
 #include <common.h>
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
 #include <BizConstants.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
