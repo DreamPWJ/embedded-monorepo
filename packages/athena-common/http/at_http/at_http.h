@@ -12,6 +12,8 @@
 
 DynamicJsonDocument at_http_get(String url, bool isResponseData = true);
 
+String send_http_at_command(String command, const int timeout, boolean isDebug, String successResult = "OK");
+
 DynamicJsonDocument get_http_uart_data();
 
 #endif

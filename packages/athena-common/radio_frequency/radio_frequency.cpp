@@ -38,20 +38,20 @@ void rf_init(void) {
     xTaskCreate(
             rf_accept_data,  /* Task function. */
             "rf_accept_data", /* String with name of task. */
-            1024*8,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024*8, NULL, 10, NULL, 0);
+xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024 * 8, NULL, 10, NULL, 0);
 #endif
 
     // }
 }
 
 /**
- * 接收RF射频数据
+ * 接收RF射频数据 使用GPIO外部中断接收更优
  */
 void rf_accept_data(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字

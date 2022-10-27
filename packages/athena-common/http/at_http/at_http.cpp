@@ -54,6 +54,28 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
 }
 
 /**
+ * 发送AT指令
+ */
+String send_http_at_command(String command, const int timeout, boolean isDebug, String successResult) {
+    String response = "";
+    myHttpSerial.print(command);
+    long int time = millis();
+    while ((time + timeout) > millis()) {
+        while (myHttpSerial.available()) {
+            char c = myHttpSerial.read();
+            response += c;
+        }
+        if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
+            break;
+        }
+    }
+    if (isDebug) {
+        Serial.println(command + "AT指令响应数据: " + response);
+    }
+    return response;
+}
+
+/**
  * 获取缓冲区串口返回的数据
  */
 DynamicJsonDocument get_http_uart_data() {
