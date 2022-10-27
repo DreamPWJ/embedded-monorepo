@@ -27,8 +27,8 @@ using namespace std;
 * https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 #define IS_DEBUG false  // 是否调试模式
+#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
 
