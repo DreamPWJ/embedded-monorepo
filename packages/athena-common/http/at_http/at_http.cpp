@@ -68,6 +68,7 @@ String send_http_at_command(String command, const int timeout, boolean isDebug, 
         if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
             break;
         }
+        delay(10);
     }
     if (isDebug) {
         Serial.println(command + "AT指令响应数据: " + response);

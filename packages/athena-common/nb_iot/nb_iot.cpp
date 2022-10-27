@@ -64,15 +64,14 @@ void init_nb_iot() {
     Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     String isNBInit = get_nvs("is_nb_iot_init");
     // Serial.println(isNBInit);
-    // if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
+    // if (isNBInit.c_str() != "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
+
     // myNBSerial.printf("AT\r\n"); // 测试AT指令
     // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
-    delay(100);
     send_at_command("AT+CGATT=1\r\n", 6000, IS_DEBUG); // // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-    delay(100);
     send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 8000,
                     IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     send_at_command("AT+CGACT=1\r\n", 3000, IS_DEBUG); // 激活网络
@@ -115,6 +114,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
         if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
             break;
         }
+        delay(10);
     }
     if (isDebug) {
         Serial.println(command + "AT指令响应数据: " + response);
