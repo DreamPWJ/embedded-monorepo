@@ -15,7 +15,7 @@
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
-#define RF_PIN 9  // RF射频接收引脚GPIO
+#define RF_PIN 9  // RF射频接收引脚GPIO  外部中断接收
 
 // RH_ASK driver;
 RCSwitch mySwitch = RCSwitch();
@@ -32,18 +32,19 @@ void rf_init(void) {
 /*    if (!driver.init()) {
         Serial.println("RF init failed"); */
     mySwitch.enableReceive(RF_PIN);  // Receiver on inerrupt 0 => that is pin
+
 #if !USE_MULTI_CORE
     const char *params = NULL;
     xTaskCreate(
             rf_accept_data,  /* Task function. */
             "rf_accept_data", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024*8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
             6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 8192, NULL, 10, NULL, 0);
+xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024*8, NULL, 10, NULL, 0);
 #endif
 
     // }

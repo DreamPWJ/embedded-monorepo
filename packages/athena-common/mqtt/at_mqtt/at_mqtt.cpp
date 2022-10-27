@@ -100,7 +100,6 @@ void init_at_mqtt() {
     delay(1000);
     at_mqtt_subscribe("ESP32/system"); // 系统相关主题订阅
 
-    delay(1000);
 //#if !USE_MULTI_CORE
 //    // MQTT订阅消息回调
 //    const char *params = NULL;
@@ -219,10 +218,6 @@ void at_mqtt_callback(String rxData) {
     // yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
     String incomingByte = rxData; // 串口数据
     // incomingByte = myMqttSerial.readString();
-    /*  for (uint8_t i = 0; i < 2; i++) {  // 循环保证数据全部取出
-           incomingByte += myMqttSerial.readString();
-           delay(2);
-       } */
 #if IS_DEBUG
     Serial.println("------------------MQTT------------------");
     Serial.println(incomingByte);
@@ -239,7 +234,7 @@ void at_mqtt_callback(String rxData) {
         int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
         String end = start.substring(0, endIndex + 1);
         String data = end.substring(end.lastIndexOf("{"), end.length());
-        vector<string> dataArray = split(start.c_str(), ",");
+        vector <string> dataArray = split(start.c_str(), ",");
         String topic = dataArray[2].c_str();
         // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
 #if IS_DEBUG
@@ -288,7 +283,7 @@ void do_at_mqtt_heart_beat() {
     int parkingStatus = ground_feeling_status(); // 是否有车
     String firmwareVersion = get_nvs("version"); // 固件版本
     String networkRSSI = get_nvs("network_rssi"); // 信号质量
-    vector<string> array = split(to_string(get_electricity()), "."); // 电量值
+    vector <string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
     // 发送心跳消息
     string jsonData =
@@ -340,7 +335,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     // MQTT订阅消息处理
     if (topic.indexOf("ESP32/system") != -1) { // 针对主题做逻辑处理
         String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
-        vector<string> array = split(chipIds.c_str(), ",");
+        vector <string> array = split(chipIds.c_str(), ",");
         bool isUpdateByDevice = false;
         if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
             Serial.print("根据设备标识进行指定设备OTA升级: ");
@@ -382,7 +377,6 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                           to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) + "\"}";
         at_mqtt_publish(at_topics, jsonData.c_str());
     }
-
 }
 
 /**
