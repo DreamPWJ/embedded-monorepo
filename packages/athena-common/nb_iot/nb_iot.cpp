@@ -32,25 +32,24 @@ void init_nb_iot() {
     digitalWrite(MODEM_RST, HIGH);
 
     String isNBInit = get_nvs("is_nb_iot_init");
+   // if (isNBInit != "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
+        // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
+        // restart_nb_iot();
+        Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
 
-    // if (isNBInit.c_str() != "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
-    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
-    restart_nb_iot();
-    Serial.println("给NB-IoT模组发送AT指令, 配置网络...");
-
-    // myNBSerial.printf("AT\r\n"); // 测试AT指令
-    // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
-    send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-    send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
-                    IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
-    send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
-    send_at_command("AT+CREG=1\r\n", 10000, IS_DEBUG); // 注册网络
-    // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
-    // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
-    // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
-    //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
-    set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
-    //  }
+        // myNBSerial.printf("AT\r\n"); // 测试AT指令
+        // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
+        send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
+        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
+                        IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+        send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
+        send_at_command("AT+CREG=1\r\n", 10000, IS_DEBUG); // 注册网络
+        // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
+        // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
+        // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
+        //myNBSerial.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
+        set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
+   // }
 
     // NB模块心跳检测网络
 #if !USE_MULTI_CORE
@@ -112,18 +111,10 @@ void nb_iot_heart_beat(void *pvParameters) {
         String rssi = dataArray[0].c_str();
         // Serial.println(rssi);
         if (rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
+            Serial.println("NB-IoT信号丢失重连机制...");
             // 重新初始化网络
             init_nb_iot();
             init_at_mqtt();
-
-            string chip_id = to_string(get_chip_mac());
-            DynamicJsonDocument doc(200);
-            doc["type"] = "reconnectNBIoT";
-            doc["msg"] = "检测重连NB-IoT网络服务完成: " + chip_id + "单片机发布的消息";
-            String initStr;
-            serializeJson(doc, initStr);
-            std::string mcu_topic = "ESP32/common";
-            at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
         }
         delay(1000 * 60);
     }
@@ -135,7 +126,7 @@ void nb_iot_heart_beat(void *pvParameters) {
 void restart_nb_iot() {
     Serial.println("重启GSM调制解调器模块芯片...");
     send_at_command("AT+ECRST\r\n", 60000, IS_DEBUG); // 重启NB模块芯片
-    //set_nvs("is_nb_iot_init", "no");
+    set_nvs("is_nb_iot_init", "no");
 }
 
 /**
