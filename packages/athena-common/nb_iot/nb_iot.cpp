@@ -114,7 +114,7 @@ void nb_iot_heart_beat(void *pvParameters) {
         vector<string> dataArray = split(networkRSSI.c_str(), ",");
         String rssi = dataArray[0].c_str();
         // Serial.println(rssi);
-        if (rssi.c_str() == "+CSQ: 99,99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
+        if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
             Serial.println("NB-IoT信号丢失重连机制...");
             // 重新初始化网络
             restart_nb_iot();
