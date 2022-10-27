@@ -134,9 +134,8 @@ void nb_iot_heart_beat(void *pvParameters) {
  */
 void restart_nb_iot() {
     Serial.println("重启GSM调制解调器模块芯片...");
-    Serial1.printf("AT+ECRST\r\n"); // 重启NB模块芯片
-    set_nvs("is_nb_iot_init", "no");
-    delay(2000);
+    send_at_command("AT+ECRST\r\n", 60000, IS_DEBUG); // 重启NB模块芯片
+    //set_nvs("is_nb_iot_init", "no");
 }
 
 /**
