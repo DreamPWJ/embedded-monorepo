@@ -38,8 +38,6 @@ using namespace std;
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
 SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
 
-// SoftwareSerial mySerial(PIN_RX, PIN_TX);
-
 /*void IRAM_ATTR isr() {
     Serial.println("进入外部中断了");
 }*/
@@ -47,14 +45,19 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
 void setup() {
     // 初始化设置代码
 
-    // 设置串口波特率
+    // 设置UART串口波特率
     Serial.begin(115200);
 
     // 初始化其它UART串口通信
-    //init_uart();
+    // init_uart();
     Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
-
-    // delay(1000);
+    if (!Serial1) { // If the object did not initialize, then its configuration is invalid
+        Serial.println("Invalid Serial1 pin configuration, check config");
+        while (1) { // Don't continue with invalid configuration
+            Serial.print(".");
+            delay(1000);
+        }
+    }
 
     // 将LED数字引脚初始化为输出
     set_pin_mode();

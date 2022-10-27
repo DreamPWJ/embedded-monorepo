@@ -3,7 +3,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <ArduinoJson.h>
-//#include <SoftwareSerial.h>
 #include <json_utils.h>
 #include <vector>
 #include <iostream>
@@ -31,10 +30,6 @@ using namespace std;
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 #define IS_DEBUG false  // 是否调试模式
 
-#define PIN_RX 19
-#define PIN_TX 18
-//SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
-
 String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
 
 const char *at_mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
@@ -49,15 +44,6 @@ const int at_mqtt_port = 1883;
  */
 void init_at_mqtt() {
     Serial.println("初始化MQTT客户端AT指令");
-/*    myMqttSerial.begin(9600);
-    if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
-        Serial.println("Invalid SoftwareSerial pin configuration, check config");
-        while (1) { // Don't continue with invalid configuration
-            Serial.print(".");
-            delay(1000);
-        }
-    } */
-    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
 
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
@@ -77,6 +63,7 @@ void init_at_mqtt() {
     String connectResult = send_mqtt_at_command(
             "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
             "\042\r\n", 60000, IS_DEBUG, conFlag);
+
     if (connectResult.indexOf(conFlag) != -1) {
         Serial.println("MQTT Broker 连接成功: " + client_id);
     } else {
@@ -99,24 +86,6 @@ void init_at_mqtt() {
     at_mqtt_subscribe(topic_device.c_str()); // 设备单独的主题订阅
     delay(100);
     at_mqtt_subscribe("ESP32/system"); // 系统相关主题订阅
-
-//#if !USE_MULTI_CORE
-//    // MQTT订阅消息回调
-//    const char *params = NULL;
-//    xTaskCreate(
-//            at_mqtt_callback,  /* Task function. */
-//            "at_mqtt_callback", /* String with name of task. */
-//            1024 * 16,      /* Stack size in bytes. */
-//            (void *) params,      /* Parameter passed as input of the task */
-//            2,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
-//            NULL);     /* Task handle. */
-//#else
-//    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-//    xTaskCreatePinnedToCore(at_mqtt_callback, "at_mqtt_callback", 1024 * 8, NULL, 2, NULL, 0);
-//#endif
-
-    // 外部中断机制  MQTT订阅消息回调
-    // at_interrupt_mqtt_callback();
 
     delay(1000);
     // MQTT心跳服务
@@ -388,7 +357,7 @@ void at_interrupt_mqtt_callback() {
     // https://dreamsourcelab.cn/%e6%8a%80%e6%9c%af%e6%96%87%e7%ab%a0/%e6%9c%80%e8%af%a6%e7%bb%86%e7%9a%84-%e9%80%9a%e8%ae%af%e5%8d%8f%e8%ae%ae-uart%e5%88%86%e6%9e%90-%e5%9c%a8%e8%bf%99%e9%87%8c/
     // 使用外部中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测。 持续监控某种事件、时效性和资源使用情况更好
     // 将中断触发引脚 设置为INPUT_PULLUP（输入上拉）模式
-    pinMode(PIN_RX, INPUT_PULLUP);
+    pinMode(0, INPUT_PULLUP);
     // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
     // LOW：当针脚输入为低时，触发中断。
     // HIGH：当针脚输入为高时，触发中断。
@@ -400,5 +369,5 @@ void at_interrupt_mqtt_callback() {
     void IRAM_ATTR ISR() {
         Statements;
     }*/
-    // attachInterrupt(PIN_RX, at_mqtt_callback, FALLING);
+    // attachInterrupt(0, at_mqtt_callback, FALLING);
 }

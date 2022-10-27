@@ -14,9 +14,6 @@ using namespace std;
 
 #define IS_DEBUG false // 是否调试模式
 
-#define PIN_RX 19
-#define PIN_TX 18
-
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
@@ -36,7 +33,6 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
 
-    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     String isNBInit = get_nvs("is_nb_iot_init");
 
     // if (isNBInit.c_str() != "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次

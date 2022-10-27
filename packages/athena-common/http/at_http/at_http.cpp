@@ -11,15 +11,11 @@
 */
 #define IS_DEBUG false // 是否调试模式
 
-#define PIN_RX 19
-#define PIN_TX 18
-
 /**
  * Http请求GET方法
  */
 DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     Serial.println("HTTP请求GET方法AT指令");
-    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
 
     // NB-IoT的AT指令文档: https://docs.ai-thinker.com/_media/nb-iot/nb-iot%E7%B3%BB%E5%88%97%E6%A8%A1%E7%BB%84at%E6%8C%87%E4%BB%A4%E9%9B%86v1.0.pdf
     url.replace("http://", "");
