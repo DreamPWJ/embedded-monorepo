@@ -217,7 +217,9 @@ void at_mqtt_callback(String rxData) {
             // 获取MQTT订阅消息后执行任务
             do_at_mqtt_subscribe(json, topic);
         }
-    } else if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
+    }
+
+    if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
         int startIndex = incomingByte.indexOf(flagRSSI);
         String start = incomingByte.substring(startIndex);
         int endIndex = start.indexOf("\n");
@@ -335,11 +337,14 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
 
     if (command == "heartbeat") { // 心跳指令
         do_at_mqtt_heart_beat();
-    } else if (command == "raise") { // 电机升起指令
+    }
+    if (command == "raise") { // 电机升起指令
         set_motor_up();
-    } else if (command == "putdown") { // 电机下降指令
+    }
+    if (command == "putdown") { // 电机下降指令
         set_motor_down();
-    } else if (command == "query") { // MQTT主动查询指令
+    }
+    if (command == "query") { // MQTT主动查询指令
         int deviceStatus = get_pwm_status(); // 设备电机状态
         int parkingStatus = ground_feeling_status(); // 是否有车
         std:

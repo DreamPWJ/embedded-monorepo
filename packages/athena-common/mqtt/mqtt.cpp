@@ -126,13 +126,13 @@ void mqtt_heart_beat() {
     xTaskCreate(
             x_task_mqtt,  /* Task function. */
             "x_task_mqtt", /* String with name of task. */
-            8192,      /* Stack size in bytes. */
+            1024 * 8,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            3,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_mqtt, "x_task_mqtt", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_mqtt, "x_task_mqtt", 1024 * 8, NULL, 5, NULL, 0);
 #endif
 }
 
@@ -238,11 +238,14 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
 
     if (command == "heartbeat") { // 心跳指令
         do_mqtt_heart_beat();
-    } else if (command == "raise") {
+    }
+    if (command == "raise") {
         set_motor_up();
-    } else if (command == "putdown") {
+    }
+    if (command == "putdown") {
         set_motor_down();
-    } else if (command == "query") {
+    }
+    if (command == "query") {
         int status = get_pwm_status();
         std:
         string jsonData = "{\"command\":\"query\",\"deviceCode\":\"" + to_string(chipId) + "\",\"deviceStatus\":\"" +
