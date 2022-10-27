@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 //#include <MKRGSM.h>
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
 #include <hex_utils.h>
 #include <json_utils.h>
 #include <mcu_nvs.h>
@@ -20,7 +20,7 @@ using namespace std;
 #define PIN_TX 18
 
 // Set up a new SoftwareSerial object
-SoftwareSerial myNBSerial(PIN_RX, PIN_TX);
+//SoftwareSerial myNBSerial(PIN_RX, PIN_TX);
 //SoftwareSerial myNBSerial;
 
 /**
@@ -48,18 +48,20 @@ void init_nb_iot() {
     digitalWrite(MODEM_RST, HIGH);
     //digitalWrite(MODEM_PWKEY, HIGH);
 
-    pinMode(PIN_RX, INPUT);
-    pinMode(PIN_TX, OUTPUT);
+/*    pinMode(PIN_RX, INPUT);
+    pinMode(PIN_TX, OUTPUT);*/
     // 参考文档： https://github.com/plerup/espsoftwareserial
     //myNBSerial.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX, false); // NB模组的波特率
-    myNBSerial.begin(9600);
-    if (!myNBSerial) { // If the object did not initialize, then its configuration is invalid
+    //myNBSerial.begin(9600);
+/*    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
+    if (!Serial1) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
         }
-    }
+    }*/
+    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     String isNBInit = get_nvs("is_nb_iot_init");
     // Serial.println(isNBInit);
     // if (isNBInit.c_str() == "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
@@ -102,11 +104,11 @@ void init_nb_iot() {
  */
 String send_at_command(String command, const int timeout, boolean isDebug, String successResult) {
     String response = "";
-    myNBSerial.print(command);
+    Serial1.print(command);
     long int time = millis();
     while ((time + timeout) > millis()) {
-        while (myNBSerial.available()) {
-            char c = myNBSerial.read();
+        while (Serial1.available()) {
+            char c = Serial1.read();
             response += c;
         }
         if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
@@ -123,8 +125,8 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
  * AT指令响应数据
  */
 void at_command_response() {
-    while (myNBSerial.available()) {
-        Serial.println(myNBSerial.readStringUntil('\n'));
+    while (Serial1.available()) {
+        Serial.println(Serial1.readStringUntil('\n'));
     }
 }
 
@@ -133,7 +135,7 @@ void at_command_response() {
  */
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
-        myNBSerial.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
+        Serial1.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
         delay(2000);
         String networkRSSI = get_nvs("network_rssi"); // 信号质量
         vector<string> dataArray = split(networkRSSI.c_str(), ",");
@@ -162,7 +164,7 @@ void nb_iot_heart_beat(void *pvParameters) {
  */
 void restart_nb_iot() {
     Serial.println("重启GSM调制解调器模块芯片...");
-    myNBSerial.printf("AT+ECRST\r\n"); // 重启NB模块芯片
+    Serial1.printf("AT+ECRST\r\n"); // 重启NB模块芯片
     set_nvs("is_nb_iot_init", "no");
     delay(2000);
 }
@@ -172,6 +174,6 @@ void restart_nb_iot() {
  */
 String get_imei() {
     // return modem.getIMEI();
-    myNBSerial.printf("AT+CGSN=1\r\n");  // 取产品序列号IMEI
+    Serial1.printf("AT+CGSN=1\r\n");  // 取产品序列号IMEI
     return "";
 }

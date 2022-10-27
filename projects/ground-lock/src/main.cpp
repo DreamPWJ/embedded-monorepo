@@ -173,6 +173,7 @@ void serialEvent1() {
     Serial.println("************************************");
 #endif
 
+    // MQTT订阅消息
     at_mqtt_callback(rxData);
 }
 

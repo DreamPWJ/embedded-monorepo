@@ -3,7 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <ArduinoJson.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include <json_utils.h>
 #include <vector>
 #include <iostream>
@@ -33,7 +33,7 @@ using namespace std;
 
 #define PIN_RX 19
 #define PIN_TX 18
-SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
+//SoftwareSerial myMqttSerial(PIN_RX, PIN_TX);
 
 String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
 
@@ -49,15 +49,15 @@ const int at_mqtt_port = 1883;
  */
 void init_at_mqtt() {
     Serial.println("初始化MQTT客户端AT指令");
-
-    myMqttSerial.begin(9600);
+/*    myMqttSerial.begin(9600);
     if (!myMqttSerial) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid SoftwareSerial pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
         }
-    }
+    } */
+    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
 
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
@@ -129,11 +129,11 @@ void init_at_mqtt() {
  */
 String send_mqtt_at_command(String command, const int timeout, boolean isDebug, String successResult) {
     String response = "";
-    myMqttSerial.print(command);
+    Serial1.print(command);
     long int time = millis();
     while ((time + timeout) > millis()) {
-        while (myMqttSerial.available()) {
-            char c = myMqttSerial.read();
+        while (Serial1.available()) {
+            char c = Serial1.read();
             response += c;
         }
         if (response.indexOf(successResult) != -1) { // 获取到成功结果 退出循环
@@ -152,7 +152,7 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
 void at_mqtt_publish(String topic, String msg) {
     // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
-    myMqttSerial.printf(
+    Serial1.printf(
             "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
 }
 
@@ -160,21 +160,21 @@ void at_mqtt_publish(String topic, String msg) {
  * MQTT订阅消息
  */
 void at_mqtt_subscribe(String topic) {
-    myMqttSerial.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
+    Serial1.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
 }
 
 /**
  * 取消MQTT主题订阅
  */
 void at_mqtt_unsubscribe(String topic) {
-    myMqttSerial.printf("AT+ECMTUNS=0,1,\"%s\"\r\n", topic.c_str());
+    Serial1.printf("AT+ECMTUNS=0,1,\"%s\"\r\n", topic.c_str());
 }
 
 /**
  * MQTT断开连接
  */
 void at_mqtt_disconnect() {
-    myMqttSerial.printf("AT+ECMTDISC=0\\r\\n\r\n");
+    Serial1.printf("AT+ECMTDISC=0\\r\\n\r\n");
 }
 
 /**
