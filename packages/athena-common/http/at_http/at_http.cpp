@@ -114,6 +114,7 @@ DynamicJsonDocument get_http_uart_data() {
         return json;
         // }
     }
+    return (const JsonDocument &) "";
 }
 
 /**
