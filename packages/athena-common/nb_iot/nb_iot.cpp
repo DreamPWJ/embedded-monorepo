@@ -1,8 +1,6 @@
 #include "nb_iot.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
-//#include <MKRGSM.h>
-// #include <SoftwareSerial.h>
 #include <hex_utils.h>
 #include <json_utils.h>
 #include <mcu_nvs.h>
@@ -19,10 +17,6 @@ using namespace std;
 #define PIN_RX 19
 #define PIN_TX 18
 
-// Set up a new SoftwareSerial object
-//SoftwareSerial myNBSerial(PIN_RX, PIN_TX);
-//SoftwareSerial myNBSerial;
-
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
@@ -31,12 +25,8 @@ using namespace std;
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
-// modem verification object
-// gsmmodem modem;
-
 // NB-IoT控制GPIO
-#define MODEM_RST             6
-//#define MODEM_PWKEY          10
+#define MODEM_RST  6
 
 /**
  * 初始化NB网络协议
@@ -44,26 +34,11 @@ using namespace std;
 void init_nb_iot() {
     // NB相关引脚初始化
     pinMode(MODEM_RST, OUTPUT);
-    //pinMode(MODEM_PWKEY, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
-    //digitalWrite(MODEM_PWKEY, HIGH);
 
-/*    pinMode(PIN_RX, INPUT);
-    pinMode(PIN_TX, OUTPUT);*/
-    // 参考文档： https://github.com/plerup/espsoftwareserial
-    //myNBSerial.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX, false); // NB模组的波特率
-    //myNBSerial.begin(9600);
-/*    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
-    if (!Serial1) { // If the object did not initialize, then its configuration is invalid
-        Serial.println("Invalid SoftwareSerial pin configuration, check config");
-        while (1) { // Don't continue with invalid configuration
-            Serial.print(".");
-            delay(1000);
-        }
-    }*/
     Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     String isNBInit = get_nvs("is_nb_iot_init");
-    // Serial.println(isNBInit);
+
     // if (isNBInit.c_str() != "yes") {  // 如果NB-IOT配网成功 重启等会自动入网 只需初始化一次
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     restart_nb_iot();
@@ -71,7 +46,7 @@ void init_nb_iot() {
 
     // myNBSerial.printf("AT\r\n"); // 测试AT指令
     // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
-    send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); // // 附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
+    send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
     send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
                     IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
@@ -90,7 +65,7 @@ void init_nb_iot() {
             "nb_iot_heart_beat",
             1024 * 2,
             NULL,
-            8,
+            2,
             NULL);
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
@@ -137,7 +112,7 @@ void at_command_response() {
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
         Serial1.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
-        delay(2000);
+        delay(3000);
         String networkRSSI = get_nvs("network_rssi"); // 信号质量
         vector<string> dataArray = split(networkRSSI.c_str(), ",");
         String rssi = dataArray[0].c_str();
@@ -150,7 +125,7 @@ void nb_iot_heart_beat(void *pvParameters) {
             string chip_id = to_string(get_chip_mac());
             DynamicJsonDocument doc(200);
             doc["type"] = "reconnectNBIoT";
-            doc["msg"] = "检测重连NB-IoT网络服务: " + chip_id + "单片机发布的消息";
+            doc["msg"] = "检测重连NB-IoT网络服务完成: " + chip_id + "单片机发布的消息";
             String initStr;
             serializeJson(doc, initStr);
             std::string mcu_topic = "ESP32/common";
