@@ -149,9 +149,11 @@ void nb_iot_heart_beat(void *pvParameters) {
             std::string mcu_topic = "ESP32/common";
             at_mqtt_publish(mcu_topic.c_str(), initStr.c_str());
 
+            // 重新初始化网络
             init_nb_iot();
+            init_at_mqtt();
         }
-        delay(1000 * 120);
+        delay(1000 * 60);
     }
 }
 
