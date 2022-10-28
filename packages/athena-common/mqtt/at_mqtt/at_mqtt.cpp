@@ -15,6 +15,7 @@
 #include <device_info.h>
 #include <ota.h>
 #include <mcu_nvs.h>
+#include <nb_iot.h>
 
 using namespace std;
 
@@ -55,14 +56,14 @@ void init_at_mqtt() {
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
-    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 30000,
+    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
                          IS_DEBUG, "+ECMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
 /*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
     String conFlag = "+ECMTCONN: 0,0,0";
     String connectResult = send_mqtt_at_command(
             "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
-            "\042\r\n", 30000, IS_DEBUG, conFlag);
+            "\042\r\n", 15000, IS_DEBUG, conFlag);
 
     if (connectResult.indexOf(conFlag) != -1) {
         Serial.println("MQTT Broker 连接成功: " + client_id);
@@ -336,6 +337,11 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
             if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
                 Serial.println("远程重启单片机设备...");
                 esp_restart();
+            }
+        } else if (command == "restart_network") { // 远程重启网络
+            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                Serial.println("远程重启单片机设备NB-IoT网络...");
+                restart_nb_iot();
             }
         }
         return;
