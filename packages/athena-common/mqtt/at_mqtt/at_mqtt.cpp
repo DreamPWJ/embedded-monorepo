@@ -176,7 +176,7 @@ void at_mqtt_callback(String rxData) {
     /* +ECMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
     }*/
-    String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据
+    String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
     String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
 
     //  while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
@@ -200,12 +200,12 @@ void at_mqtt_callback(String rxData) {
 #endif
         int startIndex = incomingByte.indexOf(flag);
         String start = incomingByte.substring(startIndex);
-        int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失
+        int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失 可尝试\n\r
         String end = start.substring(0, endIndex + 1);
         String data = end.substring(end.lastIndexOf("{"), end.length());
         vector<string> dataArray = split(start.c_str(), ",");
         String topic = dataArray[2].c_str();
-        // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确
+        // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确 可根据前一位集indexOf截取获取最后一位
 #if IS_DEBUG
         Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
         Serial.println(data);
@@ -226,6 +226,13 @@ void at_mqtt_callback(String rxData) {
         String data = end.substring(0, end.length());
         // NVS存储信号信息 用于MQTT上报
         set_nvs("network_rssi", data.c_str());
+
+        vector<string> dataArray = split(data.c_str(), ",");
+        String rssi = dataArray[0].c_str();
+        if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") {
+            Serial.println("NB-IoT信号丢失触发重连机制...");
+            esp_restart();
+        }
         // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
     }
 
