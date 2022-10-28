@@ -45,9 +45,8 @@ void init_nb_iot() {
         send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
         send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
-        send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
     } else {
-        delay(2000);
+        delay(3000);
         // 判断附着网络是否成功  第二个参数1或5标识附着正常 如 +CEREG: 0,1
 /*      String atResult = send_at_command("AT+CEREG?\r\n", 60000, IS_DEBUG);
         String flag = "+CEREG:";
@@ -63,13 +62,17 @@ void init_nb_iot() {
             init_nb_iot();
         }*/
     }
+
+    send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
     send_at_command("AT+CREG=1\r\n", 10000, IS_DEBUG); // 注册网络
+
     // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
     // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
     // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
     // Serial1.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
 
+    delay(1000);
     // NB模块心跳检测网络
 #if !USE_MULTI_CORE
     xTaskCreate(
