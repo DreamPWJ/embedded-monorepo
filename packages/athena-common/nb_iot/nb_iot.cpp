@@ -46,8 +46,9 @@ void init_nb_iot() {
         send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
+        delay(2000);
         // 判断附着网络是否成功  第二个参数1或5标识附着正常 如 +CEREG: 0,1
-        String atResult = send_at_command("AT+CEREG?\r\n", 60000, IS_DEBUG);
+/*      String atResult = send_at_command("AT+CEREG?\r\n", 60000, IS_DEBUG);
         String flag = "+CEREG:";
         int startIndex = atResult.indexOf(flag);
         String start = atResult.substring(startIndex);
@@ -59,7 +60,7 @@ void init_nb_iot() {
         if (reg.c_str() != "1" && reg.c_str() != "5") {
             Serial.println("NB-IOT附着网络失败重试...");
             init_nb_iot();
-        }
+        }*/
     }
     send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
     send_at_command("AT+CREG=1\r\n", 10000, IS_DEBUG); // 注册网络
