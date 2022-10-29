@@ -22,6 +22,8 @@ using namespace std;
 #define IS_DEBUG false // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 #define MODEM_RST  6  // NB-IoT控制GPIO
+#define PIN_RX 19
+#define PIN_TX 18
 
 /**
  * 初始化NB网络协议
@@ -31,7 +33,14 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
 
-    String isNBInit = get_nvs("is_nb_iot_init");
+    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
+    if (!Serial1) { // If the object did not initialize, then its configuration is invalid
+        Serial.println("Invalid Serial1 pin configuration, check config");
+        while (1) { // Don't continue with invalid configuration
+            Serial.print(".");
+            delay(1000);
+        }
+    }
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();
@@ -40,13 +49,15 @@ void init_nb_iot() {
     // Serial1.printf("AT\r\n"); // 测试AT指令
     // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
 
+    String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
         Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
-        send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 60000,
+        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
+        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
-        delay(3000);
+        // delay(3000); //  附着网络等可能长达2分钟才成功
+        send_at_command("AT+CGATT?\r\n", 60000, IS_DEBUG, "+CGATT: 1");
         // 判断附着网络是否成功  第二个参数1或5标识附着正常 如 +CEREG: 0,1
 /*      String atResult = send_at_command("AT+CEREG?\r\n", 60000, IS_DEBUG);
         String flag = "+CEREG:";
@@ -63,8 +74,8 @@ void init_nb_iot() {
         }*/
     }
 
-    send_at_command("AT+CGACT=1\r\n", 10000, IS_DEBUG); // 激活网络
-    send_at_command("AT+CREG=1\r\n", 10000, IS_DEBUG); // 注册网络
+    send_at_command("AT+CGACT=1\r\n", 5000, IS_DEBUG); // 激活网络
+    send_at_command("AT+CREG=1\r\n", 5000, IS_DEBUG); // 注册网络
 
     // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
     // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
@@ -78,7 +89,7 @@ void init_nb_iot() {
     xTaskCreate(
             nb_iot_heart_beat,
             "nb_iot_heart_beat",
-            1024 * 2,
+            1024 * 8,
             NULL,
             2,
             NULL);

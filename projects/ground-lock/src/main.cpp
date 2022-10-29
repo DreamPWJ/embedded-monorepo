@@ -169,10 +169,10 @@ void serialEvent1() {
         // Serial.println("serialEvent()作为串口中断回调函数");
         char inChar = char(Serial1.read());
         rxData += inChar;
-        delay(2); // 这里不能去掉，要给串口处理数据的时间
+        // delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
-   if (inChar == '\n') { // 换行符 表示一个数据集结束
+   if (inChar == '\n') { // 换行符 表示一个完整数据结束
       // stringComplete = true;
     }
     Serial.println("------------------------------------");
@@ -192,7 +192,6 @@ void serialEvent1() {
     while (Serial.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
         rxData += char(Serial.read());
-        delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
     Serial.println("------------------------------------");
