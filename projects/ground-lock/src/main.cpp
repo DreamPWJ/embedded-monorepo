@@ -134,8 +134,8 @@ void setup() {
 void loop() {
     // 循环执行代码
     // delay(1000);
-    // 开发板LED 闪动的实现
-    set_led();
+    // 开发板LED 闪动的实现 影响serialEvent运行
+    // set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
     // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
     // Serial.printf("电池电量值: %f\n", get_electricity());
@@ -167,10 +167,14 @@ void serialEvent1() {
     String rxData = "";
     while (Serial1.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
-        rxData += char(Serial1.read());
+        char inChar = char(Serial1.read());
+        rxData += inChar;
         delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
+   if (inChar == '\n') { // 换行符 表示一个数据集结束
+      // stringComplete = true;
+    }
     Serial.println("------------------------------------");
     Serial.println(rxData);
     Serial.println("************************************");
