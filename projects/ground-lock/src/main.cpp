@@ -68,7 +68,7 @@ void setup() {
     bool isVersion = set_nvs("version", FIRMWARE_VERSION);
 
     // 常量与工具类调用示例
-    const BizConstants bizConstants;
+    // const BizConstants bizConstants;
     //Serial.println(bizConstants.NAME.c_str());
 
 #if WIFI_EN

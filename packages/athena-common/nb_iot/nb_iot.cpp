@@ -53,7 +53,7 @@ void init_nb_iot() {
     if (isNBInit != "yes") {
         Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
         send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000,
+        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n", 30000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
         // delay(3000); //  附着网络等可能长达2分钟才成功
@@ -75,7 +75,7 @@ void init_nb_iot() {
     }
 
     send_at_command("AT+CGACT=1\r\n", 5000, IS_DEBUG); // 激活网络
-    send_at_command("AT+CREG=1\r\n", 5000, IS_DEBUG); // 注册网络
+    // send_at_command("AT+CREG=1\r\n", 5000, IS_DEBUG); // 注册网络
 
     // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
     // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
