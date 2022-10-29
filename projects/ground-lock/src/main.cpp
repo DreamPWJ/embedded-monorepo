@@ -172,12 +172,12 @@ void serialEvent1() {
         // delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
-   if (inChar == '\n') { // 换行符 表示一个完整数据结束
-      // stringComplete = true;
-    }
-    Serial.println("------------------------------------");
-    Serial.println(rxData);
-    Serial.println("************************************");
+    if (inChar == '\n') { // 换行符 表示一个完整数据结束
+       // stringComplete = true;
+     }
+     Serial.println("------------------------------------");
+     Serial.println(rxData);
+     Serial.println("************************************");
 #endif
 
     // MQTT订阅消息
