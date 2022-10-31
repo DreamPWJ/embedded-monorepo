@@ -16,14 +16,12 @@ using namespace std;
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
-* @description nb-iot物联网网络协议
+* @description NB-IoT物联网网络协议
 */
 
 #define IS_DEBUG false // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 #define MODEM_RST  6  // NB-IoT控制GPIO
-#define PIN_RX 19
-#define PIN_TX 18
 
 /**
  * 初始化NB网络协议
@@ -33,21 +31,12 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
 
-/*    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
-    if (!Serial1) { // If the object did not initialize, then its configuration is invalid
-        Serial.println("Invalid Serial1 pin configuration, check config");
-        while (1) { // Don't continue with invalid configuration
-            Serial.print(".");
-            delay(1000);
-        }
-    }*/
-
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置网络");
 
     // Serial1.printf("AT\r\n"); // 测试AT指令
-    // send_at_command("AT+ECICCID\r\n", 5000, IS_DEBUG); // 查看SIM ID号
+    // send_at_command("AT+ECICCID\r\n", 3000, IS_DEBUG); // 查看SIM ID号
 
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
@@ -57,7 +46,7 @@ void init_nb_iot() {
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
         delay(3000); //  附着网络等可能长达2分钟才成功
-        // +CSQ: 99,99 已经读取不到信号强度，搜寻NBIOT网络中
+        // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中
         String flag = "+CSQ: 99,99";
         while (1) {
             String atResult = send_at_command("AT+CSQ\r\n", 6000, IS_DEBUG, "+CSQ:");
