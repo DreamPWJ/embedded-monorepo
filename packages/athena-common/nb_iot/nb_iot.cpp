@@ -33,14 +33,14 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     digitalWrite(MODEM_RST, HIGH);
 
-    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
+/*    Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     if (!Serial1) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid Serial1 pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
         }
-    }
+    }*/
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();

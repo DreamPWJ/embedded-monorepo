@@ -60,7 +60,7 @@ void setup() {
     }
 
     // 将LED数字引脚初始化为输出
-    set_pin_mode();
+    // set_pin_mode();
 
     // 初始化非易失性存储
     int_nvs();
@@ -169,15 +169,15 @@ void serialEvent1() {
         // Serial.println("serialEvent()作为串口中断回调函数");
         char inChar = char(Serial1.read());
         rxData += inChar;
-        // delay(2); // 这里不能去掉，要给串口处理数据的时间
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
-    if (inChar == '\n') { // 换行符 表示一个完整数据结束
-       // stringComplete = true;
-     }
-     Serial.println("------------------------------------");
-     Serial.println(rxData);
-     Serial.println("************************************");
+    /* if (inChar == '\n') { // 换行符 表示一个完整数据结束
+        // stringComplete = true;
+      }*/
+    Serial.println("------------------------------------");
+    Serial.println(rxData);
+    Serial.println("************************************");
 #endif
 
     // MQTT订阅消息
@@ -192,6 +192,7 @@ void serialEvent1() {
     while (Serial.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
         rxData += char(Serial.read());
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
 #if IS_DEBUG
     Serial.println("------------------------------------");
