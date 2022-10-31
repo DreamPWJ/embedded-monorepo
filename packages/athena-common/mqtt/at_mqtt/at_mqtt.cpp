@@ -186,7 +186,7 @@ void at_mqtt_callback(String rxData) {
       delay(200);
     */
     // yield(); // 专用于主动调用运行后台。 在ESP单片机实际运行过程中，有时会不可避免需要长时间延时，这些长时间延时可能导致单线程的C/C++后台更新不及时，会导致看门狗触发 可使用yield()；主动调用后台程序防止重启。
-    String incomingByte = rxData; // 串口数据
+    String incomingByte = rxData; // 全部串口数据
     // incomingByte = myMqttSerial.readString();
 #if IS_DEBUG
     Serial.println("------------------MQTT------------------");
@@ -194,15 +194,18 @@ void at_mqtt_callback(String rxData) {
     Serial.println("******************MQTT******************");
 #endif
 
-    if (incomingByte.indexOf(flag) != -1) {
-        vector<string> rxDataArray = split(incomingByte.c_str(), "\\n");
-        for (int i = 0; i < rxDataArray.size(); i++) {  // 并发数据处理
+    vector<string> rxDataArray = split(incomingByte.c_str(), "\\n");
+    for (int i = 0; i < rxDataArray.size(); i++) {  // 并发数据处理
+        String incomingByteItem = rxDataArray[i].c_str();
+
+        // MQTT订阅回调消息
+        if (incomingByteItem.indexOf(flag) != -1) {
 #if IS_DEBUG
             std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-            at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
+            at_mqtt_publish(topic_device.c_str(), incomingByteItem.c_str());  // 上报MQTT订阅数据 下行指令
 #endif
-            int startIndex = incomingByte.indexOf(flag);
-            String start = incomingByte.substring(startIndex);
+            int startIndex = incomingByteItem.indexOf(flag);
+            String start = incomingByteItem.substring(startIndex);
             int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失 可尝试\n\r
             String end = start.substring(0, endIndex + 1);
             String data = end.substring(end.lastIndexOf("{"), end.length());
