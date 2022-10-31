@@ -25,6 +25,7 @@
 #include <radio_frequency.h>
 #include <json_utils.h>
 #include <TimeUtil.h>
+#include <common_utils.h>
 
 using namespace std;
 
@@ -178,6 +179,11 @@ void serialEvent1() {
     Serial.println("------------------------------------");
     Serial.println(rxData);
     Serial.println("************************************");
+    /*    vector<string> dataArray = split(rxData.c_str(), "\\n");
+    for (int i = 0; i < dataArray.size(); i++) {
+        Serial.println("----------------DataArray--------------------");
+        Serial.println(dataArray[i].c_str());
+    }*/
 #endif
 
     // MQTT订阅消息

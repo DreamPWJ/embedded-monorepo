@@ -195,27 +195,30 @@ void at_mqtt_callback(String rxData) {
 #endif
 
     if (incomingByte.indexOf(flag) != -1) {
+        vector<string> rxDataArray = split(incomingByte.c_str(), "\\n");
+        for (int i = 0; i < rxDataArray.size(); i++) {  // 并发数据处理
 #if IS_DEBUG
-        std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
-        at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
+            std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
+            at_mqtt_publish(topic_device.c_str(), incomingByte.c_str());  // 上报MQTT订阅数据 下行指令
 #endif
-        int startIndex = incomingByte.indexOf(flag);
-        String start = incomingByte.substring(startIndex);
-        int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失 可尝试\n\r
-        String end = start.substring(0, endIndex + 1);
-        String data = end.substring(end.lastIndexOf("{"), end.length());
-        vector<string> dataArray = split(start.c_str(), ",");
-        String topic = dataArray[2].c_str();
-        // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确 可根据前一位集indexOf截取获取最后一位
+            int startIndex = incomingByte.indexOf(flag);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失 可尝试\n\r
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(end.lastIndexOf("{"), end.length());
+            vector<string> dataArray = split(start.c_str(), ",");
+            String topic = dataArray[2].c_str();
+            // String data = dataArray[3].c_str(); // JSON结构体可能有分隔符 导致分割不正确 可根据前一位集indexOf截取获取最后一位
 #if IS_DEBUG
-        Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
-        Serial.println(data);
+            Serial.printf("AT指令MQTT订阅主题: %s\n", topic.c_str());
+            Serial.println(data);
 #endif
 
-        if (!data.isEmpty()) {
-            DynamicJsonDocument json = string_to_json(data);
-            // 获取MQTT订阅消息后执行任务
-            do_at_mqtt_subscribe(json, topic);
+            if (!data.isEmpty()) {
+                DynamicJsonDocument json = string_to_json(data);
+                // 获取MQTT订阅消息后执行任务
+                do_at_mqtt_subscribe(json, topic);
+            }
         }
     }
 
