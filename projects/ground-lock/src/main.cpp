@@ -170,11 +170,11 @@ void serialEvent1() {
         char inChar = char(Serial1.read());
         rxData += inChar;
         delay(2); // 这里不能去掉，要给串口处理数据的时间
+        /* if (inChar == '\n') { // 换行符 表示一个完整数据结束
+             stringComplete = true;
+        } */
     }
 #if IS_DEBUG
-    /* if (inChar == '\n') { // 换行符 表示一个完整数据结束
-        // stringComplete = true;
-      }*/
     Serial.println("------------------------------------");
     Serial.println(rxData);
     Serial.println("************************************");
