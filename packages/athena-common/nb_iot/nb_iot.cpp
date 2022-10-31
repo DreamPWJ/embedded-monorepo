@@ -56,12 +56,14 @@ void init_nb_iot() {
         send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n", 30000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
-        // delay(3000); //  附着网络等可能长达2分钟才成功
+        delay(3000); //  附着网络等可能长达2分钟才成功
         // +CSQ: 99,99 已经读取不到信号强度，搜寻NBIOT网络中
         String flag = "+CSQ: 99,99";
         while (1) {
-            String atResult = send_at_command("AT+CSQ\r\n", 3000, IS_DEBUG);
+            String atResult = send_at_command("AT+CSQ\r\n", 6000, IS_DEBUG, "+CSQ:");
+            // Serial.print(atResult);
             if (atResult.indexOf(flag) != -1) {
+                Serial.print(".");
                 delay(3000);
             } else {
                 break;
