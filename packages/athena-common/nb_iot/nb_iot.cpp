@@ -72,7 +72,7 @@ void init_nb_iot() {
         vector<string> dataArray = split(data.c_str(), ",");
         String reg = dataArray[1].c_str();
         if (reg.c_str() != "1" && reg.c_str() != "5") {
-            Serial.println("NB-IOT附着网络失败重试...");
+            Serial.println("NB-IoT附着网络失败重试...");
             init_nb_iot();
         }*/
     }

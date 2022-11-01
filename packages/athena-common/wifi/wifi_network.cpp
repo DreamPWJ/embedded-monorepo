@@ -16,6 +16,7 @@ using namespace std;
 
 WiFiMulti wifiMulti;
 
+// WiFiMulti方式支持多个账号同时设置 连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
 const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
 const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
 
@@ -27,7 +28,6 @@ unsigned long interval = 60000; // 检测wifi状态间隔 毫秒
  */
 void init_wifi() {
     Serial.println("开始初始化WiFi模块");
-    // ESP32 WiFiMulti功能：连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
     // 站模式：ESP32 连接到接入点连接到另一个网络, 它必须处于工作站模式
     WiFi.mode(WIFI_STA);
     // 设置wifi账号和密码  注意文件名称不要和库的名称一样，会导致error: 'WiFi' was not declared in this scope
