@@ -19,6 +19,8 @@ void nb_iot_heart_beat(void *pvParameters); // void *pvParameters
 
 void restart_nb_iot();
 
+void  hardware_restart_nb_iot();
+
 String get_imei();
 
 #endif
