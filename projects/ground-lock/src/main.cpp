@@ -124,6 +124,8 @@ void setup() {
 
     // WiFi网络版本执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
+    do_firmware_upgrade(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL, "");
+
     // GSM网络版本执行OTA空中升级
     // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 

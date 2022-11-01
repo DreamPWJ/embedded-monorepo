@@ -51,7 +51,7 @@ extern const uint8_t server_cert_pem_start[] asm("_binary_lib_server_certs_ca_ce
 
 /**
  * 执行固件升级
- * 1. 定时检测HTTP方式 2. 主动触发MQTT方式
+ * 1. 定时检测HTTP方式 2. 主动触发MQTT方式  3. 单片机初始化的时候执行一次检测
  * 1. 全量整包升级  2. 差分包升级(自定义bootloader实现)  3. 灰度升级(根据百分比、地区、版本等)
  * 对于弱网络如NB-IoT(无法下载完整大固件包、差分升级复杂度高)或不使用Wifi作为主网络的OTA升级 可采用不完美的降级方案 检测到有新固件版本时扫描并建立开放WIFI连接(公网AP、4G路由器、手机热点等)进行OTA下载升级 升级成功后关闭WIFI连接来减少功耗和不稳定网络
  */
