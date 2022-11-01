@@ -69,8 +69,8 @@ void init_at_mqtt() {
         Serial.println("MQTT Broker 连接成功: " + client_id);
     } else {
         Serial.println("MQTT初始化网络连接失败, 自动重启单片机设备...");
-        hardware_restart_nb_iot();
-        esp_restart();
+        hardware_restart_nb_iot(); // 硬件重启网络模组
+        esp_restart();  // 重启单片机主控芯片
     }
 
     // 发布MQTT消息
