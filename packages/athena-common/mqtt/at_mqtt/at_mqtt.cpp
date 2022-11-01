@@ -30,6 +30,7 @@ using namespace std;
 
 #define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define MODEM_RST  6  // NB-IoT控制GPIO
 
 String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
 
@@ -69,6 +70,8 @@ void init_at_mqtt() {
         Serial.println("MQTT Broker 连接成功: " + client_id);
     } else {
         Serial.println("MQTT初始化网络连接失败, 自动重启单片机设备...");
+        digitalWrite(MODEM_RST, LOW);
+        delay(1000);
         esp_restart();
     }
 
