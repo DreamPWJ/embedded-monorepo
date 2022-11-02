@@ -21,6 +21,8 @@ void restart_nb_iot();
 
 void  hardware_restart_nb_iot();
 
+String get_nb_ntp_time();
+
 String get_imei();
 
 #endif

@@ -60,8 +60,10 @@ void setup() {
         }
     }
 
+#if IS_DEBUG
     // 将LED数字引脚初始化为输出
     // set_pin_mode();
+#endif
 
     // 初始化非易失性存储
     int_nvs();
@@ -136,12 +138,13 @@ void setup() {
 
 void loop() {
     // 循环执行代码
-    // delay(1000);
+#if IS_DEBUG
     // 开发板LED 闪动的实现 影响serialEvent运行
     // set_led();
     // Print unused stack for the task that is running loop() - the same as for setup()
     // Serial.printf("\nLoop() - Free Stack Space: %d", uxTaskGetStackHighWaterMark(NULL));
     // Serial.printf("电池电量值: %f\n", get_electricity());
+#endif
 
 #if WIFI_EN
     // 定时检测重新连接WiFi

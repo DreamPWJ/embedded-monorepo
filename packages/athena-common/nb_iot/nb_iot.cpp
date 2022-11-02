@@ -177,6 +177,30 @@ void hardware_restart_nb_iot() {
 }
 
 /**
+ * 获取NTP时间
+ */
+String get_nb_ntp_time() {
+    // 基于TCP或UDP访问 访问NTP公共服务器获取时间  阿里云NTP服务器是ntp1.aliyun.com（IP为120.25.115.20）端口为123
+    // 创建socket为TCP协议
+    send_at_command("AT+SKTCREATE=1,1,6\r\n", 3000, IS_DEBUG);
+    // 发起连接
+    String atResult = send_at_command("AT+SKTCONNECT=0,\042120.25.115.20\042,123\r\n", 6000, IS_DEBUG);
+    String flag = "+SKTRECV:"; // 响应标识  HEX十六进制数据
+    String time = "";
+    if (atResult.indexOf(flag) != -1) {
+        int startIndex = atResult.indexOf(flag);
+        String start = atResult.substring(startIndex);
+        int endIndex = start.indexOf("\n");
+        String end = start.substring(0, endIndex + 1);
+        String data = end.substring(0, end.length());
+        vector<string> dataArray = split(data.c_str(), ",");
+        time = dataArray[2].c_str();
+        Serial.println(time);
+    }
+    return time;
+}
+
+/**
  * 获取国际移动设备唯一标识IMEI串号码
  */
 String get_imei() {
