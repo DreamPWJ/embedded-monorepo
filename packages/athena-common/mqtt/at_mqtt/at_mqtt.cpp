@@ -239,7 +239,8 @@ void at_mqtt_callback(String rxData) {
         String rssi = dataArray[0].c_str();
         if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") {
             Serial.println("NB-IoT信号丢失触发重连机制...");
-            esp_restart();
+            hardware_restart_nb_iot(); // 硬件重启网络模组
+            esp_restart();  // 重启单片机主控芯片
         }
         // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
     }

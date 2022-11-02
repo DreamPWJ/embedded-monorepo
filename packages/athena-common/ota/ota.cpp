@@ -126,11 +126,11 @@ void do_firmware_upgrade(String version, String jsonUrl, String firmwareUrl) {
         } else {
             Serial.println("执行OTA空中升级失败: " + chipId);
 #if WIFI_ONLY_OTA
+            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
+            WiFi.disconnect();
             // 上报MQTT消息
             string jsonDataFail = "{\"msg\":\"执行OTA空中升级失败了\",\"chipId\":\"" + to_string(chipId) + "\"}";
             at_mqtt_publish(ota_topic, jsonDataFail.c_str());
-            // 升级成功后关闭WIFI连接来减少功耗和不稳定网络
-            WiFi.disconnect();
 #endif
             // return ESP_FAIL;
         }
