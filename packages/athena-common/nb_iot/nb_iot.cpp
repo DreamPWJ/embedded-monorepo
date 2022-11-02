@@ -140,7 +140,9 @@ void at_command_response() {
  */
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
-        Serial1.printf("AT+CSQ\r\n");  // 获取信号质量 如RSSI
+        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号质量 如RSSI
+        delay(1000);
+        Serial1.printf("AT+ECMTCONN?\r\n");  // MQTT 服务器连接是否正常
 /*     delay(3000);
         String networkRSSI = get_nvs("network_rssi"); // 信号质量
         vector<string> dataArray = split(networkRSSI.c_str(), ",");

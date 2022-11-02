@@ -153,20 +153,15 @@ void at_mqtt_disconnect() {
  * 检测重连MQTT服务
  */
 void at_mqtt_reconnect(String incomingByte) {
-    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
-    // +ECMTSTAT: <tcpconnectID>,<err_code> 1 连接已关闭或由对等方重置
-    String flag = "ECMTSTAT";
-    if (incomingByte.indexOf(flag) != -1) {
-        Serial.println("AT指令重连MQTT服务");
-        init_at_mqtt(); // 重连MQTT服务
+    Serial.println("AT指令重连MQTT服务");
+    init_at_mqtt(); // 重连MQTT服务
 
-        DynamicJsonDocument doc(200);
-        doc["type"] = "reconnectMQTT";
-        doc["msg"] = "检测重连MQTT服务完成: " + to_string(get_chip_mac()) + "单片机发布的消息";
-        String initStr;
-        serializeJson(doc, initStr);
-        at_mqtt_publish(at_topics, initStr.c_str());
-    }
+    DynamicJsonDocument doc(200);
+    doc["type"] = "reconnectMQTT";
+    doc["msg"] = "检测重连MQTT服务完成: " + to_string(get_chip_mac()) + "单片机发布的消息";
+    String initStr;
+    serializeJson(doc, initStr);
+    at_mqtt_publish(at_topics, initStr.c_str());
 }
 
 /**
@@ -178,8 +173,11 @@ void at_mqtt_callback(String rxData) {
     /* +ECMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
     }*/
-    String flag = "ECMTRECV"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
-    String flagRSSI = "+CSQ:"; // 并发情况下 串口可能返回多条数据
+
+    String flagMQTT = "+ECMTRECV:"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
+    String flagRSSI = "+CSQ:"; // 网络信息值
+    String flagMQTT1 = "+ECMTCONN: 0,4"; // MQTT连接状态 1. 初始化 2. 正在连接  3. 已连接  4. 已断开
+    String flagMQTT2 = "+ECMTSTAT:";    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
 
     //  while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
     /*
@@ -200,12 +198,12 @@ void at_mqtt_callback(String rxData) {
         String incomingByteItem = rxDataArray[i].c_str();
 
         // MQTT订阅回调消息
-        if (incomingByteItem.indexOf(flag) != -1) {
+        if (incomingByteItem.indexOf(flagMQTT) != -1) {
 #if IS_DEBUG
             std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
             at_mqtt_publish(topic_device.c_str(), incomingByteItem.c_str());  // 上报MQTT订阅数据 下行指令
 #endif
-            int startIndex = incomingByteItem.indexOf(flag);
+            int startIndex = incomingByteItem.indexOf(flagMQTT);
             String start = incomingByteItem.substring(startIndex);
             int endIndex = start.indexOf("}"); //  发送JSON数据的换行 会导致后缀丢失 可尝试\n\r
             String end = start.substring(0, endIndex + 1);
@@ -224,6 +222,7 @@ void at_mqtt_callback(String rxData) {
                 do_at_mqtt_subscribe(json, topic);
             }
         }
+        delay(2);
     }
 
     if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
@@ -245,8 +244,10 @@ void at_mqtt_callback(String rxData) {
         // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
     }
 
-    // 检测MQTT服务状态 如果失效自动重连
-    at_mqtt_reconnect(incomingByte);
+    if (incomingByte.indexOf(flagMQTT1) != -1 || incomingByte.indexOf(flagMQTT2) != -1) { // 检测MQTT连接状态断开
+        // 检测MQTT服务状态 如果失效自动重连
+        at_mqtt_reconnect(incomingByte);
+    }
 
     // }
 }
