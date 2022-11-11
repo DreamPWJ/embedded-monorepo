@@ -31,7 +31,7 @@ using namespace std;
 #define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
-String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
+String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
 const char *at_mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
@@ -56,13 +56,13 @@ void init_at_mqtt() {
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
-    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
-                         IS_DEBUG, "+ECMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
-/*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
+    send_mqtt_at_command("AT+QMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
+                         IS_DEBUG, "+QMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
+/*  myMqttSerial.printf("AT+QMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
-    String conFlag = "+ECMTCONN: 0,0,0";
+    String conFlag = "+QMTCONN: 0,0,0";
     String connectResult = send_mqtt_at_command(
-            "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
+            "AT+QMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
             "\042\r\n", 15000, IS_DEBUG, conFlag);
 
     if (connectResult.indexOf(conFlag) != -1) {
@@ -125,28 +125,28 @@ void at_mqtt_publish(String topic, String msg) {
     // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     Serial1.printf(
-            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
+            "AT+QMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
 }
 
 /**
  * MQTT订阅消息
  */
 void at_mqtt_subscribe(String topic) {
-    Serial1.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
+    Serial1.printf("AT+QMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
 }
 
 /**
  * 取消MQTT主题订阅
  */
 void at_mqtt_unsubscribe(String topic) {
-    Serial1.printf("AT+ECMTUNS=0,1,\"%s\"\r\n", topic.c_str());
+    Serial1.printf("AT+QMTUNS=0,1,\"%s\"\r\n", topic.c_str());
 }
 
 /**
  * MQTT断开连接
  */
 void at_mqtt_disconnect() {
-    Serial1.printf("AT+ECMTDISC=0\\r\\n\r\n");
+    Serial1.printf("AT+QMTDISC=0\\r\\n\r\n");
 }
 
 /**
@@ -170,14 +170,14 @@ void at_mqtt_reconnect(String incomingByte) {
 void at_mqtt_callback(String rxData) {
     //Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据格式
-    /* +ECMTRECV: 0,0,"ESP32/system",{
+    /* +QMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
     }*/
 
-    String flagMQTT = "+ECMTRECV:"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
+    String flagMQTT = "+QMTRECV:"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
     String flagRSSI = "+CSQ:"; // 网络信息值
-    String flagMQTT1 = "+ECMTCONN: 0,4"; // MQTT连接状态 1. 初始化 2. 正在连接  3. 已连接  4. 已断开
-    String flagMQTT2 = "+ECMTSTAT:";    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
+    String flagMQTT1 = "+QMTCONN: 0,4"; // MQTT连接状态 1. 初始化 2. 正在连接  3. 已连接  4. 已断开
+    String flagMQTT2 = "+QMTSTAT:";    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
 
     //  while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
     /*
