@@ -44,8 +44,8 @@ void init_nb_iot() {
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
         Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
-        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络  +CME ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-        //send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n", 30000, IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡  NB模块不用设置APN的
+        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络
+        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG); // 注册APN接入网络 如CMNET, NB-IOT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响
     } else {
         delay(3000); //  附着网络等可能长达2分钟才成功
         // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中
