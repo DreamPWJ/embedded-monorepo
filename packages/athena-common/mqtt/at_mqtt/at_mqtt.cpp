@@ -52,6 +52,8 @@ void init_at_mqtt() {
     // send_mqtt_at_command("AT+CEREG?\r\n", 3000, IS_DEBUG); // 判断附着网络 参数1或5标识附着正常
     // delay(3000);
 
+    send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 3000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
+
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
@@ -60,7 +62,7 @@ void init_at_mqtt() {
                          IS_DEBUG, "+QMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
 /*  myMqttSerial.printf("AT+QMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
-    String conFlag = "+QMTCONN: 0,0,0";
+    String conFlag = "+QMTCONN: 0,0,0"; // 客户端成功连接到 MQTT 服务器返回响应标识
     String connectResult = send_mqtt_at_command(
             "AT+QMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
             "\042\r\n", 15000, IS_DEBUG, conFlag);
@@ -124,8 +126,8 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
 void at_mqtt_publish(String topic, String msg) {
     // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
-    Serial1.printf(
-            "AT+QMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
+    Serial1.printf("AT+QMTPUB=0,1,2,0,\042%s\042,%d,\042%s\042\r\n", topic.c_str(), msg.length(), msg.c_str());
+    // 获取AT返回的发送是否成功  做重发机制
 }
 
 /**

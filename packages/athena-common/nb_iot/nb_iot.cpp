@@ -35,8 +35,10 @@ void init_nb_iot() {
     // restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置网络");
 
-    send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); //  禁用休眠模式
-    Serial1.printf("AT\r\n"); // 测试AT指令
+    send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
+    // send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
+/*  Serial1.printf("AT\r\n"); // 测试AT指令
+    delay(1000);*/
     // send_at_command("AT+ECICCID\r\n", 3000, IS_DEBUG); // 查看SIM ID号
 
     String isNBInit = get_nvs("is_nb_iot_init");
@@ -65,7 +67,6 @@ void init_nb_iot() {
     // send_at_command("AT+CREG=1\r\n", 5000, IS_DEBUG); // 注册网络
 
     // send_at_command("AT+ECSNTP=\042210.72.145.44\042,123,0\r\n", 3000, IS_DEBUG); // 同步NTP网络时间 利用SNTP服务器进行UE的本地时间和UTC时间的同步
-    // send_at_command("AT+CSQ\r\n", 2000, IS_DEBUG); // 信号质量
     // send_at_command("AT+ECIPR=115200\r\n", 2000, IS_DEBUG); // 设置模组AT串口通信波特率
     // Serial1.printf("AT+ECPING=\042www.baidu.com\042\r\n"); // 测试网络
     set_nvs("is_nb_iot_init", "yes"); // 单片机持久化存储是否初始化NB-IoT网络
@@ -111,35 +112,14 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
 }
 
 /**
- * AT指令响应数据
- */
-void at_command_response() {
-    while (Serial1.available()) {
-        Serial.println(Serial1.readStringUntil('\n'));
-    }
-}
-
-/**
  * NB模块心跳检测网络
  */
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
-        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号质量 如RSSI
-        delay(1000);
-        Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常
-/*     delay(3000);
-        String networkRSSI = get_nvs("network_rssi"); // 信号质量
-        vector<string> dataArray = split(networkRSSI.c_str(), ",");
-        String rssi = dataArray[0].c_str();
-        // Serial.println(rssi);
-        if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
-            Serial.println("NB-IoT信号丢失重连机制...");
-            // 重新初始化网络
-            restart_nb_iot();
-            init_nb_iot();
-            init_at_mqtt();
-        }*/
         delay(1000 * 60);
+        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号质量 如RSSI
+        delay(3000);
+        Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常
     }
 }
 
@@ -199,4 +179,13 @@ String get_imei() {
         return atResult;
     }
     return "";
+}
+
+/**
+ * AT指令响应数据
+ */
+void at_command_response() {
+    while (Serial1.available()) {
+        Serial.println(Serial1.readStringUntil('\n'));
+    }
 }
