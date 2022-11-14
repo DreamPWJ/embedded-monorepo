@@ -50,7 +50,7 @@ void init_at_mqtt() {
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
 
-    send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 3000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
+    send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 1000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
 
     // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
