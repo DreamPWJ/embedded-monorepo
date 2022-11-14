@@ -49,8 +49,6 @@ void init_at_mqtt() {
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
-    // send_mqtt_at_command("AT+CEREG?\r\n", 3000, IS_DEBUG); // 判断附着网络 参数1或5标识附着正常
-    // delay(3000);
 
     send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 3000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
 
