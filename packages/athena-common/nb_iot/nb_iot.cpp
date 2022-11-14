@@ -36,7 +36,7 @@ void init_nb_iot() {
     Serial.println("给NB-IoT模组发送AT指令, 配置网络");
 
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
-    // send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
+    send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
 /*  Serial1.printf("AT\r\n"); // 测试AT指令
     delay(1000);*/
     // send_at_command("AT+ECICCID\r\n", 3000, IS_DEBUG); // 查看SIM ID号

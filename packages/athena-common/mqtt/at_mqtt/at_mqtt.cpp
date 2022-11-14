@@ -119,13 +119,15 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
 }
 
 /**
- * MQTT发送消息
+ * MQTT发布消息
  */
 void at_mqtt_publish(String topic, String msg) {
     // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
     Serial1.printf("AT+QMTPUB=0,1,2,0,\042%s\042,%d,\042%s\042\r\n", topic.c_str(), msg.length(), msg.c_str());
     // 获取AT返回的发送是否成功  做重发机制
+    // String pubFlag = "OK"; //  MQTT发布消息成功
+
 }
 
 /**
