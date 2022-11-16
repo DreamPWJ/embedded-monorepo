@@ -42,7 +42,7 @@ void init_nb_iot() {
     if (isNBInit != "yes") {
         Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
         send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
-        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNET\042\r\n", 30000,
+        send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000,
                         IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
         delay(3000); //  附着网络等可能长达2分钟才成功
@@ -59,22 +59,6 @@ void init_nb_iot() {
                 break;
             }
         }
-
-        // send_at_command("AT+CGATT?\r\n", 60000, IS_DEBUG, "+CGATT: 1");
-        // 判断附着网络是否成功  第二个参数1或5标识附着正常 如 +CEREG: 0,1
-/*      String atResult = send_at_command("AT+CEREG?\r\n", 60000, IS_DEBUG);
-        String flag = "+CEREG:";
-        int startIndex = atResult.indexOf(flag);
-        String start = atResult.substring(startIndex);
-        int endIndex = start.indexOf("\n");
-        String end = start.substring(0, endIndex + 1);
-        String data = end.substring(0, end.length());
-        vector<string> dataArray = split(data.c_str(), ",");
-        String reg = dataArray[1].c_str();
-        if (reg.c_str() != "1" && reg.c_str() != "5") {
-            Serial.println("NB-IoT附着网络失败重试...");
-            init_nb_iot();
-        }*/
     }
 
     send_at_command("AT+CGACT=1\r\n", 5000, IS_DEBUG); // 激活网络
@@ -141,20 +125,8 @@ void at_command_response() {
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
         Serial1.printf("AT+CSQ\r\n");  // 获取网络信号质量 如RSSI
-        delay(1000);
+        delay(3000);
         Serial1.printf("AT+ECMTCONN?\r\n");  // MQTT 服务器连接是否正常
-/*     delay(3000);
-        String networkRSSI = get_nvs("network_rssi"); // 信号质量
-        vector<string> dataArray = split(networkRSSI.c_str(), ",");
-        String rssi = dataArray[0].c_str();
-        // Serial.println(rssi);
-        if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") { // 信号丢失重连机制
-            Serial.println("NB-IoT信号丢失重连机制...");
-            // 重新初始化网络
-            restart_nb_iot();
-            init_nb_iot();
-            init_at_mqtt();
-        }*/
         delay(1000 * 60);
     }
 }
