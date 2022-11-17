@@ -33,7 +33,7 @@ void init_nb_iot() {
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();
-    Serial.println("给NB-IoT模组发送AT指令, 配置网络");
+    Serial.println("给NB-IoT模组发送AT指令, 配置蜂窝网络");
 
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
@@ -43,9 +43,9 @@ void init_nb_iot() {
 
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
-        Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
+        Serial.println("初始化NB-IoT配网, 重启等会自动入网"); // 如果NB-IoT配网成功 重启等会自动入网 只需初始化一次
         send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络
-        // 注册APN接入网络 如CMNET, NB-IOT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
+        // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
     } else {
         delay(3000); //  附着网络等可能长达2分钟才成功
