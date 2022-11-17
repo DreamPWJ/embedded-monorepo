@@ -33,17 +33,17 @@ void init_nb_iot() {
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();
-    Serial.println("给NB-IoT模组发送AT指令, 配置网络");
+    Serial.println("给NB-IoT模组发送AT指令, 配置蜂窝网络");
 
     // Serial1.printf("AT\r\n"); // 测试AT指令
     // send_at_command("AT+ECICCID\r\n", 3000, IS_DEBUG); // 查看SIM ID号
 
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
-        Serial.println("如果NB-IOT配网成功 重启等会自动入网 只需初始化一次");
+        Serial.println("初始化NB-IoT配网, 重启等会自动入网"); // 如果NB-IoT配网成功 重启等会自动入网 只需初始化一次
         send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); //  附着网络  CMS ERROR:308物联网卡被锁(换卡或解锁),没信号会导致设置失败
         send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000,
-                        IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IOT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
+                        IS_DEBUG); // 注册APNID接入网络 如CMNET,  NB-IoT通用类型CMNBIOT1, CMS ERROR:3附着不成功或没装卡
     } else {
         delay(3000); //  附着网络等可能长达2分钟才成功
         // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中
