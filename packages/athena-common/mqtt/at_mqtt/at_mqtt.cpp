@@ -170,7 +170,7 @@ void at_mqtt_reconnect(String incomingByte) {
  * MQTT订阅消息回调
  */
 void at_mqtt_callback(String rxData) {
-    //Serial.println("AT指令MQTT订阅接收的消息: ");
+    // Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据格式
     /* +ECMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"

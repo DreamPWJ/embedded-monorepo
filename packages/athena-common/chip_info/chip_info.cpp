@@ -22,6 +22,9 @@ uint32_t get_chip_id() {
     return chipId;
 }
 
+/**
+ * 获取芯片MAC地址唯一标识
+ */
 uint64_t get_chip_mac() {
     chipMac |= ESP.getEfuseMac();
     return chipMac;
