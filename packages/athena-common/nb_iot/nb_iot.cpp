@@ -118,11 +118,11 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
         delay(1000 * 60);
-        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号质量 如RSSI
+        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号强度 如RSSI
         delay(3000);
         Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常
         // delay(3000);
-        // Serial1.printf("AT+QENG=0\r\n");  // 模组工程模式 块当前的网络服务信息
+        // Serial1.printf("AT+QENG=0\r\n");  // 模组工程模式 当前的网络服务信息 真正NB-IoT信号质量 走4G LTE部分带宽
         // delay(3000);
         // Serial1.printf("AT+CEREG?\r\n"); // 判断附着网络 参数1或5标识附着正常
     }
