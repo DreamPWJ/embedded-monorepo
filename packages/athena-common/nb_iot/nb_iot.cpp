@@ -29,12 +29,13 @@ using namespace std;
 void init_nb_iot() {
     // NB相关引脚初始化
     pinMode(MODEM_RST, OUTPUT);
-    digitalWrite(MODEM_RST, HIGH);
+    digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
     // restart_nb_iot();
     Serial.println("给NB-IoT模组发送AT指令, 配置蜂窝网络");
 
+    // send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
 /*  Serial1.printf("AT\r\n"); // 测试AT指令
@@ -118,7 +119,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
 void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
         delay(1000 * 60);
-        Serial1.printf("AT+CSQ\r\n");  // 获取网络信号强度 如RSSI
+        Serial1.printf("AT+CSQ\r\n");  // CSQ获取2G网络信号强度 如RSSI
         delay(3000);
         Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常
         // delay(3000);
@@ -142,7 +143,7 @@ void restart_nb_iot() {
  */
 void hardware_restart_nb_iot() {
     Serial.println("硬重启GSM调制解调器模块芯片...");
-    digitalWrite(MODEM_RST, LOW); // 低电压复位
+    digitalWrite(MODEM_RST, HIGH); // 电平复位
     delay(3000);
     set_nvs("is_nb_iot_init", "no");
 }
