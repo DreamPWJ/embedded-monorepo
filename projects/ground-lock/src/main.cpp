@@ -96,8 +96,6 @@ void setup() {
     init_ground_feeling();
     // 检测地感状态 有车无车及时上报MQTT服务器
     check_ground_feeling_status();
-    // 初始化抬起车位锁
-    set_motor_up();
 #endif
 
 #if MQTT_EN
@@ -121,6 +119,11 @@ void setup() {
 
     // WiFi网络版本MQTT心跳服务
     // mqtt_heart_beat();
+#endif
+
+#if PWM_EN
+    // 初始化抬起车位锁
+    set_motor_up();
 #endif
 
     // 初始化无线射频RF 用于遥控器控制

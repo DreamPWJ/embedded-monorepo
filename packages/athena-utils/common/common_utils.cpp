@@ -20,7 +20,7 @@ vector<string> split(const string &str, const string &pattern) {
     vector<string> res;
     if (str == "")
         return res;
-    //在字符串末尾也加入分隔符，方便截取最后一段
+    // 在字符串末尾也加入分隔符，方便截取最后一段
     string strs = str + pattern;
     size_t pos = strs.find(pattern);
 
