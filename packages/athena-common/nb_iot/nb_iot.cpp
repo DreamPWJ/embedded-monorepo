@@ -31,10 +31,11 @@ void init_nb_iot() {
     pinMode(MODEM_RST, OUTPUT);
     digitalWrite(MODEM_RST, LOW);
 
-    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线  参考文章: https://aithinker.blog.csdn.net/article/details/120765734
+    // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
     // restart_nb_iot();
     Serial.println("单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
-
+ /*   Serial1.println("ATI\r\n"); // 产品固件信息
+    delay(1000);*/
     // send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式

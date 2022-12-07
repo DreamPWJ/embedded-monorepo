@@ -50,12 +50,15 @@ void init_at_mqtt() {
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
 
+    // 执行 AT+QMTOPEN? 时 ，若当前不存在已打开的客户端信息 ，则无 +QMTOPEN:<TCP_connectID>,<host_name>,<port>返回，仅返回 OK 或者 ERROR
     send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 1000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
 
-    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
+    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
+    send_mqtt_at_command("AT+QMTCFG=\042version\042,0,1\r\n", 3000, IS_DEBUG);  // 设置MQTT的版本
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
+    // 打开连接  确保网络天线连接正确
     send_mqtt_at_command("AT+QMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
                          IS_DEBUG, "+QMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
 /*  myMqttSerial.printf("AT+QMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
@@ -237,13 +240,13 @@ void at_mqtt_callback(String rxData) {
         String data = end.substring(0, end.length());
         vector<string> dataArray = split(data.c_str(), ",");
         int index = 0; // 取值下标
-        if (flagCEREG.indexOf(",") != -1) {
+        if (data.indexOf(",") != -1) {
             index = 1;
         }
         String stat = dataArray[index].c_str();
-        Serial.println("网络注册状态 : " + data + " 状态值: " + stat);
-        if (stat.c_str() == "1" || stat.c_str() == "5") {
-            // 网络正常
+        // Serial.println("网络注册状态 : " + data + " 状态值: " + stat);
+        if (stat.toInt() == 1 || stat.toInt() == 5) {
+            // 网络已连接 但不一定完全Ping通
         } else {
             // 网络不正常 无法连接
             Serial.println("NB-IoT 已断网触发重连机制...");
