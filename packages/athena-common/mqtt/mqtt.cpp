@@ -155,7 +155,7 @@ void do_mqtt_heart_beat() {
     int deviceStatus = get_pwm_status(); // 设备电机状态
     int parkingStatus = ground_feeling_status(); // 是否有车
     String firmwareVersion = get_nvs("version"); // 固件版本
-    String networkRSSI = get_nvs("network_rssi"); // 信号质量
+    String networkSignal = get_nvs("network_signal"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
     // 发送心跳消息
@@ -164,7 +164,7 @@ void do_mqtt_heart_beat() {
             to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
             "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
             "\"electricity\":\"" + electricityValue.c_str() + "\"," +
-            "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
+            "\"networkSignal\":\"" + networkSignal.c_str() + "\"}";
     // 发送心跳消息
     client.publish(topics, jsonData.c_str());
 }

@@ -266,18 +266,19 @@ void at_mqtt_callback(String rxData) {
             String end = start.substring(0, endIndex + 1);
             String data = end.substring(0, end.length());
             vector<string> dataArray = split(data.c_str(), ",");
-            int RSRP = (int) dataArray[5].c_str(); // 信号接收功率 关键参数
+            String RSRP = dataArray[5].c_str(); // 信号接收功率 关键参数
             String RSSI = dataArray[7].c_str();
-            int SNR = (int) dataArray[8].c_str();
+            String SNR = dataArray[8].c_str();
             //Serial.println("RSRP: " + RSRP);
             //Serial.println("SNR: " + SNR);
             // NVS存储信号信息 用于MQTT上报
-            set_nvs("network_rssi", RSSI.c_str());
-            /*       if (RSRP >= -100 && SNR >= 3) {
+            String signal = "RSRP: " + RSRP + ",SNR: " + SNR + ",RSSI: " + RSSI;
+            set_nvs("network_signal", signal.c_str());
+            /*       if (RSRP.toInt() >= -100 && SNR.toInt() >= 3) {
                        // 信号强
-                   } else if ((-110 <= RSRP <= -100 && 3 < SNR < 3) || RSRP >= -110) {
+                   } else if ((-110 <= RSRP.toInt() <= -100 && 3 < SNR.toInt() < 3) || RSRP.toInt() >= -110) {
                        // 信号中
-                   } else if (RSRP < -115 || SNR < -3) {
+                   } else if (RSRP.toInt() < -115 || SNR.toInt() < -3) {
                        // 信号弱
                    }*/
         } catch (exception &e) {
@@ -285,14 +286,14 @@ void at_mqtt_callback(String rxData) {
         }
     }
 
-/*    if (incomingByte.indexOf(flagCSQ) != -1) { // 2G/3G信号质量
+/*    if (incomingByte.indexOf(flagCSQ) != -1) { // 2G/3G信号质量CSQ
         int startIndex = incomingByte.indexOf(flagCSQ);
         String start = incomingByte.substring(startIndex);
         int endIndex = start.indexOf("\n");
         String end = start.substring(0, endIndex + 1);
         String data = end.substring(0, end.length());
         // NVS存储信号信息 用于MQTT上报
-        set_nvs("network_rssi", data.c_str());
+        set_nvs("network_signal", data.c_str());
 
         vector<string> dataArray = split(data.c_str(), ",");
         String rssi = dataArray[0].c_str();
@@ -329,7 +330,7 @@ void do_at_mqtt_heart_beat() {
     int deviceStatus = get_pwm_status(); // 设备电机状态
     int parkingStatus = ground_feeling_status(); // 是否有车
     String firmwareVersion = get_nvs("version"); // 固件版本
-    String networkRSSI = get_nvs("network_rssi"); // 信号质量
+    String networkSignal = get_nvs("network_signal"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
     // 发送心跳消息
@@ -338,7 +339,7 @@ void do_at_mqtt_heart_beat() {
             to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
             "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
             "\"electricity\":\"" + electricityValue.c_str() + "\"," +
-            "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
+            "\"networkSignal\":\"" + networkSignal.c_str() + "\"}";
     at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
 }
 

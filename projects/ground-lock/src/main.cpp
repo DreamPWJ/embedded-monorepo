@@ -121,11 +121,6 @@ void setup() {
     // mqtt_heart_beat();
 #endif
 
-#if PWM_EN
-    // 初始化抬起车位锁
-    set_motor_up();
-#endif
-
     // 初始化无线射频RF 用于遥控器控制
     // rf_init();
 
@@ -138,6 +133,11 @@ void setup() {
 
 /*  pinMode(19, INPUT_PULLUP);
     attachInterrupt(19, isr, FALLING); */
+
+#if PWM_EN
+    // 初始化抬起车位锁
+    set_motor_up();
+#endif
 
 }
 
