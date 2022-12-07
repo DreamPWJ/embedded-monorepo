@@ -245,7 +245,7 @@ void at_mqtt_callback(String rxData) {
         }
         vector<string> dataArray = split(data.c_str(), splitFlag);
         String stat = dataArray[index].c_str();
-        Serial.println("网络注册状态 : " + data + " 状态值: " + stat);
+        // Serial.println("网络注册状态 : " + data + " 状态值: " + stat);
         if (stat.toInt() == 1 || stat.toInt() == 5) {
             // 网络已连接 但不一定完全Ping通
         } else {

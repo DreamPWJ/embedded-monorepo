@@ -44,7 +44,7 @@ SET_LOOP_TASK_STACK_SIZE(16 * 1024); // 16KB
 }*/
 
 void setup() {
-    // 初始化设置代码
+    // 初始化设置代码  为保证单片机运行正常  电路设计与电压必须稳定
 
     // 设置UART串口波特率
     Serial.begin(115200);
