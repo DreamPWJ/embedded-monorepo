@@ -96,8 +96,6 @@ void setup() {
     init_ground_feeling();
     // 检测地感状态 有车无车及时上报MQTT服务器
     check_ground_feeling_status();
-    // 初始化抬起车位锁
-    set_motor_up();
 #endif
 
 #if MQTT_EN
@@ -135,6 +133,11 @@ void setup() {
 
 /*  pinMode(19, INPUT_PULLUP);
     attachInterrupt(19, isr, FALLING); */
+
+#if PWM_EN
+    // 初始化抬起车位锁
+    set_motor_up();
+#endif
 
 }
 
