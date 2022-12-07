@@ -34,8 +34,8 @@ void init_nb_iot() {
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
     // restart_nb_iot();
     Serial.println("单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
- /*   Serial1.println("ATI\r\n"); // 产品固件信息
-    delay(1000);*/
+    Serial1.println("ATI\r\n"); // 产品固件信息
+    delay(2000);
     // send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
@@ -113,12 +113,12 @@ void nb_iot_heart_beat(void *pvParameters) {
     while (1) {
         delay(1000 * 60);
         Serial1.printf("AT+CEREG?\r\n"); // 判断网络注册状态 参数1或5标识附着正常
-        delay(3000);
+        delay(1000 * 15);
+        Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常  执行 AT+QMTCONN? 时 ， 若当前不存在MQTT连接 ，则无 +QMTCONN: <TCP_connectID>,<state> 返回，仅返回 OK 或者 ERROR。
+        delay(1000 * 15);
         Serial1.printf("AT+QENG=0\r\n");  // 模组工程模式 当前的网络服务信息 真正NB-IoT信号质量 走4G LTE部分带宽
-        /*delay(3000);
+        /*delay(1000 * 15);
         Serial1.printf("AT+CSQ\r\n");  // CSQ获取2G网络信号强度 如RSSI*/
-        delay(3000);
-        Serial1.printf("AT+QMTCONN?\r\n");  // MQTT 服务器连接是否正常
     }
 }
 
