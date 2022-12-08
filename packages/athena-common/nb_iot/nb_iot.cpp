@@ -35,7 +35,7 @@ void init_nb_iot() {
     // restart_nb_iot();
     Serial.println("单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
     Serial1.println("ATI\r\n"); // 产品固件信息
-    delay(2000);
+    delay(1000);
     // send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
@@ -50,7 +50,7 @@ void init_nb_iot() {
         // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
     } else {
-        delay(3000); //  附着网络等可能长达2分钟才成功
+        delay(1000); //  附着网络等可能长达2分钟才成功
         // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
         String flag = "+CGATT: 1";
         while (1) {
@@ -147,22 +147,8 @@ void hardware_restart_nb_iot() {
 String get_nb_ntp_time() {
     // 基于TCP或UDP访问 访问NTP公共服务器获取时间  阿里云NTP服务器是ntp1.aliyun.com（IP为120.25.115.20）端口为123
     // AT+CCLK 设置/获取当前日期和时间
-    // 创建socket为TCP协议
-    send_at_command("AT+SKTCREATE=1,1,6\r\n", 3000, IS_DEBUG);
-    // 发起连接
-    String atResult = send_at_command("AT+SKTCONNECT=0,\042120.25.115.20\042,123\r\n", 6000, IS_DEBUG);
-    String flag = "+SKTRECV:"; // 响应标识  HEX十六进制数据
-    String time = "";
-    if (atResult.indexOf(flag) != -1) {
-        int startIndex = atResult.indexOf(flag);
-        String start = atResult.substring(startIndex);
-        int endIndex = start.indexOf("\n");
-        String end = start.substring(0, endIndex + 1);
-        String data = end.substring(0, end.length());
-        vector<string> dataArray = split(data.c_str(), ",");
-        time = dataArray[2].c_str();
-        Serial.println(time);
-    }
+    // send_at_command("AT+CCLK=yyyy-mm-dd hh:mm:ss\r\n", 3000, IS_DEBUG);
+    String time = send_at_command("AT+CCLK?\r\n", 3000, IS_DEBUG);
     return time;
 }
 
