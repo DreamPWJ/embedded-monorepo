@@ -44,7 +44,7 @@ const int at_mqtt_port = 1883;
  * 初始化MQTT客户端
  */
 void init_at_mqtt() {
-    Serial.println("初始化MQTT客户端AT指令"); // 确保固件版本支持MQTT
+    Serial.println("初始化MQTT客户端AT指令"); // 确保模组固件版本支持MQTT
 
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
@@ -250,7 +250,10 @@ void at_mqtt_callback(String rxData) {
             // 网络已连接 但不一定完全Ping通
         } else {
             // 网络不正常 无法连接
+            // 确保一定时间的断线才重启  防止闪断重启导致浪费资源
             Serial.println("NB-IoT 已断网触发重连机制...");
+            /*init_nb_iot();
+            init_at_mqtt();*/
             hardware_restart_nb_iot(); // 硬件重启网络模组
             esp_restart();  // 重启单片机主控芯片
         }
@@ -320,7 +323,7 @@ void x_at_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         do_at_mqtt_heart_beat();
-        delay(1000 * 600); // 多久执行一次 毫秒
+        delay(1000 * 60 * 60 * 2); // 多久执行一次 毫秒
     }
 }
 
