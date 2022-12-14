@@ -95,7 +95,7 @@ void setup() {
     // 初始化地感线圈
     init_ground_feeling();
     // 检测地感状态 有车无车及时上报MQTT服务器
-    check_ground_feeling_status();
+    // check_ground_feeling_status();
 #endif
 
 #if MQTT_EN
