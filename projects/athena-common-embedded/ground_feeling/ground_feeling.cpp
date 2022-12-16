@@ -62,8 +62,8 @@ void init_ground_feeling() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    attachInterrupt(GROUND_FEELING_GPIO, check_has_car, RISING); // 高电平表示检测到进车
-    attachInterrupt(GROUND_FEELING_GPIO, check_no_car, FALLING);  // 低电平表示检测到出车
+    attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
+    attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
     // Serial1.println("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
 }
 
