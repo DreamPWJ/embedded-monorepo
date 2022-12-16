@@ -93,6 +93,7 @@ void set_motor_up() {
     channel_PWMA_duty = 1024; // PWM速度值
     int overtime = 10; // 超时时间 秒s
 
+    Serial1.println("MAG_STOP\n"); // 升锁同时停止地磁检测
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
@@ -111,6 +112,7 @@ void set_motor_up() {
             ledcWrite(channel_PWMA, 0); // 停止电机
             Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
             set_motor_down(); // 回落锁
+            Serial1.println("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
@@ -177,6 +179,7 @@ void set_motor_down() {
             break;
         }
     }
+    Serial1.println("MAG_OPEN\n"); // 落锁后开始地磁检测
 }
 
 /**
