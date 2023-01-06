@@ -17,7 +17,10 @@ using namespace std;
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
 // 地感信号GPIO 外部中断接收
-const int GROUND_FEELING_GPIO = 8;
+const int GROUND_FEELING_GPIO = 7;
+const int GROUND_FEELING_RST_GPIO = 9;
+const int GROUND_FEELING_CTRL_I_GPIO = 5;
+
 // MQTT通用的Topic
 const char *topic = "ESP32/common";
 
@@ -64,7 +67,12 @@ void init_ground_feeling() {
     // FALLING：当针脚输入由高变低时，触发中断。
     attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
     attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
-    // Serial1.println("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
+
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+    delay(1500);
+    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO,HIGH);
+    Serial.println("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
 }
 
 /**
@@ -73,10 +81,10 @@ void init_ground_feeling() {
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
     // printf("GPIO %d 电平信号值: %d \n", GROUND_FEELING_GPIO, ground_feeling);
-    if (ground_feeling == 0) {
+    if (ground_feeling == 1) {
         // printf("地感检测有车 \n");
         return 1;
-    } else if (ground_feeling == 1) {
+    } else if (ground_feeling == 0) {
         // 如果无车时间超过一定时长  地锁抬起
         // printf("地感检测无车 \n");
         return 0;
