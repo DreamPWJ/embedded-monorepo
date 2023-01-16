@@ -11,7 +11,7 @@ using namespace std;
 /**
 * @author 潘维吉
 * @date 2022/8/24 17:18
-* @description 地磁传感器 如QMC5883 地感信号
+* @description 地磁传感器 如QMC5883三轴磁阻传感器
 */
 
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
@@ -29,14 +29,14 @@ const char *topic = "ESP32/common";
  */
 void IRAM_ATTR check_has_car() {
     Serial.println("地磁检测有车, 进入外部中断了");
-    // 芯片唯一标识
+/*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
     // 车辆驶入
     string jsonData =
             "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
             "\",\"parkingStatus\":\"" + to_string(1) +
             "\"}";
-    at_mqtt_publish(topic, jsonData.c_str());
+    at_mqtt_publish(topic, jsonData.c_str());*/
 }
 
 /**
@@ -44,14 +44,14 @@ void IRAM_ATTR check_has_car() {
  */
 void IRAM_ATTR check_no_car() {
     Serial.println("地磁检测无车, 进入外部中断了");
-    // 芯片唯一标识
+/*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
     // 车辆驶出
     string jsonData =
             "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
             "\",\"parkingStatus\":\"" + to_string(0) +
             "\"}";
-    at_mqtt_publish(topic, jsonData.c_str());
+    at_mqtt_publish(topic, jsonData.c_str());*/
 }
 
 /**
@@ -60,23 +60,29 @@ void IRAM_ATTR check_no_car() {
 void init_ground_feeling() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
     pinMode(GROUND_FEELING_GPIO, INPUT_PULLUP);
+    pinMode(GROUND_FEELING_RST_GPIO, OUTPUT);
+    pinMode(GROUND_FEELING_CTRL_I_GPIO, OUTPUT);
     // LOW：当针脚输入为低时，触发中断。
     // HIGH：当针脚输入为高时，触发中断。
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
-    attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
+    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, HIGH); // 高电平表示检测到进车
+    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, LOW);  // 低电平表示检测到出车
 
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(1500);
+    delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO,HIGH);
-    Serial.println("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
+    delay(10);
+    Serial.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
+    delay(1000);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO,LOW);
 }
 
 /**
- * 地感信号检测
+ * 地磁信号检测
  */
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
