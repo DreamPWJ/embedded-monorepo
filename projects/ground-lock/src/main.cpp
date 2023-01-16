@@ -29,7 +29,7 @@
 
 using namespace std;
 
-#define FIRMWARE_VERSION              "1.1.0"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
+#define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
@@ -53,7 +53,7 @@ void setup() {
     // init_uart();
     Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     if (!Serial1) { // If the object did not initialize, then its configuration is invalid
-        Serial.println("Invalid Serial1 pin configuration, check config");
+        Serial.println("Serial1 Invalid Serial1 pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
