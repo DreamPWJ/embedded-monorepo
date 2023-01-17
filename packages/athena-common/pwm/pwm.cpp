@@ -43,6 +43,8 @@ int freq_PWM = 5000;
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
+const int GROUND_FEELING_RST_GPIO = 9;
+const int GROUND_FEELING_CTRL_I_GPIO = 5;
 const char *common_topic = "ESP32/common";
 uint64_t chipMacId = get_chip_mac();
 
@@ -93,7 +95,6 @@ void set_motor_up() {
     channel_PWMA_duty = 1024; // PWM速度值
     int overtime = 10; // 超时时间 秒s
 
-    Serial1.println("MAG_STOP\n"); // 升锁同时停止地磁检测
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
@@ -103,6 +104,12 @@ void set_motor_up() {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     delay(600);
+    if (get_pwm_status() == 2) {
+        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+        Serial.print("MAG_STOP\n"); // 升锁同时停止地磁检测
+        delay(1000);
+        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    }
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -112,7 +119,10 @@ void set_motor_up() {
             ledcWrite(channel_PWMA, 0); // 停止电机
             Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
             set_motor_down(); // 回落锁
-            Serial1.println("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
+            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+            Serial.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
+            delay(1000);
+            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
@@ -179,7 +189,16 @@ void set_motor_down() {
             break;
         }
     }
-    Serial1.println("MAG_OPEN\n"); // 落锁后开始地磁检测
+
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+    delay(500);
+    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    delay(10);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+    delay(10);
+    Serial.print("MAG_OPEN\n"); // 落锁后开始地磁检测
+    delay(1000);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 }
 
 /**

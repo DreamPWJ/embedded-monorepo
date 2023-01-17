@@ -53,7 +53,16 @@ void setup() {
     // init_uart();
     Serial1.begin(9600, SERIAL_8N1, PIN_RX, PIN_TX);
     if (!Serial1) { // If the object did not initialize, then its configuration is invalid
-        Serial.println("Serial1 Invalid Serial1 pin configuration, check config");
+        Serial.println("Invalid Serial1 pin configuration, check config");
+        while (1) { // Don't continue with invalid configuration
+            Serial.print(".");
+            delay(1000);
+        }
+    }
+
+    Serial2.begin(9600, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
+    if (!Serial2) { // If the object did not initialize, then its configuration is invalid
+        Serial.println("Invalid Serial2 pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
@@ -95,7 +104,7 @@ void setup() {
     // 初始化地感线圈
     init_ground_feeling();
     // 检测地感状态 有车无车及时上报MQTT服务器
-    // check_ground_feeling_status();
+    check_ground_feeling_status();
 #endif
 
 #if MQTT_EN
