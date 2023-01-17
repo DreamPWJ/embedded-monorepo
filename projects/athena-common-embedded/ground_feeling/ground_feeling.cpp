@@ -27,7 +27,9 @@ const char *topic = "ESP32/common";
 /**
  * 地磁信号GPIO外部中断
  */
-void IRAM_ATTR check_has_car() {
+void IRAM_ATTR
+
+check_has_car() {
     Serial.println("地磁检测有车, 进入外部中断了");
 /*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
@@ -42,7 +44,9 @@ void IRAM_ATTR check_has_car() {
 /**
  * 地磁信号GPIO外部中断
  */
-void IRAM_ATTR check_no_car() {
+void IRAM_ATTR
+
+check_no_car() {
     Serial.println("地磁检测无车, 进入外部中断了");
 /*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
@@ -70,15 +74,18 @@ void init_ground_feeling() {
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, HIGH); // 高电平表示检测到进车
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, LOW);  // 低电平表示检测到出车
 
+#if true
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
     delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
     delay(10);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO,HIGH);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
-    Serial.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
+    Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
     delay(1000);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO,LOW);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+#endif
+
 }
 
 /**
