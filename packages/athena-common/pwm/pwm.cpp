@@ -17,8 +17,8 @@ using namespace std;
 #define IS_DEBUG false  // 是否调试模式
 
 // PWM控制引脚GPIO
-const int PWM_PinA = 3;
-const int PWM_PinB = 2;
+const int PWM_PinA = 41;
+const int PWM_PinB = 42;
 // 电机驱动模块控制信号
 /*const int Motor_INA1 = 2;
 const int Motor_INA2 = 3;*/

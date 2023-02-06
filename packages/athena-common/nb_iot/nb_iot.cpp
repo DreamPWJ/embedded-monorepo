@@ -21,7 +21,7 @@ using namespace std;
 
 #define IS_DEBUG false // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
-#define MODEM_RST  6  // NB-IoT控制GPIO
+#define MODEM_RST  8  // NB-IoT控制GPIO
 
 /**
  * 初始化NB网络协议
