@@ -20,7 +20,7 @@ using namespace std;
 */
 
 #define IS_DEBUG false // 是否调试模式
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 #define MODEM_RST  8  // NB-IoT控制GPIO
 
 /**
@@ -53,21 +53,23 @@ void init_nb_iot() {
         send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); // 附着网络
         // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
-    } else {
-        delay(1000); //  附着网络等可能长达2分钟才成功
-        // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
-        String flag = "+CGATT: 1";
-        while (1) {
-            // Serial1.println("AT+QENG=0\r\n");
-            String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
-            Serial.print(atResult);
-            if (atResult.indexOf(flag) != -1) {
-                Serial.println("NB-IoT附着网络成功: " + atResult);
-                break;
-            } else {
-                Serial.print(".");
-                delay(3000);
-            }
+    }
+    delay(1000); //  附着网络等可能长达2分钟才成功
+    // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
+    String flag = "+CGATT: 1";
+    while (1) {
+#if true
+        Serial1.println("AT+QENG=0\r\n");
+        delay(1000);
+#endif
+        String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
+        Serial.print(atResult);
+        if (atResult.indexOf(flag) != -1) {
+            Serial.println("NB-IoT附着网络成功: " + atResult);
+            break;
+        } else {
+            Serial.print(".");
+            delay(3000);
         }
     }
 
@@ -106,7 +108,7 @@ void init_nb_iot() {
             NULL);
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 1024 * 8, NULL, 2, NULL, 0);
 #endif
 
 }
