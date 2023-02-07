@@ -14,12 +14,14 @@ using namespace std;
 * @description 地磁传感器 如QMC5883三轴磁阻传感器
 */
 
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
+#define IS_DEBUG true  // 是否调试模式
 
 // 地感信号GPIO 外部中断接收
-const int GROUND_FEELING_GPIO = 7;
-const int GROUND_FEELING_RST_GPIO = 9;
-const int GROUND_FEELING_CTRL_I_GPIO = 5;
+const int GROUND_FEELING_READY_GPIO = 4;
+const int GROUND_FEELING_GPIO = 5;
+const int GROUND_FEELING_RST_GPIO = 16;
+const int GROUND_FEELING_CTRL_I_GPIO = 15;
 
 // MQTT通用的Topic
 const char *topic = "ESP32/common";
@@ -27,9 +29,7 @@ const char *topic = "ESP32/common";
 /**
  * 地磁信号GPIO外部中断
  */
-void IRAM_ATTR
-
-check_has_car() {
+void IRAM_ATTR check_has_car() {
     Serial.println("地磁检测有车, 进入外部中断了");
 /*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
@@ -44,9 +44,7 @@ check_has_car() {
 /**
  * 地磁信号GPIO外部中断
  */
-void IRAM_ATTR
-
-check_no_car() {
+void IRAM_ATTR check_no_car() {
     Serial.println("地磁检测无车, 进入外部中断了");
 /*    // 芯片唯一标识
     uint64_t chipId = get_chip_mac();
@@ -71,10 +69,10 @@ void init_ground_feeling() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, HIGH); // 高电平表示检测到进车
-    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, LOW);  // 低电平表示检测到出车
+    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
+    //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
 
-#if true
+#if IS_DEBUG
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
     delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
@@ -117,19 +115,28 @@ void x_task_ground_feeling_status(void *pvParameters) {
         int status = ground_feeling_status();
         if (lastTimeStatus == 0 && status == 1) {
             // 车辆驶入
+#if IS_DEBUG
+            Serial.println("地磁检测有车");
+#else
             string jsonData =
-                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
-                    "\",\"parkingStatus\":\"" + to_string(status) +
-                    "\"}";
-            at_mqtt_publish(topic, jsonData.c_str());
+                      "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
+                      "\",\"parkingStatus\":\"" + to_string(status) +
+                      "\"}";
+              at_mqtt_publish(topic, jsonData.c_str());
+#endif
         } else if (lastTimeStatus == 1 && status == 0) {
             // 车辆驶出
+#if IS_DEBUG
+            Serial.println("地磁检测无车");
+#else
             string jsonData =
-                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
-                    "\",\"parkingStatus\":\"" + to_string(status) +
-                    "\"}";
-            at_mqtt_publish(topic, jsonData.c_str());
+                      "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
+                      "\",\"parkingStatus\":\"" + to_string(status) +
+                      "\"}";
+              at_mqtt_publish(topic, jsonData.c_str());
+#endif
         }
+
         lastTimeStatus = status;
         delay(6000); // 多久执行一次 毫秒
     }
@@ -149,7 +156,8 @@ void check_ground_feeling_status() {
             6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
-    //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_ground_feeling_status, "x_task_ground_feeling_status", 8192, NULL, 6, NULL, 0);
+    // 最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1, 或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(x_task_ground_feeling_status, "x_task_ground_feeling_status",
+                            1024 * 2, NULL, 6, NULL,0);
 #endif
 }

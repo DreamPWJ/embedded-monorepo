@@ -32,7 +32,7 @@ using namespace std;
 #define FIRMWARE_VERSION              "1.1.0"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 #define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
-#define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
+#define MQTT_EN 0  // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1   // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 #define IS_DEBUG false  // 是否调试模式
 
@@ -88,7 +88,7 @@ void setup() {
     init_wifi();
 #else
     // 初始化NB-IoT网络协议
-    init_nb_iot();
+    // init_nb_iot();
 #endif
 
     // Serial.println(TimeUtil::getDateTime().c_str());
@@ -135,7 +135,7 @@ void setup() {
 
     // WiFi网络版本执行OTA空中升级
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
-    do_firmware_upgrade(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL, "");
+    // do_firmware_upgrade(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL, "");
 
     // GSM网络版本执行OTA空中升级
     // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
@@ -145,7 +145,7 @@ void setup() {
 
 #if PWM_EN
     // 初始化抬起车位锁
-    set_motor_up();
+    //set_motor_up();
 #endif
 
 }
@@ -212,9 +212,19 @@ void serialEvent1() {
 /**
  * UART2串口中断入口
  */
-/*void serialEvent2() {
-
-}*/
+void serialEvent2() {
+    String rxData = "";
+    while (Serial2.available()) {
+        // Serial.println("serialEvent()作为串口中断回调函数");
+        rxData += char(Serial2.read());
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
+    }
+#if true
+    Serial.println("------------------Serial2------------------");
+    Serial.println(rxData);
+    Serial.println("******************Serial2******************");
+#endif
+}
 
 /**
  * UART0串口中断入口
