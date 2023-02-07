@@ -145,6 +145,8 @@ void restart_nb_iot() {
 void hardware_restart_nb_iot() {
     Serial.println("硬重启GSM调制解调器模块芯片...");
     digitalWrite(MODEM_RST, HIGH); // 电平复位
+    delay(1000);
+    digitalWrite(MODEM_RST, LOW); // 电平工作
     delay(3000);
     set_nvs("is_nb_iot_init", "no");
 }
