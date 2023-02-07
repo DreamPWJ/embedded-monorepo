@@ -20,7 +20,7 @@ using namespace std;
 */
 
 #define IS_DEBUG false // 是否调试模式
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 #define MODEM_RST  8  // NB-IoT控制GPIO
 
 /**
@@ -32,15 +32,15 @@ void init_nb_iot() {
     digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
-    // hardware_restart_nb_iot();
+    // restart_nb_iot();
     Serial.println("主控单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
-    delay(2000);
+    delay(3000);
 
     // Serial1.printf("AT\r\n"); // 测试AT指令
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
 
-#if true
+#if IS_DEBUG
     Serial1.println("ATI\r\n"); // 产品固件信息
     delay(1000);
     send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
@@ -50,7 +50,7 @@ void init_nb_iot() {
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
         Serial.println("初始化NB-IoT配网一次, 以后重启等会自动入网"); // 如果NB-IoT配网成功 重启等会自动入网 只需初始化一次
-        send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络
+        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); // 附着网络
         // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
     }
@@ -58,10 +58,12 @@ void init_nb_iot() {
     // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
     String flag = "+CGATT: 1";
     while (1) {
+#if true
         Serial1.println("AT+QENG=0\r\n");
-        send_at_command("AT+QENG=0\r\n", 3000, IS_DEBUG);
+        delay(1000);
+#endif
         String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
-        // Serial.print(atResult);
+        Serial.print(atResult);
         if (atResult.indexOf(flag) != -1) {
             Serial.println("NB-IoT附着网络成功: " + atResult);
             break;
@@ -106,7 +108,7 @@ void init_nb_iot() {
             NULL);
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(nb_iot_heart_beat, "nb_iot_heart_beat", 1024 * 8, NULL, 2, NULL, 0);
 #endif
 
 }
@@ -143,6 +145,8 @@ void restart_nb_iot() {
 void hardware_restart_nb_iot() {
     Serial.println("硬重启GSM调制解调器模块芯片...");
     digitalWrite(MODEM_RST, HIGH); // 电平复位
+    delay(1000);
+    digitalWrite(MODEM_RST, LOW); // 电平工作
     delay(3000);
     set_nvs("is_nb_iot_init", "no");
 }
@@ -190,7 +194,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
         delay(10);
     }
     if (isDebug) {
-        Serial.println(command + "AT指令响应数据: " + response);
+        Serial.println("发送的" + command + "AT指令响应数据: " + response);
     }
     return response;
 }
