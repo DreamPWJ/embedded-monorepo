@@ -32,15 +32,15 @@ void init_nb_iot() {
     digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
-    // hardware_restart_nb_iot();
+    // restart_nb_iot();
     Serial.println("主控单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
-    delay(2000);
+    delay(3000);
 
     // Serial1.printf("AT\r\n"); // 测试AT指令
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
 
-#if true
+#if IS_DEBUG
     Serial1.println("ATI\r\n"); // 产品固件信息
     delay(1000);
     send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
@@ -50,24 +50,24 @@ void init_nb_iot() {
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
         Serial.println("初始化NB-IoT配网一次, 以后重启等会自动入网"); // 如果NB-IoT配网成功 重启等会自动入网 只需初始化一次
-        send_at_command("AT+CGATT=1\r\n", 60000, IS_DEBUG); //  附着网络
+        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); // 附着网络
         // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
-    }
-    delay(1000); //  附着网络等可能长达2分钟才成功
-    // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
-    String flag = "+CGATT: 1";
-    while (1) {
-        Serial1.println("AT+QENG=0\r\n");
-        send_at_command("AT+QENG=0\r\n", 3000, IS_DEBUG);
-        String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
-        // Serial.print(atResult);
-        if (atResult.indexOf(flag) != -1) {
-            Serial.println("NB-IoT附着网络成功: " + atResult);
-            break;
-        } else {
-            Serial.print(".");
-            delay(3000);
+    } else {
+        delay(1000); //  附着网络等可能长达2分钟才成功
+        // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
+        String flag = "+CGATT: 1";
+        while (1) {
+            // Serial1.println("AT+QENG=0\r\n");
+            String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
+            Serial.print(atResult);
+            if (atResult.indexOf(flag) != -1) {
+                Serial.println("NB-IoT附着网络成功: " + atResult);
+                break;
+            } else {
+                Serial.print(".");
+                delay(3000);
+            }
         }
     }
 
@@ -190,7 +190,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
         delay(10);
     }
     if (isDebug) {
-        Serial.println(command + "AT指令响应数据: " + response);
+        Serial.println("发送的" + command + "AT指令响应数据: " + response);
     }
     return response;
 }
