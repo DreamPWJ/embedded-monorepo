@@ -40,7 +40,7 @@ void init_nb_iot() {
     send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
 
-#if IS_DEBUG
+#if true
     Serial1.println("ATI\r\n"); // 产品固件信息
     delay(1000);
     send_at_command("AT+CPIN?\r\n", 5000, IS_DEBUG); // AT 指令判断模组有没有识别 SIM 卡
