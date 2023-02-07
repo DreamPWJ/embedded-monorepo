@@ -17,8 +17,8 @@ using namespace std;
 #define IS_DEBUG false  // 是否调试模式
 
 // PWM控制引脚GPIO
-const int PWM_PinA = 3;
-const int PWM_PinB = 2;
+const int PWM_PinA = 41;
+const int PWM_PinB = 42;
 // 电机驱动模块控制信号
 /*const int Motor_INA1 = 2;
 const int Motor_INA2 = 3;*/
@@ -43,8 +43,8 @@ int freq_PWM = 5000;
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
-const int GROUND_FEELING_RST_GPIO = 9;
-const int GROUND_FEELING_CTRL_I_GPIO = 5;
+const int GROUND_FEELING_RST_GPIO = 16;
+const int GROUND_FEELING_CTRL_I_GPIO = 15;
 const char *common_topic = "ESP32/common";
 uint64_t chipMacId = get_chip_mac();
 
@@ -106,7 +106,7 @@ void set_motor_up() {
     delay(600);
     if (get_pwm_status() == 2) {
         digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-        Serial.print("MAG_STOP\n"); // 升锁同时停止地磁检测
+        Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
         delay(1000);
         digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
     }
@@ -120,7 +120,7 @@ void set_motor_up() {
             Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
             set_motor_down(); // 回落锁
             digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-            Serial.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
+            Serial2.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
             delay(1000);
             digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
             break;
@@ -190,13 +190,14 @@ void set_motor_down() {
         }
     }
 
+    delay(1000);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
     delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
-    Serial.print("MAG_OPEN\n"); // 落锁后开始地磁检测
+    Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测
     delay(1000);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 }
