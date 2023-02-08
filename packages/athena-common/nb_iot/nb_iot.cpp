@@ -28,7 +28,7 @@ using namespace std;
  */
 void init_nb_iot() {
     // NB-IoT相关引脚初始化
-    pinMode(MODEM_RST, OUTPUT);
+    pinMode(MODEM_RST, OUTPUT); // 确保RX是输入上拉模式
     digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
@@ -36,9 +36,9 @@ void init_nb_iot() {
     Serial.println("主控单片机向NB-IoT模组发送AT指令, 配置蜂窝网络...");
     delay(3000);
 
-    // Serial1.printf("AT\r\n"); // 测试AT指令
-    send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
+    Serial1.printf("AT\r\n"); // 测试AT指令
     send_at_command("AT+CPSMS=0\r\n", 5000, IS_DEBUG); // 禁用省电模式
+    send_at_command("AT+QSCLK=0\r\n", 5000, IS_DEBUG); // 禁用休眠模式
 
 #if true
     Serial1.println("ATI\r\n"); // 产品固件信息
@@ -58,8 +58,15 @@ void init_nb_iot() {
     // +CSQ: 99,99 已经读取不到信号强度，搜寻NB-IoT网络中   CSQ信号适合判断2G、3G网络 不适合判断NB网络质量
     String flag = "+CGATT: 1";
     while (1) {
-#if true
+#if IS_DEBUG
+        delay(1000);
+        Serial1.println("AT+CEREG?\r\n");
+        delay(1000);
         Serial1.println("AT+QENG=0\r\n");
+        delay(1000);
+        Serial1.println("AT+CFUN?\r\n");
+        delay(1000);
+        Serial1.println("AT+QBAND?\r\n");
         delay(1000);
 #endif
         String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
