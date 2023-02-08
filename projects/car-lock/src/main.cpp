@@ -219,7 +219,7 @@ void serialEvent2() {
         rxData2 += char(Serial2.read());
         delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
-#if IS_DEBUG
+#if true
     Serial.println("------------------Serial2------------------");
     Serial.println(rxData2);
     Serial.println("******************Serial2******************");

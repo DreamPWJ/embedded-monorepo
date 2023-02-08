@@ -72,10 +72,11 @@ void init_ground_feeling() {
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
 
-#if IS_DEBUG
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(500);
+    delay(1500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+
+#if IS_DEBUG
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);

@@ -192,11 +192,10 @@ void set_motor_down() {
 
     delay(1000);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(500);
+    delay(1500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-    delay(10);
     Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测
     delay(1000);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
