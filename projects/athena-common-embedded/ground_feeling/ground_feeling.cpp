@@ -76,6 +76,10 @@ void init_ground_feeling() {
     delay(1500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
 
+    digitalWrite(GROUND_FEELING_READY_GPIO, LOW);
+    delay(500);
+    digitalWrite(GROUND_FEELING_READY_GPIO, HIGH);
+
 #if IS_DEBUG
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);

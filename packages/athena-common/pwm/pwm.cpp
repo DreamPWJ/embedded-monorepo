@@ -196,7 +196,7 @@ void set_motor_down() {
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-    Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测
+    Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测 初始化命令完成后3秒再判断READY是否真正就绪  可重发5次
     delay(1000);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 }
