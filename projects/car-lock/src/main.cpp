@@ -184,11 +184,11 @@ void serialEvent1() {
     // serialEvent()作为串口中断回调函数，需要注意的是，这里的中断与硬件中断有所不同，这个回调函数只会在loop()执行完后才会执行，所以在loop()里的程序不能写成阻塞式的，只能写成轮询式的
     // 使用串口中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测)。 持续监控某种事件、时效性和资源使用情况更好
     // RTOS多线程内while不断获取串口数据和系统看门狗冲突 导致随机性UART接收数据部分乱码和丢失 建议使用串口中断方式获取串口数据
-    String rxData = "";
+    String rxData1 = "";
     while (Serial1.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
         char inChar = char(Serial1.read());
-        rxData += inChar;
+        rxData1 += inChar;
         delay(2); // 这里不能去掉，要给串口处理数据的时间
         /* if (inChar == '\n') { // 换行符 表示一个完整数据结束
              stringComplete = true;
@@ -206,24 +206,26 @@ void serialEvent1() {
 #endif
 
     // MQTT订阅消息
-    at_mqtt_callback(rxData);
+    at_mqtt_callback(rxData1);
 }
 
 /**
  * UART2串口中断入口
  */
 void serialEvent2() {
-    String rxData = "";
+    String rxData2 = "";
     while (Serial2.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
-        rxData += char(Serial2.read());
+        rxData2 += char(Serial2.read());
         delay(2); // 这里不能去掉，要给串口处理数据的时间
     }
-#if true
+#if IS_DEBUG
     Serial.println("------------------Serial2------------------");
-    Serial.println(rxData);
+    Serial.println(rxData2);
     Serial.println("******************Serial2******************");
 #endif
+    // UART2串口响应数据处理
+    // uart_check_car(rxData2);
 }
 
 /**

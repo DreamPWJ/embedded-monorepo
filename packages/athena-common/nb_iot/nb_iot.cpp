@@ -28,7 +28,7 @@ using namespace std;
  */
 void init_nb_iot() {
     // NB-IoT相关引脚初始化
-    pinMode(MODEM_RST, OUTPUT); // 确保RX是输入上拉模式
+    pinMode(MODEM_RST, OUTPUT); // 确保RX是输入上拉模式 , 否则导致模组不能完全正常工作
     digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
