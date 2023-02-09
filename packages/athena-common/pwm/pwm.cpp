@@ -16,6 +16,10 @@ using namespace std;
 
 #define IS_DEBUG false  // 是否调试模式
 
+// 电机上下限位信号GPIO
+const int MOTOR_UPPER_GPIO = 1; // 上限位
+const int MOTOR_LOWER_GPIO = 2; // 下限位
+
 // PWM控制引脚GPIO
 const int PWM_PinA = 41;
 const int PWM_PinB = 42;
@@ -31,10 +35,6 @@ const int Motor_INB2 = 18;*/
 // 如果有定时器的使用，千万要避开!!!
 const int channel_PWMA = 2;
 const int channel_PWMB = 3;
-
-// 电机上下限信号GPIO
-const int motor_lower_limit = 0; // 下限位
-const int motor_upper_limit = 1; // 上限位
 
 // PWM波形频率KHZ
 int freq_PWM = 5000;
@@ -54,8 +54,8 @@ uint64_t chipMacId = get_chip_mac();
 void init_motor() {
     Serial.println("初始化PWM电机马达");
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
-    pinMode(motor_upper_limit, INPUT_PULLUP);
-    pinMode(motor_lower_limit, INPUT_PULLUP);
+    pinMode(MOTOR_UPPER_GPIO, INPUT_PULLUP);
+    pinMode(MOTOR_LOWER_GPIO, INPUT_PULLUP);
 /*    pinMode(Motor_INA1, OUTPUT);
       pinMode(Motor_INA2, OUTPUT); */
     /*  pinMode(Motor_INB1, OUTPUT);
@@ -98,14 +98,14 @@ void set_motor_up() {
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
-    if (get_pwm_status() == 2) {
-        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-        delay(10);
-        Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
-        delay(500);
-        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
-    }
-    
+    //if (get_pwm_status() == 2) {
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+    delay(10);
+    Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
+    delay(500);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    // }
+
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
@@ -246,10 +246,10 @@ void set_pwm() {
  */
 int get_pwm_status() {
     // 读取后电平为0/1  中断机制
-    int upper_limit = digitalRead(motor_upper_limit);
-    int lower_limit = digitalRead(motor_lower_limit);
-    // printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
-    // printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
+    int upper_limit = digitalRead(MOTOR_UPPER_GPIO);
+    int lower_limit = digitalRead(MOTOR_LOWER_GPIO);
+    // printf("GPIO %d 电平信号值: %d \n", MOTOR_UPPER_GPIO, upper_limit);
+    // printf("GPIO %d 电平信号值: %d \n", MOTOR_LOWER_GPIO, lower_limit);
     if (upper_limit == 0 && lower_limit == 1) {
         ledcWrite(channel_PWMA, 0);
         //Serial.println("电机上限位状态触发");
