@@ -85,7 +85,7 @@ void init_ground_feeling() {
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
     Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
-    delay(1000);
+    delay(500);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 #endif
 
@@ -149,24 +149,22 @@ void x_task_ground_feeling_status(void *pvParameters) {
             // 车辆驶入
 #if IS_DEBUG
             Serial.println("地磁检测有车");
-#else
-            string jsonData =
-                      "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
-                      "\",\"parkingStatus\":\"" + to_string(status) +
-                      "\"}";
-              at_mqtt_publish(topic, jsonData.c_str());
 #endif
+            string jsonData =
+                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
+                    "\",\"parkingStatus\":\"" + to_string(status) +
+                    "\"}";
+            at_mqtt_publish(topic, jsonData.c_str());
         } else if (lastTimeStatus == 1 && status == 0) {
             // 车辆驶出
 #if IS_DEBUG
             Serial.println("地磁检测无车");
-#else
-            string jsonData =
-                      "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
-                      "\",\"parkingStatus\":\"" + to_string(status) +
-                      "\"}";
-              at_mqtt_publish(topic, jsonData.c_str());
 #endif
+            string jsonData =
+                    "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
+                    "\",\"parkingStatus\":\"" + to_string(status) +
+                    "\"}";
+            at_mqtt_publish(topic, jsonData.c_str());
         }
 
         lastTimeStatus = status;

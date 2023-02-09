@@ -81,9 +81,9 @@ void set_motor_up() {
 
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
-        Serial.println("地感判断有车地锁不能抬起");
+        Serial.println("地磁判断有车地锁不能抬起");
         string jsonDataGF =
-                "{\"command\":\"exception\",\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
+                "{\"command\":\"exception\",\"msg\":\"地磁判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
                 "\"}";
         at_mqtt_publish(common_topic, jsonDataGF.c_str());
         return;
@@ -98,18 +98,20 @@ void set_motor_up() {
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
+    if (get_pwm_status() == 2) {
+        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+        delay(10);
+        Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
+        delay(500);
+        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    }
+    
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     delay(600);
-    if (get_pwm_status() == 2) {
-        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-        Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
-        delay(1000);
-        digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
-    }
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -117,18 +119,21 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
+            Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
             set_motor_down(); // 回落锁
             digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+            delay(10);
             Serial2.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
-            delay(1000);
+            delay(500);
             digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
-            channel_PWMA_duty = channel_PWMA_duty - 2;
+            if (channel_PWMA_duty > 512) {
+                channel_PWMA_duty = channel_PWMA_duty - 1;
+            }
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
@@ -177,7 +182,9 @@ void set_motor_down() {
         if (costB >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
-            channel_PWMB_duty = channel_PWMB_duty - 2;
+            if (channel_PWMB_duty > 512) {
+                channel_PWMB_duty = channel_PWMB_duty - 1;
+            }
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
@@ -197,7 +204,7 @@ void set_motor_down() {
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测 初始化命令完成后3秒再判断READY是否真正就绪  可重发5次
-    delay(1000);
+    delay(500);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 }
 
