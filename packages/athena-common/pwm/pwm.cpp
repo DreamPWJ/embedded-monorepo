@@ -16,14 +16,13 @@ using namespace std;
 
 #define IS_DEBUG false  // 是否调试模式
 
+// 电机上下限位信号GPIO
+const int MOTOR_UPPER_GPIO = 1; // 上限位
+const int MOTOR_LOWER_GPIO = 2; // 下限位
+
 // PWM控制引脚GPIO
-const int PWM_PinA = 3;
-const int PWM_PinB = 2;
-// 电机驱动模块控制信号
-/*const int Motor_INA1 = 2;
-const int Motor_INA2 = 3;*/
-/*const int Motor_INB1 = 17;
-const int Motor_INB2 = 18;*/
+const int PWM_PinA = 41;
+const int PWM_PinB = 42;
 
 // PWM的通道，共16个(0-15)，分为高低速两组，
 // 高速通道(0-7): 80MHz时钟，低速通道(8-15): 1MHz时钟
@@ -32,10 +31,6 @@ const int Motor_INB2 = 18;*/
 const int channel_PWMA = 2;
 const int channel_PWMB = 3;
 
-// 电机上下限信号GPIO
-const int motor_lower_limit = 0; // 下限位
-const int motor_upper_limit = 1; // 上限位
-
 // PWM波形频率KHZ
 int freq_PWM = 5000;
 
@@ -43,6 +38,8 @@ int freq_PWM = 5000;
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
+const int GROUND_FEELING_RST_GPIO = 16;
+const int GROUND_FEELING_CTRL_I_GPIO = 15;
 const char *common_topic = "ESP32/common";
 uint64_t chipMacId = get_chip_mac();
 
@@ -52,12 +49,8 @@ uint64_t chipMacId = get_chip_mac();
 void init_motor() {
     Serial.println("初始化PWM电机马达");
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
-    pinMode(motor_upper_limit, INPUT_PULLUP);
-    pinMode(motor_lower_limit, INPUT_PULLUP);
-/*    pinMode(Motor_INA1, OUTPUT);
-      pinMode(Motor_INA2, OUTPUT); */
-    /*  pinMode(Motor_INB1, OUTPUT);
-      pinMode(Motor_INB2, OUTPUT); */
+    pinMode(MOTOR_UPPER_GPIO, INPUT_PULLUP);
+    pinMode(MOTOR_LOWER_GPIO, INPUT_PULLUP);
 
     ledcSetup(channel_PWMA, freq_PWM, resolution_PWM); // 设置通道
     ledcAttachPin(PWM_PinA, channel_PWMA); // 将 LEDC 通道绑定到指定 IO 口上以实现输出
@@ -79,9 +72,9 @@ void set_motor_up() {
 
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
-        Serial.println("地感判断有车地锁不能抬起");
+        Serial.println("地磁判断有车地锁不能抬起");
         string jsonDataGF =
-                "{\"command\":\"exception\",\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
+                "{\"command\":\"exception\",\"msg\":\"地磁判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
                 "\"}";
         at_mqtt_publish(common_topic, jsonDataGF.c_str());
         return;
@@ -96,6 +89,14 @@ void set_motor_up() {
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
+    //if (get_pwm_status() == 2) {
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+    delay(10);
+    Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
+    delay(500);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    // }
+
     time_t startA = 0, endA = 0;
     double costA; // 时间差 秒
     time(&startA);
@@ -109,14 +110,21 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地感判断有车地锁不能继续抬起, 回落地锁");
-            set_motor_down(); // 回落锁
+            Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
+            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+            delay(10);
+            Serial2.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
+            delay(500);
+            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+            // set_motor_down(); // 降锁
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
-            channel_PWMA_duty = channel_PWMA_duty - 2;
+            if (channel_PWMA_duty > 512) {
+                channel_PWMA_duty = channel_PWMA_duty - 1;
+            }
         }
         if (costA >= overtime) {
             printf("电机正向运行超时了 \n");
@@ -165,7 +173,9 @@ void set_motor_down() {
         if (costB >= 3) { // 电机运行过半减速
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
-            channel_PWMB_duty = channel_PWMB_duty - 2;
+            if (channel_PWMB_duty > 512) {
+                channel_PWMB_duty = channel_PWMB_duty - 1;
+            }
         }
         if (costB >= overtime) {
             printf("电机反向运行超时了 \n");
@@ -177,6 +187,16 @@ void set_motor_down() {
             break;
         }
     }
+
+    delay(1000);
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+    delay(1500);
+    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    delay(10);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+    Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测 初始化命令完成后3秒再判断READY是否真正就绪  可重发5次
+    delay(500);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
 }
 
 /**
@@ -217,10 +237,10 @@ void set_pwm() {
  */
 int get_pwm_status() {
     // 读取后电平为0/1  中断机制
-    int upper_limit = digitalRead(motor_upper_limit);
-    int lower_limit = digitalRead(motor_lower_limit);
-    // printf("GPIO %d 电平信号值: %d \n", motor_upper_limit, upper_limit);
-    // printf("GPIO %d 电平信号值: %d \n", motor_lower_limit, lower_limit);
+    int upper_limit = digitalRead(MOTOR_UPPER_GPIO);
+    int lower_limit = digitalRead(MOTOR_LOWER_GPIO);
+    // printf("GPIO %d 电平信号值: %d \n", MOTOR_UPPER_GPIO, upper_limit);
+    // printf("GPIO %d 电平信号值: %d \n", MOTOR_LOWER_GPIO, lower_limit);
     if (upper_limit == 0 && lower_limit == 1) {
         ledcWrite(channel_PWMA, 0);
         //Serial.println("电机上限位状态触发");
@@ -244,33 +264,3 @@ void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     delay(1000);
     ledcWrite(channel_PWMB, DutyB);
 }
-
-// 电机的控制程序，分别是左右两个轮子的占空比（0-1024）
-/*void motor_control(int Cnt_L, int Cnt_R)
-{
-    if (Cnt_L >= 0) // 左轮正向转
-    {
-        digitalWrite(Motor_INA1, HIGH);
-        digitalWrite(Motor_INA2, LOW);
-        ledcWrite(channel_PWMA, Cnt_L);
-    }
-    else // 左轮反向转
-    {
-        digitalWrite(Motor_INA1, LOW);
-        digitalWrite(Motor_INA2, HIGH);
-        ledcWrite(channel_PWMA, -Cnt_L);
-    }
-
-    if (Cnt_R >= 0) // 右轮正向转
-    {
-        digitalWrite(Motor_INB1, HIGH);
-        digitalWrite(Motor_INB2, LOW);
-        ledcWrite(channel_PWMB, Cnt_R);
-    }
-    else // 右轮反向转
-    {
-        digitalWrite(Motor_INB1, LOW);
-        digitalWrite(Motor_INB2, HIGH);
-        ledcWrite(channel_PWMB, -Cnt_R);
-    }
-}*/
