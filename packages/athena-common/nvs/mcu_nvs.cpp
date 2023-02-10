@@ -9,26 +9,37 @@
 * 参考文档: https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/api/preferences.html
 */
 
-Preferences nvs; //声明对象名
+Preferences nvsPref; // 声明对象名
 
 void int_nvs() {
-    nvs.begin("esp32-nvs", false); // 打开命名空间名称 false读写权限 true只读 默认false
+    Serial.println("初始化非易失性存储NVS");
+    nvsPref.begin("esp32nvs", false); // 打开命名空间存储分片名称 false读写权限 true只读 默认false
 }
 
 String get_nvs(String key) {
-    return nvs.getString(key.c_str());
+    if (is_key_nvs(key)) {
+        return nvsPref.getString(key.c_str(), "");
+    }
+    return "";
 }
 
 /**
  * key关键字与系统默认内置关键字冲突 会导致存储失败
  */
 bool set_nvs(String key, String data) {
-    return nvs.putString(key.c_str(), data);
+    return nvsPref.putString(key.c_str(), data.c_str());
+}
+
+/**
+ * 是否存在key关键字
+ */
+bool is_key_nvs(String key) {
+    return nvsPref.isKey(key.c_str());
 }
 
 /**
  * 清空所有的NVS键和值
  */
 bool clear_nvs() {
-    return nvs.clear();
+    return nvsPref.clear();
 }
