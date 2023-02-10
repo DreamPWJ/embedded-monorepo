@@ -12,13 +12,15 @@
 Preferences nvsPref; // 声明对象名
 
 void int_nvs() {
-    Serial.println("初始化非易失性存储NVS");
+    // Serial.println("初始化非易失性存储NVS");
+    // Serial.println(nvsPref.freeEntries()); // 获取空余nvs空间
     nvsPref.begin("esp32nvs", false); // 打开命名空间存储分片名称 false读写权限 true只读 默认false
 }
 
 String get_nvs(String key) {
-    if (is_key_nvs(key)) {
-        return nvsPref.getString(key.c_str(), "");
+    if (is_key_nvs(key) == true) {
+        String result = nvsPref.getString(key.c_str(), "");
+        return result;
     }
     return "";
 }
@@ -26,8 +28,8 @@ String get_nvs(String key) {
 /**
  * key关键字与系统默认内置关键字冲突 会导致存储失败
  */
-bool set_nvs(String key, String data) {
-    return nvsPref.putString(key.c_str(), data.c_str());
+void set_nvs(String key, String data) {
+    nvsPref.putString(key.c_str(), data.c_str());
 }
 
 /**

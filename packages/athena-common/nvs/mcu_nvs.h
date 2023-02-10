@@ -16,7 +16,7 @@ void int_nvs();
 
 String get_nvs(String key);
 
-bool set_nvs(String key, String data);
+void set_nvs(String key, String data);
 
 bool is_key_nvs(String key);
 
