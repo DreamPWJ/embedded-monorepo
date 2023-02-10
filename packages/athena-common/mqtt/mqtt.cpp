@@ -36,8 +36,8 @@ String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
-const char *mqtt_password = "emqx@2022";
+const char *mqtt_username = "admin";   // 设置MQTT服务器用户名
+const char *mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
 const int mqtt_port = 1883;
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
@@ -155,7 +155,7 @@ void do_mqtt_heart_beat() {
     int deviceStatus = get_pwm_status(); // 设备电机状态
     int parkingStatus = ground_feeling_status(); // 是否有车
     String firmwareVersion = get_nvs("version"); // 固件版本
-    String networkRSSI = get_nvs("network_rssi"); // 信号质量
+    String networkSignal = get_nvs("network_signal"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
     // 发送心跳消息
@@ -164,7 +164,7 @@ void do_mqtt_heart_beat() {
             to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
             "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
             "\"electricity\":\"" + electricityValue.c_str() + "\"," +
-            "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
+            "\"networkSignal\":\"" + networkSignal.c_str() + "\"}";
     // 发送心跳消息
     client.publish(topics, jsonData.c_str());
 }

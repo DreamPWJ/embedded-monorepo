@@ -31,12 +31,12 @@ using namespace std;
 #define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
 
-String atMqttName = "esp32-mcu-client"; // mqtt客户端名称
+String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
 const char *at_mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
 const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名和密码
-const char *at_mqtt_password = "emqx@2022";
+const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名
+const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
 const int at_mqtt_port = 1883;
 
 /**
@@ -44,27 +44,28 @@ const int at_mqtt_port = 1883;
  * 初始化MQTT客户端
  */
 void init_at_mqtt() {
-    Serial.println("初始化MQTT客户端AT指令");
+    Serial.println("初始化MQTT客户端AT指令"); // 确保模组固件版本支持MQTT
 
     String client_id = atMqttName + "-";
     string chip_id = to_string(get_chip_mac());
     client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
-    // send_mqtt_at_command("AT+CEREG?\r\n", 3000, IS_DEBUG); // 判断附着网络 参数1或5标识附着正常
-    // delay(3000);
 
-    send_mqtt_at_command("AT+ECMTCLOSE=0\r\n", 1000, IS_DEBUG); // 关闭MQTT客户端
+    // 执行 AT+QMTOPEN? 时 ，若当前不存在已打开的客户端信息 ，则无 +QMTOPEN:<TCP_connectID>,<host_name>,<port>返回，仅返回 OK 或者 ERROR
+    send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 1000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
 
-    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  参考文章: https://aithinker.blog.csdn.net/article/details/127100435?spm=1001.2014.3001.5502
+    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
+    send_mqtt_at_command("AT+QMTCFG=\042version\042,0,1\r\n", 3000, IS_DEBUG);  // 设置MQTT的版本
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
 
-    send_mqtt_at_command("AT+ECMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
-                         IS_DEBUG, "+ECMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
-/*  myMqttSerial.printf("AT+ECMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
+    // 打开连接  确保网络天线连接正确
+    send_mqtt_at_command("AT+QMTOPEN=0,\042" + String(at_mqtt_broker) + "\042," + at_mqtt_port + "\r\n", 15000,
+                         IS_DEBUG, "+QMTOPEN: 0,0");  // GSM无法连接局域网, 因为NB本身就是低功耗广域网
+/*  myMqttSerial.printf("AT+QMTOPEN=0,\042%s\042,%d\r\n", at_mqtt_broker,
                         at_mqtt_port);  // GSM无法连接局域网, 因为NB本身就是低功耗广域网 */
-    String conFlag = "+ECMTCONN: 0,0,0";
+    String conFlag = "+QMTCONN: 0,0,0"; // 客户端成功连接到 MQTT 服务器返回响应标识
     String connectResult = send_mqtt_at_command(
-            "AT+ECMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
+            "AT+QMTCONN=0,\042" + client_id + "\042,\042" + at_mqtt_username + "\042,\042" + at_mqtt_password +
             "\042\r\n", 15000, IS_DEBUG, conFlag);
 
     if (connectResult.indexOf(conFlag) != -1) {
@@ -121,34 +122,36 @@ String send_mqtt_at_command(String command, const int timeout, boolean isDebug, 
 }
 
 /**
- * MQTT发送消息
+ * MQTT发布消息
  */
 void at_mqtt_publish(String topic, String msg) {
     // 注意完善： 1. 并发队列控制 2. 发送失败重试机制
     // QoS（服务质量）:  0 - 最多分发一次  1 - 至少分发一次  2 - 只分发一次 (保证消息到达并无重复消息) 随着QoS等级提升，消耗也会提升，需要根据场景灵活选择
-    Serial1.printf(
-            "AT+ECMTPUB=0,1,2,0,\042%s\042,\042%s\042\r\n", topic.c_str(), msg.c_str());
+    Serial1.printf("AT+QMTPUB=0,1,2,0,\042%s\042,%d,\042%s\042\r\n", topic.c_str(), msg.length(), msg.c_str());
+    // 获取AT返回的发送是否成功  做重发机制
+    // String pubFlag = "OK"; //  MQTT发布消息成功
+
 }
 
 /**
  * MQTT订阅消息
  */
 void at_mqtt_subscribe(String topic) {
-    Serial1.printf("AT+ECMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
+    Serial1.printf("AT+QMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
 }
 
 /**
  * 取消MQTT主题订阅
  */
 void at_mqtt_unsubscribe(String topic) {
-    Serial1.printf("AT+ECMTUNS=0,1,\"%s\"\r\n", topic.c_str());
+    Serial1.printf("AT+QMTUNS=0,1,\"%s\"\r\n", topic.c_str());
 }
 
 /**
  * MQTT断开连接
  */
 void at_mqtt_disconnect() {
-    Serial1.printf("AT+ECMTDISC=0\\r\\n\r\n");
+    Serial1.printf("AT+QMTDISC=0\\r\\n\r\n");
 }
 
 /**
@@ -172,14 +175,16 @@ void at_mqtt_reconnect(String incomingByte) {
 void at_mqtt_callback(String rxData) {
     // Serial.println("AT指令MQTT订阅接收的消息: ");
     // MQTT服务订阅返回AT指令数据格式
-    /* +ECMTRECV: 0,0,"ESP32/system",{
+    /* +QMTRECV: 0,0,"ESP32/system",{
             "command": "upgrade"
     }*/
 
-    String flagMQTT = "+ECMTRECV:"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
-    String flagRSSI = "+CSQ:"; // 网络信息值
-    String flagMQTT1 = "+ECMTCONN: 0,4"; // MQTT连接状态 1. 初始化 2. 正在连接  3. 已连接  4. 已断开
-    String flagMQTT2 = "+ECMTSTAT:";    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
+    String flagCEREG = "+CEREG:";    // 网络注册状态 判断是否断网
+    String flagMQTT = "+QMTRECV:"; // 并发情况下 串口可能返回多条数据  可根据\n\r解析成数组处理多条
+    String flagQENG = "+QENG:";    // 模组工程模式 当前的网络服务信息 真正NB-IoT信号质量 走4G LTE部分带宽
+    String flagCSQ = "+CSQ:"; // 2G/3G网络信息值
+    String flagCONN = "+QMTCONN: 0,4"; // MQTT连接状态 1. 初始化 2. 正在连接  3. 已连接  4. 已断开
+    String flagSTAT = "+QMTSTAT:";    // 报告链路层状态 当 MQTT 链路层状态发生变化时，将上报此URC
 
     //  while (myMqttSerial.available() > 0) { // 串口缓冲区有数据 数据长度
     /*
@@ -224,29 +229,86 @@ void at_mqtt_callback(String rxData) {
                 do_at_mqtt_subscribe(json, topic);
             }
         }
-        delay(2);
+        delay(10);
     }
 
-    if (incomingByte.indexOf(flagRSSI) != -1) { // 信号质量
-        int startIndex = incomingByte.indexOf(flagRSSI);
+    if (incomingByte.indexOf(flagCEREG) != -1) {  // 判断网络注册状态 参数1或5标识附着正常
+        int startIndex = incomingByte.indexOf(flagCEREG);
+        String start = incomingByte.substring(startIndex);
+        int endIndex = start.indexOf("\n");
+        String end = start.substring(0, endIndex + 1);
+        String data = end.substring(0, end.length());
+        int index = 1; // 取值下标
+        string splitFlag = ",";
+        if (data.indexOf(",") == -1) {
+            splitFlag = ":";
+        }
+        vector<string> dataArray = split(data.c_str(), splitFlag);
+        String stat = dataArray[index].c_str();
+        // Serial.println("网络注册状态 : " + data + " 状态值: " + stat);
+        if (stat.toInt() == 1 || stat.toInt() == 5) {
+            // 网络已连接 但不一定完全Ping通
+        } else {
+            // 网络不正常 无法连接
+            // 确保一定时间的断线才重启  防止闪断重启导致浪费资源
+            Serial.println("NB-IoT 已断网触发重连机制...");
+            /*init_nb_iot();
+            init_at_mqtt();*/
+            hardware_restart_nb_iot(); // 硬件重启网络模组
+            esp_restart();  // 重启单片机主控芯片
+        }
+    }
+
+    if (incomingByte.indexOf(flagQENG) != -1) { // 模组工程模式 当前的网络服务信息 真正NB-IoT信号质量 走4G LTE部分带宽
+        // 强：RSRP ≥ -100 dBm，且 SNR ≥ 3 dB
+        // 中：-100 dBm ≥ RSRP ≥ -110 dBm 且 3 db > SNR > -3 db
+        // 弱：RSRP < -115 dBm 或 SNR < -3 dB
+        try {
+            int startIndex = incomingByte.indexOf(flagQENG);
+            String start = incomingByte.substring(startIndex);
+            int endIndex = start.indexOf("\n");
+            String end = start.substring(0, endIndex + 1);
+            String data = end.substring(0, end.length());
+            vector<string> dataArray = split(data.c_str(), ",");
+            String RSRP = dataArray[5].c_str(); // 信号接收功率 关键参数
+            String RSSI = dataArray[7].c_str();
+            String SNR = dataArray[8].c_str();
+            //Serial.println("RSRP: " + RSRP);
+            //Serial.println("SNR: " + SNR);
+            // NVS存储信号信息 用于MQTT上报
+            String signal = "RSRP: " + RSRP + ",SNR: " + SNR + ",RSSI: " + RSSI;
+            set_nvs("network_signal", signal.c_str());
+            /*       if (RSRP.toInt() >= -100 && SNR.toInt() >= 3) {
+                       // 信号强
+                   } else if ((-110 <= RSRP.toInt() <= -100 && 3 < SNR.toInt() < 3) || RSRP.toInt() >= -110) {
+                       // 信号中
+                   } else if (RSRP.toInt() < -115 || SNR.toInt() < -3) {
+                       // 信号弱
+                   }*/
+        } catch (exception &e) {
+            cout << &e << endl;
+        }
+    }
+
+/*    if (incomingByte.indexOf(flagCSQ) != -1) { // 2G/3G信号质量CSQ
+        int startIndex = incomingByte.indexOf(flagCSQ);
         String start = incomingByte.substring(startIndex);
         int endIndex = start.indexOf("\n");
         String end = start.substring(0, endIndex + 1);
         String data = end.substring(0, end.length());
         // NVS存储信号信息 用于MQTT上报
-        set_nvs("network_rssi", data.c_str());
+        set_nvs("network_signal", data.c_str());
 
         vector<string> dataArray = split(data.c_str(), ",");
         String rssi = dataArray[0].c_str();
         if (rssi.c_str() == "+CSQ: 99" || rssi.c_str() == "+CSQ: 0" || rssi.c_str() == "+CSQ: 1") {
-            Serial.println("NB-IoT信号丢失触发重连机制...");
+            Serial.println("NB-IoT CSQ信号强度丢失触发重连机制...");
             hardware_restart_nb_iot(); // 硬件重启网络模组
             esp_restart();  // 重启单片机主控芯片
         }
-        // at_mqtt_publish(at_topics, data.c_str()); // 上报网络信号质量
-    }
+    }*/
 
-    if (incomingByte.indexOf(flagMQTT1) != -1 || incomingByte.indexOf(flagMQTT2) != -1) { // 检测MQTT连接状态断开
+    if (incomingByte.indexOf(flagCONN) != -1 || incomingByte.indexOf(flagSTAT) != -1) { // 检测MQTT连接状态断开
         // 检测MQTT服务状态 如果失效自动重连
         at_mqtt_reconnect(incomingByte);
     }
@@ -261,7 +323,7 @@ void x_at_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         do_at_mqtt_heart_beat();
-        delay(1000 * 600); // 多久执行一次 毫秒
+        delay(1000 * 60 * 60 * 2); // 多久执行一次 毫秒
     }
 }
 
@@ -272,7 +334,7 @@ void do_at_mqtt_heart_beat() {
     int deviceStatus = get_pwm_status(); // 设备电机状态
     int parkingStatus = ground_feeling_status(); // 是否有车
     String firmwareVersion = get_nvs("version"); // 固件版本
-    String networkRSSI = get_nvs("network_rssi"); // 信号质量
+    String networkSignal = get_nvs("network_signal"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
     // 发送心跳消息
@@ -281,7 +343,7 @@ void do_at_mqtt_heart_beat() {
             to_string(deviceStatus) + "\",\"parkingStatus\":\"" + to_string(parkingStatus) +
             "\",\"firmwareVersion\":\"" + firmwareVersion.c_str() + "\"," +
             "\"electricity\":\"" + electricityValue.c_str() + "\"," +
-            "\"networkRSSI\":\"" + networkRSSI.c_str() + "\"}";
+            "\"networkSignal\":\"" + networkSignal.c_str() + "\"}";
     at_mqtt_publish(at_topics, jsonData.c_str()); // 我是AT指令 MQTT心跳发的消息
 }
 
@@ -392,10 +454,10 @@ void at_interrupt_mqtt_callback() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-/*    中断服务程序 (ISR) 是每次在 GPIO 引脚上发生中断时调用的函数
+/*  中断服务程序 (ISR) 是每次在 GPIO 引脚上发生中断时调用的函数
     // 1. ISR 不能有任何参数，它们不应该返回任何东西 2. ISR 应该尽可能短和快，因为它们会阻止正常的程序执行 3. IRAM_ATTR 编译后的代码被放置在单片机的内部 RAM (IRAM)中, 因Flash 比内部 RAM 慢得多
     void IRAM_ATTR ISR() {
         Statements;
-    }*/
+    } */
     // attachInterrupt(0, at_mqtt_callback, FALLING);
 }

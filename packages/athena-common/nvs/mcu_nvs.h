@@ -18,5 +18,6 @@ String get_nvs(String key);
 
 bool set_nvs(String key, String data);
 
+bool clear_nvs();
 
 #endif
