@@ -20,7 +20,6 @@
 #include <http.h>
 #include <at_mqtt/at_mqtt.h>
 #include <at_http/at_http.h>
-#include <gsm_ota/gsm_ota.h>
 #include <infrared_signals.h>
 #include <radio_frequency.h>
 #include <json_utils.h>
@@ -137,9 +136,6 @@ void setup() {
     // exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
     // WIFI要供电稳定 保证电压足够 才能正常工作
     do_firmware_upgrade(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL, "");
-
-    // GSM网络版本执行OTA空中升级
-    // gsm_exec_ota(FIRMWARE_VERSION, FIRMWARE_UPDATE_JSON_URL);
 
 /*  pinMode(19, INPUT_PULLUP);
     attachInterrupt(19, isr, FALLING); */
