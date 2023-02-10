@@ -84,6 +84,7 @@ void init_ground_feeling() {
     delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
+    Serial2.print("MAG_VERS\n"); // 查看版本
     Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
     delay(500);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
