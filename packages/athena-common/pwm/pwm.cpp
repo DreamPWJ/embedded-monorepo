@@ -89,12 +89,14 @@ void set_motor_up() {
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+
     //if (get_pwm_status() == 2) {
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+/*    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
     Serial2.print("MAG_STOP\n"); // 升锁同时停止地磁检测
     delay(500);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
     // }
 
     time_t startA = 0, endA = 0;
@@ -102,7 +104,7 @@ void set_motor_up() {
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(600);
+    delay(1000);
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -111,12 +113,12 @@ void set_motor_up() {
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
             Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
-            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
+/*            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
             delay(10);
             Serial2.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
             delay(500);
-            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
-            // set_motor_down(); // 降锁
+            digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
+             set_motor_down(); // 降锁
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
@@ -164,7 +166,7 @@ void set_motor_down() {
     double costB; // 时间差 秒
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    delay(600);
+    delay(1000);
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
@@ -188,15 +190,13 @@ void set_motor_down() {
         }
     }
 
-    delay(1000);
-    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(1500);
+    delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
-    delay(10);
+/*  delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     Serial2.print("MAG_OPEN\n"); // 落锁后开始地磁检测 初始化命令完成后3秒再判断READY是否真正就绪  可重发5次
     delay(500);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
 }
 
 /**

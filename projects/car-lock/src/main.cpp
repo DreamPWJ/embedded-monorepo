@@ -29,7 +29,7 @@
 using namespace std;
 
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
-#define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议
+#define FIRMWARE_UPDATE_JSON_URL      "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/car-lock/prod/car-lockota.json" // 如果https证书有问题 可以使用http协议
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1   // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
@@ -59,14 +59,14 @@ void setup() {
         }
     }
 
-    Serial2.begin(9600, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
+/*    Serial2.begin(9600, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
     if (!Serial2) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid Serial2 pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
         }
-    }
+    }*/
 
 #if IS_DEBUG
     // 将LED数字引脚初始化为输出
@@ -76,7 +76,7 @@ void setup() {
     // 初始化非易失性存储
     int_nvs();
     // key关键字与系统默认内置关键字冲突 会导致存储失败
-    bool isVersion = set_nvs("version", FIRMWARE_VERSION);
+    set_nvs("version", FIRMWARE_VERSION);
 
     // 常量与工具类调用示例
     // const BizConstants bizConstants;
@@ -209,7 +209,7 @@ void serialEvent1() {
 /**
  * UART2串口中断入口
  */
-void serialEvent2() {
+/*void serialEvent2() {
     String rxData2 = "";
     while (Serial2.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
@@ -223,7 +223,7 @@ void serialEvent2() {
 #endif
     // UART2串口响应数据处理
     // uart_check_car(rxData2);
-}
+}*/
 
 /**
  * UART0串口中断入口

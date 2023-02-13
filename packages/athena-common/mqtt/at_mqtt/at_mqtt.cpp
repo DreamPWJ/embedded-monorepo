@@ -398,7 +398,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
             /*    {
                     "command": "upgrade",
-                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
+                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/car-lock/prod/firmware.bin",
                      "chipIds" : ""
                 } */
             String firmwareUrl = json["firmwareUrl"].as<String>();
