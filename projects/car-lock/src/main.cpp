@@ -59,14 +59,14 @@ void setup() {
         }
     }
 
-    Serial2.begin(9600, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
+/*    Serial2.begin(9600, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
     if (!Serial2) { // If the object did not initialize, then its configuration is invalid
         Serial.println("Invalid Serial2 pin configuration, check config");
         while (1) { // Don't continue with invalid configuration
             Serial.print(".");
             delay(1000);
         }
-    }
+    }*/
 
 #if IS_DEBUG
     // 将LED数字引脚初始化为输出
@@ -209,7 +209,7 @@ void serialEvent1() {
 /**
  * UART2串口中断入口
  */
-void serialEvent2() {
+/*void serialEvent2() {
     String rxData2 = "";
     while (Serial2.available()) {
         // Serial.println("serialEvent()作为串口中断回调函数");
@@ -223,7 +223,7 @@ void serialEvent2() {
 #endif
     // UART2串口响应数据处理
     // uart_check_car(rxData2);
-}
+}*/
 
 /**
  * UART0串口中断入口

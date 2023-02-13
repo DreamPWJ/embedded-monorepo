@@ -11,8 +11,6 @@ void init_ground_feeling();
 
 int ground_feeling_status();
 
-void uart_check_car(String rxData);
-
 void x_task_ground_feeling_status(void *pvParameters);
 
 void check_ground_feeling_status();

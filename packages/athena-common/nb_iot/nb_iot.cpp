@@ -28,7 +28,7 @@ using namespace std;
  */
 void init_nb_iot() {
     // NB-IoT相关引脚初始化
-    pinMode(MODEM_RST, OUTPUT); // 确保RX是输入上拉模式 , 否则导致模组不能完全正常工作
+    pinMode(MODEM_RST, OUTPUT); // 确保RX是输入上拉模式 , 否则导致模组不能完全正常工作 返回数据不正确
     digitalWrite(MODEM_RST, LOW);
 
     // 给NB模组发送AT指令  NB模组出厂自带AT固件 接入天线
@@ -50,7 +50,7 @@ void init_nb_iot() {
     String isNBInit = get_nvs("is_nb_iot_init");
     if (isNBInit != "yes") {
         Serial.println("初始化NB-IoT配网一次, 以后重启等会自动入网"); // 如果NB-IoT配网成功 重启等会自动入网 只需初始化一次
-        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); // 附着网络
+        send_at_command("AT+CGATT=1\r\n", 30000, IS_DEBUG); // 附着网络 需要先激活SIM卡
         // 注册APN接入网络 如CMNET, NB-IoT通用类型CMNBIOT1 不同的APN类型对功耗省电模式有区别 对下行速率有影响  专网卡需要，不是专网卡不需要配置APN的
         // send_at_command("AT+CGDCONT=1,\042IP\042,\042CMNBIOT1\042\r\n", 30000, IS_DEBUG);
     }

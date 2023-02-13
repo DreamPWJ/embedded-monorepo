@@ -19,7 +19,7 @@ using namespace std;
 
 // 地感信号GPIO 外部中断接收
 const int GROUND_FEELING_READY_GPIO = 4;
-const int GROUND_FEELING_GPIO = 5;
+const int GROUND_FEELING_GPIO = 15;
 const int GROUND_FEELING_RST_GPIO = 16;
 const int GROUND_FEELING_CTRL_I_GPIO = 15;
 
@@ -63,7 +63,8 @@ void init_ground_feeling() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
     pinMode(GROUND_FEELING_GPIO, INPUT_PULLUP);
     pinMode(GROUND_FEELING_RST_GPIO, OUTPUT);
-    pinMode(GROUND_FEELING_CTRL_I_GPIO, OUTPUT);
+    /*   pinMode(GROUND_FEELING_CTRL_I_GPIO, OUTPUT); */
+
     // LOW：当针脚输入为低时，触发中断。
     // HIGH：当针脚输入为高时，触发中断。
     // CHANGE：当针脚输入发生改变时，触发中断。
@@ -72,22 +73,22 @@ void init_ground_feeling() {
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_has_car, RISING); // 高电平表示检测到进车
     //attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_no_car, FALLING);  // 低电平表示检测到出车
 
-    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+/*  digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
     delay(1500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
 
     digitalWrite(GROUND_FEELING_READY_GPIO, LOW);
     delay(500);
-    digitalWrite(GROUND_FEELING_READY_GPIO, HIGH);
+    digitalWrite(GROUND_FEELING_READY_GPIO, HIGH);*/
 
 #if IS_DEBUG
-    delay(10);
+/*  delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
     Serial2.print("MAG_VERS\n"); // 查看版本
     Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
     delay(500);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);
+    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
 #endif
 
 }
@@ -98,42 +99,15 @@ void init_ground_feeling() {
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
     // printf("GPIO %d 电平信号值: %d \n", GROUND_FEELING_GPIO, ground_feeling);
-    if (ground_feeling == 1) {
+    if (ground_feeling == 0) {
         // printf("地感检测有车 \n");
         return 1;
-    } else if (ground_feeling == 0) {
+    } else if (ground_feeling == 1) {
         // 如果无车时间超过一定时长  地锁抬起
         // printf("地感检测无车 \n");
         return 0;
     }
     return -1;
-}
-
-/**
- * 检测地磁状态 有车无车实时上报MQTT服务器
- */
-void uart_check_car(String rxData) {
-    uint64_t chipId = get_chip_mac();
-    int status = ground_feeling_status();
-
-    if (rxData.indexOf("CAR_PARK") != -1) {
-        // 车辆驶入
-        Serial.println("地磁检测有车");
-        string jsonData =
-                "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
-                "\",\"parkingStatus\":\"" + to_string(status) +
-                "\"}";
-        at_mqtt_publish(topic, jsonData.c_str());
-    } else if (rxData.indexOf("CAR_AWAY") != -1) {
-        // 车辆驶出
-        Serial.println("地磁检测无车");
-        string jsonData =
-                "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
-                "\",\"parkingStatus\":\"" + to_string(status) +
-                "\"}";
-        at_mqtt_publish(topic, jsonData.c_str());
-    }
-
 }
 
 /**
