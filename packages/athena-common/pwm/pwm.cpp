@@ -190,7 +190,7 @@ void set_motor_down() {
         }
     }
 
-    delay(1000);
+    delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
 /*  delay(10);
     digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
