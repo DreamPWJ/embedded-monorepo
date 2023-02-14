@@ -70,7 +70,7 @@ void init_nb_iot() {
         delay(1000);
 #endif
         String atResult = send_at_command("AT+CGATT?\r\n", 3000, IS_DEBUG, "+CGATT:");
-        Serial.print(atResult);
+        // Serial.print(atResult);
         if (atResult.indexOf(flag) != -1) {
             Serial.println("NB-IoT附着网络成功: " + atResult);
             break;
@@ -201,7 +201,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
         delay(10);
     }
     if (isDebug) {
-        Serial.println("发送的" + command + "AT指令响应数据: " + response);
+        Serial.println("TX发送的" + command + "指令AT响应数据: " + response);
     }
     return response;
 }

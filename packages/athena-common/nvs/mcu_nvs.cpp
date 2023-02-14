@@ -8,15 +8,18 @@
 * @date 2022/9/3 17:05
 * @description 单片机Flash持久化存储 非易失性存储NVS
 * 参考文档: https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/api/preferences.html
+* https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
 */
 
-Preferences nvsPref; // 声明对象名
+Preferences preferences; // 声明对象名
 // nvs_handle_t my_handle;
 
 void int_nvs() {
     Serial.println("初始化非易失性存储NVS");
+    //nvs_flash_erase(); // erase the NVS partition and...
+    //nvs_flash_init(); // initialize the NVS partition.
     // Serial.println(nvsPref.freeEntries()); // 获取空余nvs空间
-    nvsPref.begin("esp32nvs", false); // 打开命名空间存储分片名称 false读写权限 true只读 默认false
+    preferences.begin("flashdata", false); // 打开命名空间存储分片名称 false读写权限 true只读 默认false
     /*  nvs_flash_init();
       nvs_open("storage", NVS_READWRITE, &my_handle);*/
 }
@@ -30,7 +33,7 @@ String get_nvs(String key) {
     return server_name;*/
 
     if (is_key_nvs(key) == true) {
-        String result = nvsPref.getString(key.c_str(), "");
+        String result = preferences.getString(key.c_str(), "");
         return result;
     }
     return "";
@@ -45,19 +48,19 @@ void set_nvs(String key, String data) {
     nvs_commit(my_handle);
     nvs_close(my_handle);*/
 
-    nvsPref.putString(key.c_str(), data.c_str());
+    preferences.putString(key.c_str(), data.c_str());
 }
 
 /**
  * 是否存在key关键字
  */
 bool is_key_nvs(String key) {
-    return nvsPref.isKey(key.c_str());
+    return preferences.isKey(key.c_str());
 }
 
 /**
  * 清空所有的NVS键和值
  */
 bool clear_nvs() {
-    return nvsPref.clear();
+    return preferences.clear();
 }

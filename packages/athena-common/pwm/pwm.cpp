@@ -89,8 +89,6 @@ void set_motor_up() {
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
 
-    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-
     //if (get_pwm_status() == 2) {
 /*    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
     delay(10);
@@ -118,7 +116,7 @@ void set_motor_up() {
             Serial2.print("MAG_CONT\n"); // 若升锁遇阻，说明模块检测出错，主控应再次落锁
             delay(500);
             digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
-             set_motor_down(); // 降锁
+            set_motor_down(); // 降锁
             break;
         }
         if (costA >= 3) { // 电机运行过半减速
@@ -138,6 +136,9 @@ void set_motor_up() {
             break;
         }
     }
+
+    delay(500);
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
 }
 
 /**
