@@ -49,8 +49,6 @@ void set_nvs(String key, String data) {
     nvs_close(my_handle);*/
 
     preferences.putString(key.c_str(), data.c_str());
-    // Close the Preferences
-    preferences.end();
 }
 
 /**
