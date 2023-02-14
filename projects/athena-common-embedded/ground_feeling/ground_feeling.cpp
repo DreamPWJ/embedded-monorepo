@@ -31,14 +31,6 @@ const char *topic = "ESP32/common";
  */
 void IRAM_ATTR check_has_car() {
     Serial.println("地磁检测有车, 进入外部中断了");
-/*    // 芯片唯一标识
-    uint64_t chipId = get_chip_mac();
-    // 车辆驶入
-    string jsonData =
-            "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
-            "\",\"parkingStatus\":\"" + to_string(1) +
-            "\"}";
-    at_mqtt_publish(topic, jsonData.c_str()); */
 }
 
 /**
@@ -46,14 +38,6 @@ void IRAM_ATTR check_has_car() {
  */
 void IRAM_ATTR check_no_car() {
     Serial.println("地磁检测无车, 进入外部中断了");
-/*    // 芯片唯一标识
-    uint64_t chipId = get_chip_mac();
-    // 车辆驶出
-    string jsonData =
-            "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
-            "\",\"parkingStatus\":\"" + to_string(0) +
-            "\"}";
-    at_mqtt_publish(topic, jsonData.c_str());*/
 }
 
 /**

@@ -41,7 +41,7 @@ using namespace std;
 // 固件文件地址 可存储到公有云OSS或者公共Git代码管理中用于访问  如果https证书有问题(URL 的服务器部分必须与生成证书和密钥时使用的CN字段匹配), 可以使用http协议
 /*#define FIRMWARE_VERSION         "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置
 #define FIRMWARE_UPDATE_JSON_URL "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/ground-lockota.json" // 如果https证书有问题 可以使用http协议*/
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 #define WIFI_ONLY_OTA 1  // 是否WIFI网络功能仅用于OTA升级  0 否  1 是
 
 // 提供 OTA 服务器证书以通过 HTTPS 进行身份验证server certificates  在platformio.ini内定义board_build.embed_txtfiles属性制定pem证书位置
@@ -155,26 +155,27 @@ void exec_ota(String version, String jsonUrl) {
     // do_firmware_upgrade(version, jsonUrl);
     otaVersion = version;
     otaJsonUrl = jsonUrl;
-#if !USE_MULTI_CORE
-/*    String paramsStr = version + "," + jsonUrl;
+
+    /*  String paramsStr = version + "," + jsonUrl;
     Serial.println(paramsStr.c_str());
     const char *params = paramsStr.c_str(); // 逗号分割多参数*/
     const char *params = NULL;
+#if !USE_MULTI_CORE
     xTaskCreate(
             x_task_ota,  /* Task function. */
             "x_task_ota", /* String with name of task. */
             1024 * 16,      /* Stack size in bytes. */
             (void *) params,      /* Parameter passed as input of the task */
-            0,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            1,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_ota, "x_task_ota", 8192, NULL, 10, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_ota, "x_task_ota", 1024 * 16,  (void *) params, 1, NULL, 0);
 #endif
 
     /* HttpsOTA.onHttpEvent(HttpEvent);
        HttpsOTA.begin(url, server_cert_pem_start);
-       */
+    */
 }
 
 /**

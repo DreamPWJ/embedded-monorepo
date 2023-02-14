@@ -14,7 +14,7 @@
 * RadioHead与rc-switch库很棒，它适用于市场上几乎所有的射频模块
 */
 
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 #define RF_PIN 9  // RF射频接收引脚GPIO  外部中断接收
 
 // RH_ASK driver;
@@ -33,6 +33,8 @@ void rf_init(void) {
         Serial.println("RF init failed"); */
     mySwitch.enableReceive(RF_PIN);  // Receiver on inerrupt 0 => that is pin
 
+    // 建议使用GPIO外部中断监听引脚变化
+
 #if !USE_MULTI_CORE
     const char *params = NULL;
     xTaskCreate(
@@ -44,7 +46,7 @@ void rf_init(void) {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024 * 8, NULL, 10, NULL, 0);
+xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024 * 2, NULL, 5, NULL, 0);
 #endif
 
     // }
