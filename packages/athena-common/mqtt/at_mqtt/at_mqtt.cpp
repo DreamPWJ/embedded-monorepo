@@ -29,7 +29,7 @@ using namespace std;
 */
 
 #define IS_DEBUG false  // 是否调试模式
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 
 String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
@@ -362,7 +362,7 @@ void at_mqtt_heart_beat() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_at_task_mqtt, "x_at_task_mqtt", 8192, NULL, 8, NULL, 0);
+    xTaskCreatePinnedToCore(x_at_task_mqtt, "x_at_task_mqtt", 1024 * 8, NULL, 8, NULL, 0);
 #endif
 }
 
@@ -390,7 +390,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         vector<string> array = split(chipIds.c_str(), ",");
         bool isUpdateByDevice = false;
         if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
-            Serial.print("根据设备标识进行指定设备OTA升级: ");
+            Serial.print("根据设备标识进行指定设备命令控制: ");
             Serial.println(chipId);
             isUpdateByDevice = true;
         }

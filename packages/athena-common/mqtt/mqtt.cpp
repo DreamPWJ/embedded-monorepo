@@ -30,7 +30,7 @@ using namespace std;
 * https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
-#define USE_MULTI_CORE 0 // 是否使用多核 根据芯片决定
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
@@ -132,7 +132,7 @@ void mqtt_heart_beat() {
             NULL);     /* Task handle. */
 #else
     //最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1,或者 tskNO_AFFINITY 允许任务在两者上运行.
-    xTaskCreatePinnedToCore(x_task_mqtt, "x_task_mqtt", 1024 * 8, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(x_task_mqtt, "x_task_mqtt", 1024 * 8, NULL, 8, NULL, 0);
 #endif
 }
 
@@ -143,7 +143,7 @@ void x_task_mqtt(void *pvParameters) {
     while (1) {
         // Serial.println("多线程MQTT任务, 心跳检测...");
         do_mqtt_heart_beat();
-        delay(1000 * 60); // 多久执行一次 毫秒
+        delay(1000 * 60 * 60 * 2); // 多久执行一次 毫秒
     }
 }
 
@@ -211,7 +211,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
         vector<string> array = split(chipIds.c_str(), ",");
         bool isUpdateByDevice = false;
         if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
-            Serial.print("根据设备标识进行指定设备OTA升级: ");
+            Serial.print("根据设备标识进行指定设备命令控制: ");
             Serial.println(chipId);
             isUpdateByDevice = true;
         }
