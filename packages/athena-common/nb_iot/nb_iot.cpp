@@ -201,7 +201,7 @@ String send_at_command(String command, const int timeout, boolean isDebug, Strin
         delay(10);
     }
     if (isDebug) {
-        Serial.println("发送的" + command + "AT指令响应数据: " + response);
+        Serial.println("TX发送的" + command + "指令AT响应数据: " + response);
     }
     return response;
 }
