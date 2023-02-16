@@ -337,6 +337,8 @@ void do_at_mqtt_heart_beat() {
     String networkSignal = get_nvs("network_signal"); // 信号质量
     vector<string> array = split(to_string(get_electricity()), "."); // 电量值
     String electricityValue = array[0].c_str();
+    // string temperature = to_string(get_temperature()); // 温度值
+
     // 发送心跳消息
     string jsonData =
             "{\"command\":\"heartbeat\",\"deviceCode\":\"" + to_string(get_chip_mac()) + "\",\"deviceStatus\":\"" +

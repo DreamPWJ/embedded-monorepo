@@ -78,6 +78,9 @@ void setup() {
     // key关键字与系统默认内置关键字冲突 会导致存储失败
     set_nvs("version", FIRMWARE_VERSION);
 
+    // 初始化温度信息
+    // init_temperature();
+
     // 常量与工具类调用示例
     // const BizConstants bizConstants;
     // Serial.println(bizConstants.NAME.c_str());
