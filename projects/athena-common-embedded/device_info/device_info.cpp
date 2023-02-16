@@ -11,7 +11,7 @@
 
 
 /**
- * 初始化温度信息 ESP32自带芯片温度传感器
+ * 初始化温度信息 ESP32自带芯片温度传感器  ESP32 S3在 arduino-esp32的2.0.5才支持
  */
 void init_temperature() {
     temp_sensor_config_t temp_sensor = {
