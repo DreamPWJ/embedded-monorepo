@@ -77,6 +77,7 @@ void setup() {
     int_nvs();
     // key关键字与系统默认内置关键字冲突 会导致存储失败
     set_nvs("version", FIRMWARE_VERSION);
+    // printf(APP_VERSION);
 
     // 初始化温度信息
     // init_temperature();
