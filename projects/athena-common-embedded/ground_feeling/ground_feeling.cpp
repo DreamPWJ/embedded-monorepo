@@ -18,10 +18,8 @@ using namespace std;
 #define IS_DEBUG true  // 是否调试模式
 
 // 地感信号GPIO 外部中断接收
-const int GROUND_FEELING_READY_GPIO = 4;
 const int GROUND_FEELING_GPIO = 15;
 const int GROUND_FEELING_RST_GPIO = 16;
-const int GROUND_FEELING_CTRL_I_GPIO = 15;
 
 // MQTT通用的Topic
 const char *topic = "ESP32/common";
@@ -45,7 +43,6 @@ void init_ground_feeling() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
     pinMode(GROUND_FEELING_GPIO, INPUT_PULLUP);
     pinMode(GROUND_FEELING_RST_GPIO, OUTPUT);
-    /* pinMode(GROUND_FEELING_CTRL_I_GPIO, OUTPUT); */
 
     // LOW：当针脚输入为低时，触发中断。
     // HIGH：当针脚输入为高时，触发中断。
@@ -53,24 +50,6 @@ void init_ground_feeling() {
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
     // attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car, CHANGE); // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
-
-/*  digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(1500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
-
-    digitalWrite(GROUND_FEELING_READY_GPIO, LOW);
-    delay(500);
-    digitalWrite(GROUND_FEELING_READY_GPIO, HIGH);*/
-
-#if IS_DEBUG
-/*  delay(10);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-    delay(10);
-    Serial2.print("MAG_VERS\n"); // 查看版本
-    Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
-    delay(500);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
-#endif
 
 }
 
