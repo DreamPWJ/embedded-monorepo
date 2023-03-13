@@ -38,7 +38,8 @@ int freq_PWM = 5000;
 // 填写的pwm值就在 0 - 2的10次方 之间 也就是 0-1024
 int resolution_PWM = 10;
 
-const int GROUND_FEELING_RST_GPIO = 16;
+const int GROUND_FEELING_RST_GPIO = 15;
+
 const char *common_topic = "ESP32/common";
 uint64_t chipMacId = get_chip_mac();
 
@@ -124,7 +125,7 @@ void set_motor_up() {
     }
 
     delay(500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
 }
 
 /**
@@ -178,7 +179,7 @@ void set_motor_down() {
     }
 
     delay(500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
 }
 
 /**
