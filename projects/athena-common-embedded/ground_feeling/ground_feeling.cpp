@@ -18,10 +18,8 @@ using namespace std;
 #define IS_DEBUG true  // 是否调试模式
 
 // 地感信号GPIO 外部中断接收
-const int GROUND_FEELING_READY_GPIO = 4;
-const int GROUND_FEELING_GPIO = 15;
-const int GROUND_FEELING_RST_GPIO = 16;
-const int GROUND_FEELING_CTRL_I_GPIO = 15;
+const int GROUND_FEELING_GPIO = 16;
+const int GROUND_FEELING_RST_GPIO = 15;
 
 // MQTT通用的Topic
 const char *topic = "ESP32/common";
@@ -30,11 +28,22 @@ const char *topic = "ESP32/common";
  * 地磁信号GPIO外部中断
  */
 void IRAM_ATTR check_car() {
-    int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
-    if (ground_feeling == HIGH) {
-        Serial.println("地磁检测有车, 进入外部中断了");
-    } else if (ground_feeling == LOW) {
-        Serial.println("地磁检测无车, 进入外部中断了");
+    uint64_t chipId = get_chip_mac();
+    int status = digitalRead(GROUND_FEELING_GPIO);
+    if (status == HIGH) {
+        // Serial.println("地磁检测有车, 进入外部中断了");
+        string jsonData =
+                "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
+                "\",\"parkingStatus\":\"" + to_string(status) +
+                "\"}";
+        at_mqtt_publish(topic, jsonData.c_str());
+    } else if (status == LOW) {
+        // Serial.println("地磁检测无车, 进入外部中断了");
+        string jsonData =
+                "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
+                "\",\"parkingStatus\":\"" + to_string(status) +
+                "\"}";
+        at_mqtt_publish(topic, jsonData.c_str());
     }
 }
 
@@ -45,33 +54,14 @@ void init_ground_feeling() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
     pinMode(GROUND_FEELING_GPIO, INPUT_PULLUP);
     pinMode(GROUND_FEELING_RST_GPIO, OUTPUT);
-    /* pinMode(GROUND_FEELING_CTRL_I_GPIO, OUTPUT); */
 
     // LOW：当针脚输入为低时，触发中断。
     // HIGH：当针脚输入为高时，触发中断。
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    // attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car, CHANGE); // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
-
-/*  digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
-    delay(1500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
-
-    digitalWrite(GROUND_FEELING_READY_GPIO, LOW);
-    delay(500);
-    digitalWrite(GROUND_FEELING_READY_GPIO, HIGH);*/
-
-#if IS_DEBUG
-/*  delay(10);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, HIGH);
-    delay(10);
-    Serial2.print("MAG_VERS\n"); // 查看版本
-    Serial2.print("MAG_OPEN\n"); // 三轴地磁传感器初始化 开始检测
-    delay(500);
-    digitalWrite(GROUND_FEELING_CTRL_I_GPIO, LOW);*/
-#endif
-
+   /* attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
+                    CHANGE);*/ // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
 }
 
 /**
@@ -80,10 +70,10 @@ void init_ground_feeling() {
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
     // printf("GPIO %d 电平信号值: %d \n", GROUND_FEELING_GPIO, ground_feeling);
-    if (ground_feeling == 0) {
+    if (ground_feeling == HIGH) {
         // printf("地感检测有车 \n");
         return 1;
-    } else if (ground_feeling == 1) {
+    } else if (ground_feeling == LOW) {
         // 如果无车时间超过一定时长  地锁抬起
         // printf("地感检测无车 \n");
         return 0;
