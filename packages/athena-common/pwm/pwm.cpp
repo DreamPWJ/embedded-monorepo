@@ -124,8 +124,10 @@ void set_motor_up() {
         }
     }
 
-    delay(500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    if (get_pwm_status() == 1) {
+        delay(500);
+        digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+    }
 }
 
 /**

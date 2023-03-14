@@ -60,8 +60,8 @@ void init_ground_feeling() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
-                    CHANGE); // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
+   /* attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
+                    CHANGE);*/ // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
 }
 
 /**
@@ -70,10 +70,10 @@ void init_ground_feeling() {
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
     // printf("GPIO %d 电平信号值: %d \n", GROUND_FEELING_GPIO, ground_feeling);
-    if (ground_feeling == 0) {
+    if (ground_feeling == HIGH) {
         // printf("地感检测有车 \n");
         return 1;
-    } else if (ground_feeling == 1) {
+    } else if (ground_feeling == LOW) {
         // 如果无车时间超过一定时长  地锁抬起
         // printf("地感检测无车 \n");
         return 0;
