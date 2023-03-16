@@ -56,7 +56,7 @@ https://zhuanlan.zhihu.com/p/145801160
 
 #### MinGW是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
 
-https://www.mingw-w64.org/
+https://gnutoolchains.com/esp32/ 与 https://gnutoolchains.com/mingw64/
 
 #### ARM 工具链arm-none-eabi-gcc  用来编译ARM程序的交叉编译工具链
 
