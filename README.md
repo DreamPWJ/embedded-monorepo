@@ -26,8 +26,8 @@
 
 ### 开发平台：PlatformIO
 
-- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 安装执行 python
-  get-platformio.py
+- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 
+- 安装执行 python  get-platformio.py
 
 ### 跨芯片嵌入式框架: Arduino (不同芯片代码复用)
 
@@ -56,7 +56,7 @@ https://zhuanlan.zhihu.com/p/145801160
 
 #### MinGW是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
 
-https://gnutoolchains.com/esp32/ 与 https://gnutoolchains.com/mingw64/
+https://www.mingw-w64.org/ 与 https://gnutoolchains.com/mingw64/
 
 #### ARM 工具链arm-none-eabi-gcc  用来编译ARM程序的交叉编译工具链
 
