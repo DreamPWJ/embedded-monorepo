@@ -54,9 +54,9 @@ https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-dev
 https://zhuanlan.zhihu.com/p/63672432
 https://zhuanlan.zhihu.com/p/145801160
 
-#### MinGW是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
+#### MinGW 是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
 
-https://www.mingw-w64.org/ 与 https://gnutoolchains.com/mingw64/
+https://www.mingw-w64.org/ 与 https://sourceforge.net/projects/mingw-w64/files/  下载x86_64-posix-seh 并添加环境变量到Path
 
 #### ARM 工具链arm-none-eabi-gcc  用来编译ARM程序的交叉编译工具链
 

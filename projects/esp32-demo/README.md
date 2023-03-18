@@ -11,7 +11,7 @@ curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installe
 python3 get-platformio.py
 Windows用户, 把C:\Users\用户名\.platformio\penv\Scripts; 加到Path环境变量里才能生效
 初始化项目命令 pio -c clion init --ide clion 并且自动生成CMakeListsPrivate.txt文件
-在CLion中CMake中配置
+在CLion中CMake和MinGW中配置相关信息
 
 #### PlatformIO丰富的第三方库
 
