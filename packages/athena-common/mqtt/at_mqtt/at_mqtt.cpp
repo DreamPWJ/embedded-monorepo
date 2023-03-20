@@ -28,12 +28,16 @@ using namespace std;
 * https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
+// 获取自定义多环境变量宏定义
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+
 #define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 
 String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
-const char *at_mqtt_broker = "120.92.140.217"; // 设置MQTT的IP或域名  119.188.90.222
+const char *at_mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名
 const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
