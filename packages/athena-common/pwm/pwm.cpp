@@ -128,6 +128,7 @@ void set_motor_up() {
         delay(500);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
     }
+    ledcWrite(channel_PWMA, 0); // 停止电机
 }
 
 /**
@@ -182,6 +183,7 @@ void set_motor_down() {
 
     delay(500);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
+    ledcWrite(channel_PWMB, 0); // 停止电机
 }
 
 /**
