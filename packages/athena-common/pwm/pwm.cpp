@@ -94,7 +94,7 @@ void set_motor_up() {
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(1000);
+    delay(1500);
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -106,7 +106,7 @@ void set_motor_up() {
             set_motor_down(); // 降锁
             break;
         }
-        if (costA >= 3) { // 电机运行过半减速
+        if (costA >= 4) { // 电机运行过半减速
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             if (channel_PWMA_duty > 512) {
@@ -157,13 +157,13 @@ void set_motor_down() {
     double costB; // 时间差 秒
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    delay(1000);
+    delay(1500);
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
-        if (costB >= 3) { // 电机运行过半减速
+        if (costB >= 4) { // 电机运行过半减速
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             if (channel_PWMB_duty > 512) {
