@@ -19,6 +19,7 @@ void setup() {
     std::string const& ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
     const char *firmware_update_json_url = ota_temp_json.c_str();
     Serial.println(firmware_update_json_url);
+    Serial.println(STR(CORE_DEBUG_LEVEL));
 }
 
 void loop() {
