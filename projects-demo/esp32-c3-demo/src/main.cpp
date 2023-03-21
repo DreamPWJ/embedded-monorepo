@@ -12,10 +12,13 @@ void setup() {
     Serial.begin(115200);
     delay(1000);
     Serial.println("ESP32 C3 MCU");
-    const char* mqtt_version = STR(MQTT_VERSION);
+    const char *mqtt_version = STR(MQTT_VERSION);
     Serial.println(mqtt_version);
-    const char* app_version = STR(APP_VERSION);
+    const char *app_version = STR(APP_VERSION);
     Serial.println(app_version);
+    std::string const& ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
+    const char *firmware_update_json_url = ota_temp_json.c_str();
+    Serial.println(firmware_update_json_url);
 }
 
 void loop() {
