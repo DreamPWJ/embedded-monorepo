@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <wifi_network.h>
 #include <mqtt.h>
+#include <bluetooth_connect.h>
 
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x
@@ -23,10 +24,12 @@ void setup() {
     Serial.println(firmware_update_json_url);
     Serial.println(STR(CORE_DEBUG_LEVEL));
 
+    // 初始化设置蓝牙
+    init_bluetooth("panweiji");
     // 初始化WiFi无线网络
-    init_wifi();
+    //init_wifi();
     // WiFi网络版本初始化MQTT消息协议
-    init_mqtt();
+    //init_mqtt();
 }
 
 void loop() {
