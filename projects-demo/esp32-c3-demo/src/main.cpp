@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <wifi_network.h>
+#include <mqtt.h>
 
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x
@@ -10,16 +12,21 @@ void setup() {
 
     // 设置UART串口波特率
     Serial.begin(115200);
-    delay(1000);
+
     Serial.println("ESP32 C3 MCU");
     const char *mqtt_version = STR(MQTT_VERSION);
     Serial.println(mqtt_version);
     const char *app_version = STR(APP_VERSION);
     Serial.println(app_version);
-    std::string const& ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
+    std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
     const char *firmware_update_json_url = ota_temp_json.c_str();
     Serial.println(firmware_update_json_url);
     Serial.println(STR(CORE_DEBUG_LEVEL));
+
+    // 初始化WiFi无线网络
+    init_wifi();
+    // WiFi网络版本初始化MQTT消息协议
+    init_mqtt();
 }
 
 void loop() {

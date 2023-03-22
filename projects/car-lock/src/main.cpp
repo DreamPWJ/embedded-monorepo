@@ -132,8 +132,6 @@ void setup() {
     // WiFi网络版本初始化MQTT消息协议
     // init_mqtt();
 
-    // WiFi网络版本MQTT心跳服务
-    // mqtt_heart_beat();
 #endif
 
     // 初始化无线射频RF 用于遥控器控制
