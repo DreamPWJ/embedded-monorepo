@@ -138,7 +138,7 @@ void setup() {
     // rf_init();
 
     // OTA升级配置文件  如果https证书有问题 可以使用http协议
-    std::string const& ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
+    std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
     const char *firmware_update_json_url = ota_temp_json.c_str();
 
     // WiFi网络版本执行OTA空中升级
@@ -150,8 +150,8 @@ void setup() {
     attachInterrupt(19, isr, FALLING); */
 
 #if PWM_EN
-    // 初始化抬起车位锁
-    set_motor_up();
+    // 初始化抬起车位锁  屏蔽为了防止上面有车自动抬起  地感需要无车初始化基准才生效
+    // set_motor_up();
 #endif
 
 }
