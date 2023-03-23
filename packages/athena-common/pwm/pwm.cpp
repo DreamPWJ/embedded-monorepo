@@ -126,7 +126,7 @@ void set_motor_up() {
 
     if (get_pwm_status() == 1) {
         delay(500);
-        digitalWrite(GROUND_FEELING_RST_GPIO, HIGH);
+        digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
     }
     ledcWrite(channel_PWMA, 0); // 停止电机
 }
@@ -158,6 +158,7 @@ void set_motor_down() {
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     delay(1500);
+    digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
@@ -182,7 +183,6 @@ void set_motor_down() {
     }
 
     delay(500);
-    digitalWrite(GROUND_FEELING_RST_GPIO, LOW);
     ledcWrite(channel_PWMB, 0); // 停止电机
 }
 
