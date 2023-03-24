@@ -19,7 +19,7 @@
 void init_insights() {
     esp_insights_config_t config = {
             .log_type = ESP_DIAG_LOG_TYPE_ERROR,
-            .auth_key = ESP_INSIGHTS_AUTH_KEY,
+            .auth_key = ESP_INSIGHTS_AUTH_KEY,  // 开启是HTTPS方式  禁用是MQTT方式
     };
 
     esp_insights_init(&config);
