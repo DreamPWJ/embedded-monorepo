@@ -2,6 +2,7 @@
 #include <wifi_network.h>
 #include <mqtt.h>
 #include <bluetooth_connect.h>
+#include <log_insight.h>
 
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x
@@ -25,9 +26,13 @@ void setup() {
     Serial.println(STR(CORE_DEBUG_LEVEL));
 
     // 初始化设置蓝牙
-    init_bluetooth("panweiji");
+    // init_bluetooth("panweiji");
     // 初始化WiFi无线网络
-    //init_wifi();
+    init_wifi();
+    // 初始化日志云上报
+    init_insights();
+    delay(2000);
+    ESP_LOGE("esp32c3", "初始化insights日志云上报, 错误日志");
     // WiFi网络版本初始化MQTT消息协议
     //init_mqtt();
 }
