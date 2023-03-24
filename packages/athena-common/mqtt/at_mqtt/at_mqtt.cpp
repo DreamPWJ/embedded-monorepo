@@ -28,12 +28,16 @@ using namespace std;
 * https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
+// 获取自定义多环境变量宏定义
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+
 #define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 
 String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
-const char *at_mqtt_broker = "120.92.140.217"; // 设置MQTT的IP或域名  119.188.90.222
+const char *at_mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名
 const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
@@ -79,7 +83,7 @@ void init_at_mqtt() {
     // 发布MQTT消息
     DynamicJsonDocument doc(200);
     doc["type"] = "initMQTT";
-    doc["msg"] = "你好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息";
+    doc["msg"] = "您好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息";
     doc["version"] = get_nvs("version");
     String initStr;
     serializeJson(doc, initStr);
@@ -372,7 +376,7 @@ void at_mqtt_heart_beat() {
  * 获取MQTT订阅消息后执行任务
  */
 void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
-    // MQTT订阅消息处理 控制电机马达逻辑 可能重复下发指令使用QoS控制  并设置心跳检测
+    // MQTT订阅消息处理  可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
 
 #if IS_DEBUG
@@ -400,7 +404,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
             /*    {
                     "command": "upgrade",
-                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/car-lock/prod/firmware.bin",
+                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/car-lock/envname/prod/firmware.bin",
                      "chipIds" : ""
                 } */
             String firmwareUrl = json["firmwareUrl"].as<String>();

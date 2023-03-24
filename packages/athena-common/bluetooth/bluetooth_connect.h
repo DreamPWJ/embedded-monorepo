@@ -11,7 +11,10 @@
 
 void init_bluetooth(String bleName);
 
-void bluetooth_state();
+void bluetooth_send(String data);
 
+void check_bluetooth_state();
+
+void bluetooth_heart_beat();
 
 #endif

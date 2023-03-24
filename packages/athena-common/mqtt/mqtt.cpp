@@ -30,11 +30,16 @@ using namespace std;
 * https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 */
 
+// 获取自定义多环境变量宏定义
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+
+#define IS_DEBUG false  // 是否调试模式
 #define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 
 String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
-const char *mqtt_broker = "119.188.90.222"; // 设置MQTT的IP或域名
+const char *mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
 const char *mqtt_username = "admin";   // 设置MQTT服务器用户名
 const char *mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
@@ -61,11 +66,10 @@ void init_mqtt() {
     string chip_id = to_string(get_chip_mac());
     while (!client.connected()) {
         client_id += chip_id.c_str();   //  String(random(0xffff),HEX); // String(WiFi.macAddress());
-        Serial.printf("客户端 %s 已连接到 MQTT 服务器 \n", client_id.c_str());
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-            Serial.println("MQTT Broker 已连接成功");
+            Serial.println("MQTT Broker 连接成功: " + client_id);
         } else {
-            Serial.print("MQTT连接失败 ");
+            Serial.print("MQTT Broker连接失败 ");
             Serial.print(client.state());
             delay(2000);
         }
@@ -74,7 +78,7 @@ void init_mqtt() {
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*
     DynamicJsonDocument doc(200);
     doc["type"] = "initMQTT";
-    doc["msg"] = "你好, MQTT服务器, 我是" + client_id + "单片机发布的初始化消息";
+    doc["msg"] = "您好, MQTT服务器, 我是" + client_id + "单片机发布的初始化消息";
     doc["version"] = get_nvs("version");
     String initStr;
     serializeJson(doc, initStr);
@@ -82,6 +86,10 @@ void init_mqtt() {
     delay(1000);
     client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
     client.subscribe("ESP32/system");  // 系统相关主题订阅
+
+    delay(1000);
+    // MQTT心跳服务
+    mqtt_heart_beat();
 }
 
 /**
@@ -194,9 +202,11 @@ void mqtt_callback(char *topic, byte *payload, unsigned int length) {
  * 获取MQTT订阅消息后执行任务
  */
 void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
+    // MQTT订阅消息处理 可能重复下发指令使用QoS控制  并设置心跳检测
     String command = json["command"].as<String>();
-    // Serial.println("指令类型: " + command);
-    // Serial.println("-----------------------");
+#if IS_DEBUG
+    Serial.println("指令类型: " + command);
+#endif
 
     uint64_t chipId;
     try {
@@ -219,7 +229,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
         if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
             /*    {
                     "command": "upgrade",
-                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/prod/firmware.bin",
+                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/envname/prod/firmware.bin",
                      "chipIds" : ""
                 }*/
             String firmwareUrl = json["firmwareUrl"].as<String>();

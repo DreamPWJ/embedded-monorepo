@@ -5,6 +5,14 @@
 https://zhuanlan.zhihu.com/p/138214988
 https://docs.platformio.org/en/latest/integration/ide/clion.html
 
+#### PlatformIO安装
+
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
+python3 get-platformio.py
+Windows用户, 把C:\Users\用户名\.platformio\penv\Scripts; 加到Path环境变量里才能生效 注意用户名不能有特殊符号
+初始化项目命令 pio -c clion init --ide clion 并且自动生成CMakeListsPrivate.txt文件和下载项目依赖
+在CLion中MinGW 和 CMake中配置编译与构建相关信息 指定C和C++编译器的exe文件
+
 #### PlatformIO丰富的第三方库
 
 https://registry.platformio.org/search?t=library
@@ -24,7 +32,5 @@ https://docs.espressif.com/projects/espressif-esp-moonlight/zh_CN/latest/network
 #### HARDWARE: ESP32C3 160MHz, 320KB RAM, 4MB Flash
 
 #### ESP乐鑫工具esptool是ROM Bootloader一级bootloader通讯，从而实现的 固件烧录，flash 擦除，flash 读取，读 MAC 地址，读 flash id ，elf 文件转 bin 等常用功能
-python -m pip install esptool
 
-#### CH340 COM驱动问题
-https://sparks.gogo.co.nz/ch340.html
+python -m pip install esptool
