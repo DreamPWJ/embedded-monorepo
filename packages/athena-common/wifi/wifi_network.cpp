@@ -48,7 +48,7 @@ void init_wifi() {
     */
         Serial.println("IP Address: ");
         Serial.println(WiFi.localIP());
-        Serial.print("WiFi连接强度RRSI: ");
+        Serial.print("WiFi连接强度RSSI: ");
         Serial.println(WiFi.RSSI());
     }
 
@@ -105,7 +105,7 @@ bool scan_wifi() {
                 Serial.println("");
                 if (WiFi.status() == WL_CONNECTED) {
                     Serial.println("开放WiFi 连接成功！");
-                    Serial.print("开放WiFi连接强度RRSI: ");
+                    Serial.print("开放WiFi连接强度RSSI: ");
                     Serial.println(WiFi.RSSI());
                     WiFi.scanDelete();
                     return true;

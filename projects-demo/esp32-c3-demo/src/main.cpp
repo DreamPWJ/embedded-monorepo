@@ -32,12 +32,12 @@ void setup() {
     // 初始化WiFi无线网络
     init_wifi();
     // 初始化日志云上报
-    init_insights();
+/*    init_insights();
     delay(3000);
     ESP_LOGI(TAG, "初始化insights日志云上报");
-    ESP_LOGE(TAG, "初始化insights日志云上报, 错误日志");
+    ESP_LOGE(TAG, "初始化insights日志云上报, 错误日志");*/
     // WiFi网络版本初始化MQTT消息协议
-    //init_mqtt();
+    init_mqtt();
 }
 
 void loop() {
