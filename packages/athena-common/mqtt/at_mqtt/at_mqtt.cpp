@@ -85,10 +85,12 @@ void init_at_mqtt() {
     doc["type"] = "initMQTT";
     doc["msg"] = "您好, MQTT服务器, 我是" + client_id + "单片机AT指令发布的初始化消息";
     doc["version"] = get_nvs("version");
+    // doc["reason"] = get_nvs("init_reason");
     String initStr;
     serializeJson(doc, initStr);
     at_mqtt_publish(at_topics, initStr.c_str());
     delay(1000);
+    // set_nvs("init_reason","init MCU");
     // 订阅MQTT主题消息
     // at_mqtt_subscribe(at_topics);
     std::string topic_device = "ESP32/" + to_string(get_chip_mac()); // .c_str 是 string 转 const char*

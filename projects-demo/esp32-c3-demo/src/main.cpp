@@ -8,6 +8,8 @@
 #define XSTR(x) #x
 #define STR(x) XSTR(x)
 
+static const char *TAG = "esp32_demo";
+
 void setup() {
 // write your initialization code here
     // 初始化设置代码  为保证单片机运行正常  电路设计与电压必须稳定
@@ -29,14 +31,18 @@ void setup() {
     // init_bluetooth("panweiji");
     // 初始化WiFi无线网络
     init_wifi();
+    // WiFi网络版本初始化MQTT消息协议
+    // init_mqtt();
+
+    delay(3000);
     // 初始化日志云上报
     init_insights();
-    delay(2000);
-    ESP_LOGE("esp32c3", "初始化insights日志云上报, 错误日志");
-    // WiFi网络版本初始化MQTT消息协议
-    //init_mqtt();
+    ESP_LOGI(TAG, "初始化insights日志云上报");
+    ESP_LOGE(TAG, "初始化insights日志云上报, 错误日志");
+
 }
 
 void loop() {
 // write your code here
+
 }

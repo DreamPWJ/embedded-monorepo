@@ -80,10 +80,12 @@ void init_mqtt() {
     doc["type"] = "initMQTT";
     doc["msg"] = "您好, MQTT服务器, 我是" + client_id + "单片机发布的初始化消息";
     doc["version"] = get_nvs("version");
+    // doc["reason"] = get_nvs("init_reason");
     String initStr;
     serializeJson(doc, initStr);
     client.publish(topics, initStr.c_str());
     delay(1000);
+    // set_nvs("init_reason", "init MCU");
     client.subscribe(topic_device.c_str()); // 设备单独的主题订阅
     client.subscribe("ESP32/system");  // 系统相关主题订阅
 

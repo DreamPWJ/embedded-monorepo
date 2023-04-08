@@ -152,7 +152,6 @@ static String otaJsonUrl;
 
 void exec_ota(String version, String jsonUrl) {
     Serial.println("开始自动检测OTA空中升级...");
-    // do_firmware_upgrade(version, jsonUrl);
     otaVersion = version;
     otaJsonUrl = jsonUrl;
 
