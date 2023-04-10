@@ -2,7 +2,7 @@
 #include <wifi_network.h>
 #include <mqtt.h>
 #include <bluetooth_connect.h>
-#include <log_insight.h>
+// #include <log_insight.h>
 
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x
@@ -22,6 +22,8 @@ void setup() {
     Serial.println(mqtt_version);
     const char *app_version = STR(APP_VERSION);
     Serial.println(app_version);
+    const char *mqtt_broker = STR(MQTT_BROKER);
+    Serial.println(mqtt_broker);
     std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
     const char *firmware_update_json_url = ota_temp_json.c_str();
     Serial.println(firmware_update_json_url);
@@ -32,13 +34,13 @@ void setup() {
     // 初始化WiFi无线网络
     init_wifi();
     // WiFi网络版本初始化MQTT消息协议
-    // init_mqtt();
+    init_mqtt();
 
     delay(3000);
     // 初始化日志云上报
-    init_insights();
-    ESP_LOGI(TAG, "初始化insights日志云上报");
-    ESP_LOGE(TAG, "初始化insights日志云上报, 错误日志");
+//    init_insights();
+//    ESP_LOGI(TAG, "初始化insights日志云上报");
+//    ESP_LOGE(TAG, "初始化insights日志云上报, 错误日志");
 
 }
 
