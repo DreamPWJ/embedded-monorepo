@@ -18,8 +18,15 @@ void setup() {
     Serial.begin(115200);
 
     Serial.println("ESP32 C3 MCU");
-    const char *mqtt_version = STR(MQTT_VERSION);
-    Serial.println(mqtt_version);
+    const char *env_name = STR(ENV_NAME);
+    Serial.println(env_name);
+    if (env_name == "app1") {
+        Serial.println("App1环境工程");
+    } else if (env_name == "app2") {
+        Serial.println("App2环境工程");
+    }
+    const char *env_app_version = STR(ENV_APP_VERSION);
+    Serial.println(env_app_version);
     const char *app_version = STR(APP_VERSION);
     Serial.println(app_version);
     const char *mqtt_broker = STR(MQTT_BROKER);
