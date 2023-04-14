@@ -147,7 +147,11 @@ void setup() {
     do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
 
 /*  pinMode(19, INPUT_PULLUP);
-    attachInterrupt(19, isr, FALLING); */
+    // 开启外部中断
+    attachInterrupt(digitalPinToInterrupt(19), isr, FALLING);
+    // 取消外部中断监听
+    // detachInterrupt(digitalPinToInterrupt(19));
+    */
 
 #if PWM_EN
     // 初始化抬起车位锁  屏蔽为了防止上面有车自动抬起  地感需要无车初始化基准才生效

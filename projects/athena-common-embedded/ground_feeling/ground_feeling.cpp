@@ -60,8 +60,11 @@ void init_ground_feeling() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-   /* attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
-                    CHANGE);*/ // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
+    /* attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
+                     CHANGE);*/ // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
+
+    // 取消中断监听
+    // detachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO));
 }
 
 /**

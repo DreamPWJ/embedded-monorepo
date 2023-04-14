@@ -13,8 +13,6 @@ void init_at_mqtt();
 
 String send_mqtt_at_command(String command, const int timeout, boolean isDebug, String successResult = "OK");
 
-void at_interrupt_mqtt_callback();
-
 void at_mqtt_publish(String topic, String msg);
 
 void at_mqtt_subscribe(String topic);
