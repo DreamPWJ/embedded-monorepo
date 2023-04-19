@@ -125,7 +125,7 @@ void set_motor_up() {
     }
 
     if (get_pwm_status() == 1) {
-        delay(500);
+        delay(200);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
     }
     ledcWrite(channel_PWMA, 0); // 停止电机
@@ -182,8 +182,18 @@ void set_motor_down() {
         }
     }
 
-    delay(500);
+    if (get_pwm_status() == 0) { // 已经在下限位
+        // MQTT上报已落锁完成 可用于灯控或语音提醒等
+        string jsonDataDown =
+                "{\"command\":\"lock_status\",\"msg\":\"车位锁已落锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
+                "\",\"deviceStatus\":\"" + to_string(0) +
+                "\"}";
+        at_mqtt_publish(common_topic, jsonDataDown.c_str());
+    }
+
+    delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
+
 }
 
 /**

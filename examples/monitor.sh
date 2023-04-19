@@ -1,2 +1,2 @@
 #!/bin/env sh
-pio device monitor -b 9600
+pio device monitor -b 115200
