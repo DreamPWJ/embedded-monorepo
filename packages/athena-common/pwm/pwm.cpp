@@ -94,7 +94,7 @@ void set_motor_up() {
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(1500);
+    delay(3000);
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -125,7 +125,7 @@ void set_motor_up() {
     }
 
     if (get_pwm_status() == 1) {
-        delay(500);
+        delay(200);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
     }
     ledcWrite(channel_PWMA, 0); // 停止电机
@@ -157,7 +157,7 @@ void set_motor_down() {
     double costB; // 时间差 秒
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    delay(1500);
+    delay(3000);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
@@ -182,8 +182,18 @@ void set_motor_down() {
         }
     }
 
-    delay(500);
+    if (get_pwm_status() == 0) { // 已经在下限位
+        // MQTT上报已落锁完成 可用于灯控或语音提醒等
+        string jsonDataDown =
+                "{\"command\":\"lock_status\",\"msg\":\"车位锁已落锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
+                "\",\"deviceStatus\":\"" + to_string(0) +
+                "\"}";
+        at_mqtt_publish(common_topic, jsonDataDown.c_str());
+    }
+
+    delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
+
 }
 
 /**

@@ -446,26 +446,3 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
         at_mqtt_publish(at_topics, jsonData.c_str());
     }
 }
-
-/**
- * MQTT订阅消息回调 中断机制
- */
-void at_interrupt_mqtt_callback() {
-    // 参考文章: https://lastminuteengineers.com/handling-esp32-gpio-interrupts-tutorial/
-    // https://dreamsourcelab.cn/%e6%8a%80%e6%9c%af%e6%96%87%e7%ab%a0/%e6%9c%80%e8%af%a6%e7%bb%86%e7%9a%84-%e9%80%9a%e8%ae%af%e5%8d%8f%e8%ae%ae-uart%e5%88%86%e6%9e%90-%e5%9c%a8%e8%bf%99%e9%87%8c/
-    // 使用外部中断机制 外设发出的中断请求 您无需不断检查引脚的当前值。使用中断，当检测到更改时，会触发事件（调用函数) 无需循环检测。 持续监控某种事件、时效性和资源使用情况更好
-    // 将中断触发引脚 设置为INPUT_PULLUP（输入上拉）模式
-    pinMode(0, INPUT_PULLUP);
-    // Set motionSensor pin as interrupt, assign interrupt function and set RISING mode
-    // LOW：当针脚输入为低时，触发中断。
-    // HIGH：当针脚输入为高时，触发中断。
-    // CHANGE：当针脚输入发生改变时，触发中断。
-    // RISING：当针脚输入由低变高时，触发中断。
-    // FALLING：当针脚输入由高变低时，触发中断。
-/*  中断服务程序 (ISR) 是每次在 GPIO 引脚上发生中断时调用的函数
-    // 1. ISR 不能有任何参数，它们不应该返回任何东西 2. ISR 应该尽可能短和快，因为它们会阻止正常的程序执行 3. IRAM_ATTR 编译后的代码被放置在单片机的内部 RAM (IRAM)中, 因Flash 比内部 RAM 慢得多
-    void IRAM_ATTR ISR() {
-        Statements;
-    } */
-    // attachInterrupt(0, at_mqtt_callback, FALLING);
-}
