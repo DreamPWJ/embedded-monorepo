@@ -1,3 +1,10 @@
+## 2.1.7-car-lock
+`2023-04-19 12:53`<br><br>
+#### 其它变更 
+- chore: 增强嵌入式代码的健壮性和可维护性 ([e92b695](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/e92b695126b60881253fa150b80d81fbdbbec09e)) @406798106 
+- chore: 增强嵌入式代码的健壮性和可维护性 ([9001209](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/900120943743332d243633cf789f62ca27dfeb05)) @406798106 
+- chore: 增强嵌入式代码的健壮性和可维护性 ([d036435](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/d0364351752e86e630a1f45f78ba531d6359fb79)) @406798106 
+
 ## 2.1.6-car-lock
 `2023-04-13 11:20`<br><br>
 #### 其它变更 
