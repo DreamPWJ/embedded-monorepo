@@ -1,3 +1,7 @@
+## 2.2.0-car-lock
+`2023-06-07 10:37`<br><br>
+- docs(changelog): 发布 v2.0.1-car-lock @406798106@qq.com 
+
 ## 2.0.1-car-lock
 `2023-06-07 10:27`<br><br>
 #### 其它变更 
