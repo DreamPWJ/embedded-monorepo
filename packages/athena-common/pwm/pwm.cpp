@@ -84,7 +84,7 @@ void set_motor_up() {
     }
 
     channel_PWMA_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
@@ -149,7 +149,7 @@ void set_motor_down() {
     }
 
     channel_PWMB_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
     stop_up_motor(); // 停止正向电机
