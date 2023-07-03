@@ -44,7 +44,6 @@ const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
 const int at_mqtt_port = 1883;
 
 /**
- *
  * 初始化MQTT客户端
  */
 void init_at_mqtt() {
