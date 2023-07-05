@@ -240,18 +240,20 @@ int get_pwm_status() {
     int lower_limit = digitalRead(MOTOR_LOWER_GPIO);
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_UPPER_GPIO, upper_limit);
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_LOWER_GPIO, lower_limit);
-    if (upper_limit == 0 && lower_limit == 1) {
+    if (upper_limit == 0 && lower_limit == 0) {
         ledcWrite(channel_PWMA, 0);
         //Serial.println("电机上限位状态触发");
         return 1;
-    } else if (upper_limit == 1 && lower_limit == 0) {
+    } else if (upper_limit == 1 && lower_limit == 1) {
         ledcWrite(channel_PWMB, 0);
         //Serial.println("电机下限位状态触发");
         return 0;
-    } else if (upper_limit == 1 && lower_limit == 1) {
+    } else if (upper_limit == 1 && lower_limit == 0) {
         //Serial.println("电机运行状态触发");
         return 2;
-    } else if (upper_limit == 0 && lower_limit == 0) {
+    } else if (upper_limit == 0 && lower_limit == 1) {
+        ledcWrite(channel_PWMA, 0);
+        ledcWrite(channel_PWMB, 0);
         //Serial.println("电机无效状态触发");
         return -1;
     }
