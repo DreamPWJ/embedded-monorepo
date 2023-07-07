@@ -119,7 +119,9 @@ void set_motor_up() {
                     "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机抬起运行超时了\",\"chipId\":\"" +
                     to_string(chipMacId) + "\"}";
             at_mqtt_publish(common_topic, jsonDataUP.c_str());
-            ledcWrite(channel_PWMA, 0); // 停止电机
+            // ledcWrite(channel_PWMA, 0); // 停止电机
+            Serial.println("电机正向运行超时不能继续抬起, 回落地锁");
+            set_motor_down(); // 降锁
             break;
         }
     }
