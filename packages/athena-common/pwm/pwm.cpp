@@ -40,9 +40,6 @@ int resolution_PWM = 10;
 
 const int GROUND_FEELING_RST_GPIO = 15;
 
-// 电机正反向状态  正在升 1  正在降 2  停止 0
-int motor_motion_status = 0;
-
 const char *common_topic = "ESP32/common";
 uint64_t chipMacId = get_chip_mac();
 
@@ -90,7 +87,6 @@ void set_motor_up(int delay_time) {
     int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
-    motor_motion_status = 1;
     stop_down_motor(); // 停止反向电机
 
     time_t startA = 0, endA = 0;
@@ -99,7 +95,7 @@ void set_motor_up(int delay_time) {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     delay(delay_time);
-    while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
+    while ((get_pwm_status() == 2 || get_pwm_status() == -1) && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
         costA = difftime(endA, startA);
@@ -135,7 +131,6 @@ void set_motor_up(int delay_time) {
     }
 
     ledcWrite(channel_PWMA, 0); // 停止电机
-    motor_motion_status = 0;
 
 }
 
@@ -159,7 +154,6 @@ void set_motor_down(int delay_time) {
     int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
-    motor_motion_status = 2;
     stop_up_motor(); // 停止正向电机
 
     time_t startB = 0, endB = 0;
@@ -168,6 +162,9 @@ void set_motor_down(int delay_time) {
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     delay(delay_time);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
+    if (get_pwm_status() == -1) { // 无效状态
+        set_motor_up(0);
+    }
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
@@ -203,7 +200,6 @@ void set_motor_down(int delay_time) {
 
     delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
-    motor_motion_status = 0;
 }
 
 /**
@@ -249,24 +245,17 @@ int get_pwm_status() {
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_UPPER_GPIO, upper_limit);
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_LOWER_GPIO, lower_limit);
     if (upper_limit == 0 && lower_limit == 0) {
-        ledcWrite(channel_PWMA, 0);
         Serial.println("电机上限位状态触发");
+        ledcWrite(channel_PWMA, 0);
         return 1;
     } else if (upper_limit == 1 && lower_limit == 1) {
-        ledcWrite(channel_PWMB, 0);
         Serial.println("电机下限位状态触发");
+        ledcWrite(channel_PWMB, 0);
         return 0;
     } else if (upper_limit == 0 && lower_limit == 1) {
         Serial.println("电机运行状态触发");
         return 2;
     } else if (upper_limit == 1 && lower_limit == 0) {
-        // ledcWrite(channel_PWMA, 0);
-        // ledcWrite(channel_PWMB, 0);
-        if (motor_motion_status == 1) {
-            set_motor_down(0);
-        } else if (motor_motion_status == 2) {
-            set_motor_up(0);
-        }
         Serial.println("电机无效状态触发");
         return -1;
     }
