@@ -21,8 +21,8 @@ const int MOTOR_UPPER_GPIO = 1; // 上限位
 const int MOTOR_LOWER_GPIO = 2; // 下限位
 
 // PWM控制引脚GPIO
-const int PWM_PinA = 41;
-const int PWM_PinB = 42;
+const int PWM_PinA = 42;
+const int PWM_PinB = 41;
 
 // PWM的通道，共16个(0-15)，分为高低速两组，
 // 高速通道(0-7): 80MHz时钟，低速通道(8-15): 1MHz时钟
@@ -125,6 +125,7 @@ void set_motor_up(int delay_time) {
     }
 
     if (get_pwm_status() == 1) { // 如果已经在上限位
+        Serial.println("检测到电机上限位触发");
         ledcWrite(channel_PWMA, 0); // 停止电机
         delay(200);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
@@ -198,7 +199,6 @@ void set_motor_down(int delay_time) {
         at_mqtt_publish(common_topic, jsonDataDown.c_str());
     }
 
-    delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
 }
 
