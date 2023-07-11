@@ -14,7 +14,8 @@ using namespace std;
 * @description PWM脉冲宽度调是一种模拟控制方式 是将模拟信号转换为脉波的一种技术
 */
 
-#define IS_DEBUG false  // 是否调试模式
+#define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
+#define IS_DEBUG false   // 是否调试模式
 
 // 电机上下限位信号GPIO
 const int MOTOR_UPPER_GPIO = 1; // 上限位
@@ -95,7 +96,7 @@ void set_motor_up(int delay_time) {
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
     delay(delay_time);
-    while ((get_pwm_status() == 2 || get_pwm_status() == -1) && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
+    while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
         costA = difftime(endA, startA);
@@ -106,7 +107,7 @@ void set_motor_up(int delay_time) {
             set_motor_down(); // 降锁
             break;
         }
-        if (costA >= 4) { // 电机运行过半减速
+        if (costA >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             if (channel_PWMA_duty > 512) {
@@ -163,15 +164,12 @@ void set_motor_down(int delay_time) {
     ledcWrite(channel_PWMB, channel_PWMB_duty);
     delay(delay_time);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
-    if (get_pwm_status() == -1) { // 无效状态
-        set_motor_up(0);
-    }
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
-        if (costB >= 4) { // 电机运行过半减速
+        if (costB >= 2) { // 电机运行过半减速
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             if (channel_PWMB_duty > 512) {
@@ -245,18 +243,18 @@ int get_pwm_status() {
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_UPPER_GPIO, upper_limit);
     // printf("GPIO %d 电平信号值: %d \n", MOTOR_LOWER_GPIO, lower_limit);
     if (upper_limit == 0 && lower_limit == 0) {
-        Serial.println("电机上限位状态触发");
+        //Serial.println("电机上限位状态触发");
         ledcWrite(channel_PWMA, 0);
         return 1;
     } else if (upper_limit == 1 && lower_limit == 1) {
-        Serial.println("电机下限位状态触发");
+        //Serial.println("电机下限位状态触发");
         ledcWrite(channel_PWMB, 0);
         return 0;
     } else if (upper_limit == 0 && lower_limit == 1) {
-        Serial.println("电机运行状态触发");
+        //Serial.println("电机运行状态触发");
         return 2;
     } else if (upper_limit == 1 && lower_limit == 0) {
-        Serial.println("电机无效状态触发");
+        //Serial.println("电机无效状态触发");
         return -1;
     }
     return -1;
@@ -266,4 +264,37 @@ void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     ledcWrite(channel_PWMA, DutyA);
     delay(1000);
     ledcWrite(channel_PWMB, DutyB);
+}
+
+/**
+ * 检测电机状态
+ */
+void x_task_pwm_status(void *pvParameters) {
+    while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
+        delay(10 * 1000); // 多久执行一次 毫秒
+        if (get_pwm_status() == -1) { // 无效状态
+            Serial.println("电机无效状态触发, 复位中");
+            set_motor_up(0);
+        }
+    }
+}
+
+/**
+ * 检测电机状态任务
+ */
+void check_pwm_status() {
+#if !USE_MULTI_CORE
+    const char *params = NULL;
+    xTaskCreate(
+            x_task_pwm_status,  /* Task function. */
+            "x_task_pwm_status", /* String with name of task. */
+            1024 * 2,      /* Stack size in bytes. */
+            (void *) params,      /* Parameter passed as input of the task */
+            6,         /* Priority of the task.(configMAX_PRIORITIES - 1 being the highest, and 0 being the lowest.) */
+            NULL);     /* Task handle. */
+#else
+    // 最后一个参数至关重要，决定这个任务创建在哪个核上.PRO_CPU 为 0, APP_CPU 为 1, 或者 tskNO_AFFINITY 允许任务在两者上运行.
+    xTaskCreatePinnedToCore(x_task_pwm_status, "x_task_pwm_status",
+                            1024 * 2, NULL, 6, NULL, 0);
+#endif
 }

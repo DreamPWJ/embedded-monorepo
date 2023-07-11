@@ -12,9 +12,9 @@
 
 void init_motor();
 
-void set_motor_up(int delay_time = 2000);
+void set_motor_up(int delay_time = 1000);
 
-void set_motor_down(int delay_time = 2000);
+void set_motor_down(int delay_time = 1000);
 
 void stop_motor();
 
@@ -30,6 +30,8 @@ void check_car();
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 
-void motor_control(int Cnt_L, int Cnt_R);
+void x_task_pwm_status(void *pvParameters);
+
+void check_pwm_status();
 
 #endif

@@ -111,6 +111,8 @@ void setup() {
     init_ground_feeling();
     // 检测地感状态 有车无车及时上报MQTT服务器
     check_ground_feeling_status();
+    // 检测电机状态 复位
+    // check_pwm_status();
 #endif
 
 #if MQTT_EN
