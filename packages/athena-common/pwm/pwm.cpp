@@ -103,7 +103,7 @@ void set_motor_up(int delay_time) {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
+            Serial.println("地磁判断有车地锁不能继续升起, 回落地锁");
             set_motor_down(); // 降锁
             break;
         }
@@ -120,7 +120,9 @@ void set_motor_up(int delay_time) {
                     "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机抬起运行超时了\",\"chipId\":\"" +
                     to_string(chipMacId) + "\"}";
             at_mqtt_publish(common_topic, jsonDataUP.c_str());
-            ledcWrite(channel_PWMA, 0); // 停止电机
+            // ledcWrite(channel_PWMA, 0); // 停止电机
+            Serial.println("电机正向运行超时不能继续升起, 回落地锁");
+            set_motor_down(); // 降锁
             break;
         }
     }
@@ -274,7 +276,14 @@ void x_task_pwm_status(void *pvParameters) {
         delay(10 * 1000); // 多久执行一次 毫秒
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
-            set_motor_up(0);
+            ledcWrite(channel_PWMB, 1024);
+            while (get_pwm_status() == -1) { // 在运动状态或PWM速度非0停止状态
+                delay(10);
+            }
+            if (get_pwm_status() == 1) { // 如果已经在上限位
+                Serial.println("复位检测到电机上限位触发");
+                ledcWrite(channel_PWMB, 0); // 停止电机
+            }
         }
     }
 }

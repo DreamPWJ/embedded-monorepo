@@ -112,7 +112,7 @@ void setup() {
     // 检测地感状态 有车无车及时上报MQTT服务器
     check_ground_feeling_status();
     // 检测电机状态 复位
-    // check_pwm_status();
+    check_pwm_status();
 #endif
 
 #if MQTT_EN
@@ -190,6 +190,23 @@ void loop() {
 }
 
 /**
+ * UART0串口中断入口
+ */
+/*void serialEvent() {
+    String rxData = "";
+    while (Serial.available()) {
+        // Serial.println("serialEvent()作为串口中断回调函数");
+        rxData += char(Serial.read());
+        delay(2); // 这里不能去掉，要给串口处理数据的时间
+    }
+#if IS_DEBUG
+    Serial.println("------------------------------------");
+    Serial.println(rxData);
+    Serial.println("************************************");
+#endif
+}*/
+
+/**
  * UART1串口中断入口
  */
 void serialEvent1() {
@@ -240,20 +257,4 @@ void serialEvent1() {
     // uart_check_car(rxData2);
 }*/
 
-/**
- * UART0串口中断入口
- */
-/*void serialEvent() {
-    String rxData = "";
-    while (Serial.available()) {
-        // Serial.println("serialEvent()作为串口中断回调函数");
-        rxData += char(Serial.read());
-        delay(2); // 这里不能去掉，要给串口处理数据的时间
-    }
-#if IS_DEBUG
-    Serial.println("------------------------------------");
-    Serial.println(rxData);
-    Serial.println("************************************");
-#endif
-}*/
 
