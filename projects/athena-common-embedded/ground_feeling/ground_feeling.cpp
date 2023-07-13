@@ -31,14 +31,14 @@ void IRAM_ATTR check_car() {
     uint64_t chipId = get_chip_mac();
     int status = digitalRead(GROUND_FEELING_GPIO);
     if (status == HIGH) {
-        // Serial.println("地磁检测有车, 进入外部中断了");
+        Serial.println("地磁检测有车, 进入外部中断了");
         string jsonData =
                 "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
                 "\",\"parkingStatus\":\"" + to_string(status) +
                 "\"}";
         at_mqtt_publish(topic, jsonData.c_str());
     } else if (status == LOW) {
-        // Serial.println("地磁检测无车, 进入外部中断了");
+        Serial.println("地磁检测无车, 进入外部中断了");
         string jsonData =
                 "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
                 "\",\"parkingStatus\":\"" + to_string(status) +
@@ -60,8 +60,7 @@ void init_ground_feeling() {
     // CHANGE：当针脚输入发生改变时，触发中断。
     // RISING：当针脚输入由低变高时，触发中断。
     // FALLING：当针脚输入由高变低时，触发中断。
-    /* attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car,
-                     CHANGE);*/ // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
+    // attachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO), check_car, CHANGE);  // 同一个管脚只能设置一个外部中断类型  高电平表示检测到进车  低电平表示检测到出车
 
     // 取消中断监听
     // detachInterrupt(digitalPinToInterrupt(GROUND_FEELING_GPIO));
