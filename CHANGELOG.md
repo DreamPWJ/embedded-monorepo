@@ -1,3 +1,6 @@
+## 2.4.5-car-lock
+`2023-07-20 11:08`<br><br>
+
 ## 2.3.0-car-lock
 `2023-07-10 15:21`<br><br>
 - docs(changelog): 发布 v2.2.6-car-lock @406798106@qq.com 
