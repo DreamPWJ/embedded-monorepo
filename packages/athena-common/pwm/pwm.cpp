@@ -277,7 +277,7 @@ void x_task_pwm_status(void *pvParameters) {
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
             int channel_duty = 1024; // PWM速度值
-            int overtime = 10; // 超时时间 秒s
+            int overtime = 5; // 超时时间 秒s
             time_t start = 0, end = 0;
             double cost; // 时间差 秒
             time(&start);
@@ -304,6 +304,7 @@ void x_task_pwm_status(void *pvParameters) {
                 Serial.println("复位检测到电机上限位触发");
                 ledcWrite(channel_PWMB, 0); // 停止电机
             }
+            ledcWrite(channel_PWMB, 0); // 停止电机
         }
     }
 }
