@@ -273,11 +273,11 @@ void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
  */
 void x_task_pwm_status(void *pvParameters) {
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
-        delay(30 * 1000); // 多久执行一次 毫秒
+        delay(15 * 1000); // 多久执行一次 毫秒
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
             int channel_duty = 1024; // PWM速度值
-            int overtime = 5; // 超时时间 秒s
+            int overtime = 4; // 超时时间 秒s
             time_t start = 0, end = 0;
             double cost; // 时间差 秒
             time(&start);
