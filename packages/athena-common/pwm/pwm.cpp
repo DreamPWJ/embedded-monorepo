@@ -276,13 +276,13 @@ void x_task_pwm_status(void *pvParameters) {
         delay(30 * 1000); // 多久执行一次 毫秒
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
-            channel_PWMB_duty = 1024; // PWM速度值
-            ledcWrite(channel_PWMB, channel_PWMB_duty);
-            while (get_pwm_status() == -1 && channel_PWMB_duty != 0) { // 在运动状态或PWM速度非0停止状态
+            int channel_duty = 1024; // PWM速度值
+            ledcWrite(channel_PWMB, channel_duty);
+            while (get_pwm_status() == -1 && channel_duty != 0) { // 在运动状态或PWM速度非0停止状态
                 delay(10);
-                ledcWrite(channel_PWMB, channel_PWMB_duty);
-                if (channel_PWMB_duty > 512) {
-                    channel_PWMB_duty = channel_PWMB_duty - 2;
+                ledcWrite(channel_PWMB, channel_duty);
+                if (channel_duty > 512) {
+                    channel_duty = channel_duty - 2;
                 }
             }
             if (get_pwm_status() == 1) { // 如果已经在上限位
