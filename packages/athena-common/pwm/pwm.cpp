@@ -111,7 +111,7 @@ void set_motor_up(int delay_time) {
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             if (channel_PWMA_duty > 512) {
-                channel_PWMA_duty = channel_PWMA_duty - 2;
+                channel_PWMA_duty = channel_PWMA_duty - 3;
             }
         }
         if (costA >= overtime) {
@@ -175,7 +175,7 @@ void set_motor_down(int delay_time) {
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             if (channel_PWMB_duty > 512) {
-                channel_PWMB_duty = channel_PWMB_duty - 2;
+                channel_PWMB_duty = channel_PWMB_duty - 3;
             }
         }
         if (costB >= overtime) {
@@ -282,7 +282,7 @@ void x_task_pwm_status(void *pvParameters) {
                 delay(10);
                 ledcWrite(channel_PWMB, channel_duty);
                 if (channel_duty > 512) {
-                    channel_duty = channel_duty - 2;
+                    channel_duty = channel_duty - 3;
                 }
             }
             if (get_pwm_status() == 1) { // 如果已经在上限位
