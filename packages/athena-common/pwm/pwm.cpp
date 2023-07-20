@@ -111,7 +111,7 @@ void set_motor_up(int delay_time) {
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             if (channel_PWMA_duty > 512) {
-                channel_PWMA_duty = channel_PWMA_duty - 1;
+                channel_PWMA_duty = channel_PWMA_duty - 2;
             }
         }
         if (costA >= overtime) {
@@ -175,7 +175,7 @@ void set_motor_down(int delay_time) {
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             if (channel_PWMB_duty > 512) {
-                channel_PWMB_duty = channel_PWMB_duty - 1;
+                channel_PWMB_duty = channel_PWMB_duty - 2;
             }
         }
         if (costB >= overtime) {
@@ -276,9 +276,14 @@ void x_task_pwm_status(void *pvParameters) {
         delay(30 * 1000); // 多久执行一次 毫秒
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
-            ledcWrite(channel_PWMB, 512);
-            while (get_pwm_status() == -1) { // 在运动状态或PWM速度非0停止状态
+            channel_PWMB_duty = 1024; // PWM速度值
+            ledcWrite(channel_PWMB, channel_PWMB_duty);
+            while (get_pwm_status() == -1 && channel_PWMB_duty != 0) { // 在运动状态或PWM速度非0停止状态
                 delay(10);
+                ledcWrite(channel_PWMB, channel_PWMB_duty);
+                if (channel_PWMB_duty > 512) {
+                    channel_PWMB_duty = channel_PWMB_duty - 2;
+                }
             }
             if (get_pwm_status() == 1) { // 如果已经在上限位
                 Serial.println("复位检测到电机上限位触发");
