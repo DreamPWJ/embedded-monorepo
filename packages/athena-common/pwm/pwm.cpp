@@ -85,7 +85,7 @@ void set_motor_up(int delay_time) {
     }
 
     channel_PWMA_duty = 1024; // PWM速度值
-    int overtime = 12; // 超时时间 秒s
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
@@ -155,7 +155,7 @@ void set_motor_down(int delay_time) {
     }
 
     channel_PWMB_duty = 1024; // PWM速度值
-    int overtime = 12; // 超时时间 秒s
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
     stop_up_motor(); // 停止正向电机
@@ -277,12 +277,27 @@ void x_task_pwm_status(void *pvParameters) {
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
             int channel_duty = 1024; // PWM速度值
+            int overtime = 10; // 超时时间 秒s
+            time_t start = 0, end = 0;
+            double cost; // 时间差 秒
+            time(&start);
             ledcWrite(channel_PWMB, channel_duty);
-            while (get_pwm_status() == -1 && channel_duty != 0) { // 在运动状态或PWM速度非0停止状态
+            while (get_pwm_status() == -1) { // 在运动状态或PWM速度非0停止状态
                 delay(10);
+                time(&end);
+                cost = difftime(end, start);
                 ledcWrite(channel_PWMB, channel_duty);
                 if (channel_duty > 512) {
                     channel_duty = channel_duty - 2;
+                }
+                if (cost >= overtime) {
+                    printf("电机复位运行超时了 \n");
+                    string jsonDataUP =
+                            "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机复位运行超时了\",\"chipId\":\"" +
+                            to_string(chipMacId) + "\"}";
+                    at_mqtt_publish(common_topic, jsonDataUP.c_str());
+                    ledcWrite(channel_PWMB, 0); // 停止电机
+                    break;
                 }
             }
             if (get_pwm_status() == 1) { // 如果已经在上限位
