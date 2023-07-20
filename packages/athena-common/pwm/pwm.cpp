@@ -107,7 +107,7 @@ void set_motor_up(int delay_time) {
             set_motor_down(); // 降锁
             break;
         }
-        if (costA >= 2) { // 电机运行过半减速
+        if (costA >= 1) { // 电机运行过半减速
             ledcWrite(channel_PWMB, 0);
             ledcWrite(channel_PWMA, channel_PWMA_duty);
             if (channel_PWMA_duty > 512) {
@@ -171,7 +171,7 @@ void set_motor_down(int delay_time) {
         time(&endB);
         costB = difftime(endB, startB);
         // printf("电机反向执行耗时：%f \n", costB);
-        if (costB >= 2) { // 电机运行过半减速
+        if (costB >= 1) { // 电机运行过半减速
             ledcWrite(channel_PWMA, 0);
             ledcWrite(channel_PWMB, channel_PWMB_duty);
             if (channel_PWMB_duty > 512) {

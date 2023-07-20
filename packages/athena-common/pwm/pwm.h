@@ -12,9 +12,9 @@
 
 void init_motor();
 
-void set_motor_up(int delay_time = 1000);
+void set_motor_up(int delay_time = 800);
 
-void set_motor_down(int delay_time = 1000);
+void set_motor_down(int delay_time = 800);
 
 void stop_motor();
 
