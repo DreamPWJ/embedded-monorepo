@@ -276,7 +276,7 @@ void x_task_pwm_status(void *pvParameters) {
         delay(30 * 1000); // 多久执行一次 毫秒
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
-            ledcWrite(channel_PWMB, 1024);
+            ledcWrite(channel_PWMB, 512);
             while (get_pwm_status() == -1) { // 在运动状态或PWM速度非0停止状态
                 delay(10);
             }
