@@ -85,7 +85,7 @@ void set_motor_up(int delay_time) {
     }
 
     channel_PWMA_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 6; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
@@ -155,7 +155,7 @@ void set_motor_down(int delay_time) {
     }
 
     channel_PWMB_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 6; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
     stop_up_motor(); // 停止正向电机
@@ -282,7 +282,7 @@ void x_task_pwm_status(void *pvParameters) {
             double cost; // 时间差 秒
             time(&start);
             ledcWrite(channel_PWMB, channel_duty);
-            while (get_pwm_status() == -1) { // 在运动状态或PWM速度非0停止状态
+            while (get_pwm_status() == -1) {
                 delay(10);
                 time(&end);
                 cost = difftime(end, start);
@@ -293,7 +293,7 @@ void x_task_pwm_status(void *pvParameters) {
                 if (cost >= overtime) {
                     printf("电机复位运行超时了 \n");
                     string jsonDataUP =
-                            "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机复位运行超时了\",\"chipId\":\"" +
+                            "{\"command\":\"exception\",\"code\":\"1003\",\"msg\":\"车位锁电机复位运行超时了\",\"chipId\":\"" +
                             to_string(chipMacId) + "\"}";
                     at_mqtt_publish(common_topic, jsonDataUP.c_str());
                     ledcWrite(channel_PWMB, 0); // 停止电机
@@ -306,6 +306,28 @@ void x_task_pwm_status(void *pvParameters) {
             }
             ledcWrite(channel_PWMB, 0); // 停止电机
         }
+
+        if (get_pwm_status() == 2) { // 运动状态复位
+            int overtimeA = 6; // 超时时间 秒s
+            time_t startA = 0, endA = 0;
+            double costA; // 时间差 秒
+            time(&startA);
+            while (get_pwm_status() == 2) {
+                delay(1000);
+                time(&endA);
+                costA = difftime(endA, startA);
+                if (costA >= overtimeA) {
+                    printf("电机正向复位执行 \n");
+                    string jsonDataUP =
+                            "{\"command\":\"exception\",\"code\":\"1005\",\"msg\":\"电机正向复位执行\",\"chipId\":\"" +
+                            to_string(chipMacId) + "\"}";
+                    at_mqtt_publish(common_topic, jsonDataUP.c_str());
+                    set_motor_up(0);
+                    break;
+                }
+            }
+        }
+
     }
 }
 
