@@ -102,7 +102,7 @@ void set_motor_up(int delay_time) {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
+            Serial.println("地磁判断有车地锁不能继续升起, 回落地锁");
             set_motor_down(); // 降锁
             break;
         }
@@ -120,7 +120,7 @@ void set_motor_up(int delay_time) {
                     to_string(chipMacId) + "\"}";
             at_mqtt_publish(common_topic, jsonDataUP.c_str());
             // ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("电机正向运行超时不能继续抬起, 回落地锁");
+            Serial.println("电机正向运行超时不能继续升起, 回落地锁");
             set_motor_down(); // 降锁
             break;
         }
@@ -195,9 +195,7 @@ void set_motor_down(int delay_time) {
         at_mqtt_publish(common_topic, jsonDataDown.c_str());
     }
 
-    delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
-
 }
 
 /**
