@@ -63,7 +63,7 @@ void init_motor() {
  */
 int channel_PWMA_duty;
 
-void set_motor_up() {
+void set_motor_up(int delay_time) {
 #if IS_DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机正向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
@@ -94,7 +94,7 @@ void set_motor_up() {
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(2000);
+    delay(delay_time);
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -139,7 +139,7 @@ void set_motor_up() {
  */
 int channel_PWMB_duty;
 
-void set_motor_down() {
+void set_motor_down(int delay_time) {
 #if IS_DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机反向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
@@ -160,7 +160,7 @@ void set_motor_down() {
     double costB; // 时间差 秒
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    delay(2000);
+    delay(delay_time);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
