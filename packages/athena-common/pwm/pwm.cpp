@@ -307,7 +307,7 @@ void x_task_pwm_status(void *pvParameters) {
             ledcWrite(channel_PWMB, 0); // 停止电机
         }
 
-        if (get_pwm_status() == 2) { // 运动状态复位
+/*        if (get_pwm_status() == 2) { // 运动状态复位
             int overtimeA = 6; // 超时时间 秒s
             time_t startA = 0, endA = 0;
             double costA; // 时间差 秒
@@ -326,7 +326,7 @@ void x_task_pwm_status(void *pvParameters) {
                     break;
                 }
             }
-        }
+        }*/
 
     }
 }
