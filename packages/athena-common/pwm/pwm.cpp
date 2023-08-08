@@ -85,7 +85,7 @@ void set_motor_up(int delay_time) {
     }
 
     channel_PWMA_duty = 1024; // PWM速度值
-    int overtime = 6; // 超时时间 秒s
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
@@ -155,7 +155,7 @@ void set_motor_down(int delay_time) {
     }
 
     channel_PWMB_duty = 1024; // PWM速度值
-    int overtime = 6; // 超时时间 秒s
+    int overtime = 10; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
     stop_up_motor(); // 停止正向电机
@@ -277,7 +277,7 @@ void x_task_pwm_status(void *pvParameters) {
         if (get_pwm_status() == -1) { // 无效状态
             Serial.println("电机无效状态触发, 复位中");
             int channel_duty = 1024; // PWM速度值
-            int overtime = 8; // 超时时间 秒s
+            int overtime = 6; // 超时时间 秒s
             time_t start = 0, end = 0;
             double cost; // 时间差 秒
             time(&start);
