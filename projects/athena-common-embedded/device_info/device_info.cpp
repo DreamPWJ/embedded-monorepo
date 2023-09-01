@@ -43,7 +43,7 @@ float get_electricity() {
     // pinMode(GPIO, ANALOG);
     // 模拟引脚读取电池的输出电压  需要添加分压器，以便我们能够读取电池的电压
     int analogValue = analogRead(ADC_GPIO);   // 获取模拟值
-    //  int analogVolts = analogReadMilliVolts(ADC_GPIO);  // 获取毫伏电压
+    // int analogVolts = analogReadMilliVolts(ADC_GPIO);  // 获取毫伏电压
     // Serial.println(analogValue);
     // 获取电量百分比
 /*    float batteryLevel = map(analogValue, in_min, in_max, 0, 100);
@@ -51,6 +51,6 @@ float get_electricity() {
         return 100;
     } else {
         return batteryLevel;
-    }*/
+    } */
     return analogValue * (5.0 / 1023.0);
 }
