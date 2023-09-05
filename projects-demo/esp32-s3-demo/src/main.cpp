@@ -1,5 +1,11 @@
 #include <Arduino.h>
 
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 程序运行入口
+*/
+
 void setup() {
 // write your initialization code here
     // 设置UART串口波特率

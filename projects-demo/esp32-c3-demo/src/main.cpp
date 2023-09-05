@@ -4,6 +4,12 @@
 #include <bluetooth_connect.h>
 // #include <log_insight.h>
 
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 程序运行入口
+*/
+
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x
 #define STR(x) XSTR(x)

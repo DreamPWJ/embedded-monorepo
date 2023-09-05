@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include "../../../packages/athena-common/led_pin/led_pin.h"
 
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 程序运行入口
+*/
+
 char serialData; // 串口数据读取值
 
 void setup() {
