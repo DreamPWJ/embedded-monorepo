@@ -44,7 +44,6 @@ const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
 const int at_mqtt_port = 1883;
 
 /**
- *
  * 初始化MQTT客户端
  */
 void init_at_mqtt() {
@@ -57,7 +56,7 @@ void init_at_mqtt() {
     // 执行 AT+QMTOPEN? 时 ，若当前不存在已打开的客户端信息 ，则无 +QMTOPEN:<TCP_connectID>,<host_name>,<port>返回，仅返回 OK 或者 ERROR
     send_mqtt_at_command("AT+QMTCLOSE=0\r\n", 1000, IS_DEBUG);  // 关闭之前的连接 防止再次重连失败
 
-    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令
+    // 设置MQTT连接所需要的的参数 不同的调制解调器模组需要适配不同的AT指令  session配置保持多次中断的会话 QOS:2才能生效
     send_mqtt_at_command("AT+QMTCFG=\042version\042,0,1\r\n", 3000, IS_DEBUG);  // 设置MQTT的版本
     //send_mqtt_at_command("AT+ECMTCFG=\042keepalive\042,0,120\r\n", 6000, IS_DEBUG); // 配置心跳时间
     //send_mqtt_at_command("AT+ECMTCFG=\042timeout\042,0,20\r\n", 6000, IS_DEBUG); // 配置数据包的发送超时时间（单位：s，范围：1-60，默认10s）
@@ -143,6 +142,7 @@ void at_mqtt_publish(String topic, String msg) {
  * MQTT订阅消息
  */
 void at_mqtt_subscribe(String topic) {
+    // 判断时间戳 过滤QOS2重试的过期无效的消息
     Serial1.printf("AT+QMTSUB=0,1,\"%s\",2\r\n", topic.c_str());
 }
 

@@ -63,7 +63,7 @@ void init_motor() {
  */
 int channel_PWMA_duty;
 
-void set_motor_up() {
+void set_motor_up(int delay_time) {
 #if IS_DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机正向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
@@ -84,7 +84,7 @@ void set_motor_up() {
     }
 
     channel_PWMA_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机正向运动");
     stop_down_motor(); // 停止反向电机
@@ -94,7 +94,7 @@ void set_motor_up() {
     time(&startA);
     ledcWrite(channel_PWMA, channel_PWMA_duty);
     // 读取限位信号 停机电机 同时超时后自动复位或停止电机
-    delay(3000);
+    delay(delay_time);
     while (get_pwm_status() == 2 && channel_PWMA_duty != 0) { // 在运动状态或PWM速度非0停止状态
         delay(10);
         time(&endA);
@@ -102,7 +102,7 @@ void set_motor_up() {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地磁判断有车地锁不能继续抬起, 回落地锁");
+            Serial.println("地磁判断有车地锁不能继续升起, 回落地锁");
             set_motor_down(); // 降锁
             break;
         }
@@ -119,12 +119,15 @@ void set_motor_up() {
                     "{\"command\":\"exception\",\"code\":\"1001\",\"msg\":\"车位锁电机抬起运行超时了\",\"chipId\":\"" +
                     to_string(chipMacId) + "\"}";
             at_mqtt_publish(common_topic, jsonDataUP.c_str());
-            ledcWrite(channel_PWMA, 0); // 停止电机
+            // ledcWrite(channel_PWMA, 0); // 停止电机
+            Serial.println("电机正向运行超时不能继续升起, 回落地锁");
+            set_motor_down(); // 降锁
             break;
         }
     }
 
-    if (get_pwm_status() == 1) {
+    if (get_pwm_status() == 1) { // 如果已经在上限位
+        ledcWrite(channel_PWMA, 0); // 停止电机
         delay(200);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
     }
@@ -136,7 +139,7 @@ void set_motor_up() {
  */
 int channel_PWMB_duty;
 
-void set_motor_down() {
+void set_motor_down(int delay_time) {
 #if IS_DEBUG
     // 上报MQTT消息
     string jsonData = "{\"msg\":\"开始控制电机反向运动\",\"chipId\":\"" + to_string(chipMacId) + "\"}";
@@ -148,7 +151,7 @@ void set_motor_down() {
     }
 
     channel_PWMB_duty = 1024; // PWM速度值
-    int overtime = 10; // 超时时间 秒s
+    int overtime = 12; // 超时时间 秒s
 
     Serial.println("开始控制电机反向运动");
     stop_up_motor(); // 停止正向电机
@@ -157,7 +160,7 @@ void set_motor_down() {
     double costB; // 时间差 秒
     time(&startB);
     ledcWrite(channel_PWMB, channel_PWMB_duty);
-    delay(3000);
+    delay(delay_time);
     digitalWrite(GROUND_FEELING_RST_GPIO, LOW); // 开启地感检测
     while (get_pwm_status() == 2 && channel_PWMB_duty != 0) {  // 在运动状态与PWM速度非0停止状态
         delay(10);
@@ -183,6 +186,7 @@ void set_motor_down() {
     }
 
     if (get_pwm_status() == 0) { // 已经在下限位
+        ledcWrite(channel_PWMB, 0); // 停止电机
         // MQTT上报已落锁完成 可用于灯控或语音提醒等
         string jsonDataDown =
                 "{\"command\":\"lock_status\",\"msg\":\"车位锁已落锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
@@ -191,9 +195,7 @@ void set_motor_down() {
         at_mqtt_publish(common_topic, jsonDataDown.c_str());
     }
 
-    delay(200);
     ledcWrite(channel_PWMB, 0); // 停止电机
-
 }
 
 /**
