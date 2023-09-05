@@ -26,6 +26,12 @@
 #include <TimeUtil.h>
 #include <common_utils.h>
 
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 程序运行入口
+*/
+
 using namespace std;
 // 获取自定义多环境变量宏定义
 #define XSTR(x) #x

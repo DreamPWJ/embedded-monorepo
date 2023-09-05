@@ -26,6 +26,12 @@
 #include <TimeUtil.h>
 #include <common_utils.h>
 
+/**
+* @author 潘维吉
+* @date 2022/7/20 9:41
+* @description 程序运行入口
+*/
+
 using namespace std;
 
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
