@@ -16,7 +16,7 @@ using namespace std;
 /**
 * @author 潘维吉
 * @date 2022/8/22 14:44
-* @description NB-IoT物联网网络协议
+* @description NB-IoT 窄带宽低功耗物联网网络协议
 */
 
 #define IS_DEBUG false // 是否调试模式
