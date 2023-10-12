@@ -44,6 +44,10 @@ void IRAM_ATTR check_car() {
                 "\",\"parkingStatus\":\"" + to_string(status) +
                 "\"}";
         at_mqtt_publish(topic, jsonData.c_str());
+        // 无外部自动化下发地锁抬起指令情况  需要地锁自己触发命令
+     /*  if (true) { // 变量控制
+            set_motor_up();
+        }  */
     }
 }
 

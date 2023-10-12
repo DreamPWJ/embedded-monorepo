@@ -128,6 +128,12 @@ void set_motor_up(int delay_time) {
 
     if (get_pwm_status() == 1) { // 如果已经在上限位
         ledcWrite(channel_PWMA, 0); // 停止电机
+        // MQTT上报已落锁完成 可用于灯控或语音提醒等
+        string jsonDataUp =
+                "{\"command\":\"lock_status\",\"msg\":\"车位锁已升锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
+                "\",\"deviceStatus\":\"" + to_string(0) +
+                "\"}";
+        at_mqtt_publish(common_topic, jsonDataUp.c_str());
         delay(200);
         digitalWrite(GROUND_FEELING_RST_GPIO, HIGH); // 关闭地感检测
     }
