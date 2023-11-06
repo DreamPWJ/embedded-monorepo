@@ -17,7 +17,7 @@ using namespace std;
 WiFiMulti wifiMulti;
 
 // WiFiMulti方式支持多个账号同时设置 连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
-const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
+const char *ssid = "lnkj-develop_4G";  // WiFi用户名  注意模组只支持2.4G
 const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
 
 unsigned long previousMillis = 0;

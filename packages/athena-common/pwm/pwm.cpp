@@ -131,7 +131,7 @@ void set_motor_up(int delay_time) {
         // MQTT上报已落锁完成 可用于灯控或语音提醒等
         string jsonDataUp =
                 "{\"command\":\"lock_status\",\"msg\":\"车位锁已升锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
-                "\",\"deviceStatus\":\"" + to_string(0) +
+                "\",\"deviceStatus\":\"" + to_string(1) +
                 "\"}";
         at_mqtt_publish(common_topic, jsonDataUp.c_str());
         delay(200);
