@@ -72,9 +72,9 @@ void set_motor_up(int delay_time) {
 
     // 地感保证无车才能抬杆
     if (ground_feeling_status() == 1) {
-        Serial.println("地磁判断有车地锁不能抬起");
+        Serial.println("地感判断有车地锁不能抬起");
         string jsonDataGF =
-                "{\"command\":\"exception\",\"msg\":\"地磁判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
+                "{\"command\":\"exception\",\"msg\":\"地感判断有车地锁不能抬起\",\"chipId\":\"" + to_string(chipMacId) +
                 "\"}";
         at_mqtt_publish(common_topic, jsonDataGF.c_str());
         return;
@@ -102,7 +102,7 @@ void set_motor_up(int delay_time) {
         //printf("电机正向执行耗时：%f \n", costA);
         if (ground_feeling_status() == 1) {
             ledcWrite(channel_PWMA, 0); // 停止电机
-            Serial.println("地磁判断有车地锁不能继续升起, 回落地锁");
+            Serial.println("地感判断有车地锁不能继续升起, 回落地锁");
             set_motor_down(); // 降锁
             break;
         }

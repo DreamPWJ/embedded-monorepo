@@ -25,7 +25,7 @@ const int GROUND_FEELING_RST_GPIO = 15;
 const char *topic = "ESP32/common";
 
 /**
- * 地磁信号GPIO外部中断
+ * 地感信号GPIO外部中断
  */
 void IRAM_ATTR check_car() {
     uint64_t chipId = get_chip_mac();
@@ -72,7 +72,7 @@ void init_ground_feeling() {
 }
 
 /**
- * 地磁信号检测
+ * 地感信号检测
  */
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
