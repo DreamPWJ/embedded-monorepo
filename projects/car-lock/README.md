@@ -9,11 +9,13 @@ https://docs.platformio.org/en/latest/integration/ide/clion.html
 
 #### MinGW 是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
 
-https://www.mingw-w64.org/ 与 https://sourceforge.net/projects/mingw-w64/files/  下载x86_64-posix-seh 并bin所在目录添加环境变量到Path中
+https://www.mingw-w64.org/ 与 https://sourceforge.net/projects/mingw-w64/files/  下载x86_64-posix-seh
+并bin所在目录添加环境变量到Path中
 
 #### PlatformIO安装
 
-curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o get-platformio.py
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o
+get-platformio.py
 python3 get-platformio.py
 Windows用户, 把C:\Users\用户名\.platformio\penv\Scripts; 加到Path环境变量里才能生效 注意用户名不能有特殊符号
 初始化项目命令 pio -c clion init --ide clion 并且自动生成CMakeListsPrivate.txt文件和下载项目依赖
@@ -30,3 +32,10 @@ https://registry.platformio.org/search?t=library
 #### Espressif 32: development platform for PlatformIO 代码示例
 
 https://github.com/platformio/platform-espressif32
+
+#### .env文件使用方式示例
+
+获取自定义多环境变量宏定义
+define XSTR(x) #x
+define STR(x) XSTR(x)
+const char *env_app_version = STR(ENV_APP_VERSION);
