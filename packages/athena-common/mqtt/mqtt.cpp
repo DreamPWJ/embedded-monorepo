@@ -41,9 +41,9 @@ String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *mqtt_username = "admin";   // 设置MQTT服务器用户名
-const char *mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
-const int mqtt_port = 1883;
+const char *mqtt_username = STR(MQTT_USERNAME);   // 设置MQTT服务器用户名
+const char *mqtt_password = STR(MQTT_PASSWORD); // 设置MQTT服务器密码
+const int mqtt_port = 1883;    // 设置MQTT服务器端口号
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
 /*#define SerialAT Serial1
@@ -69,7 +69,7 @@ void init_mqtt() {
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("MQTT Broker 连接成功: " + client_id);
         } else {
-            Serial.print("MQTT Broker连接失败 ");
+            Serial.print("MQTT Broker连接失败: ");
             Serial.print(client.state());
             delay(2000);
         }
