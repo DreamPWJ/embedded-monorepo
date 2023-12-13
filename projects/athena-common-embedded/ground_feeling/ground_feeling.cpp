@@ -25,25 +25,29 @@ const int GROUND_FEELING_RST_GPIO = 15;
 const char *topic = "ESP32/common";
 
 /**
- * 地磁信号GPIO外部中断
+ * 地感信号GPIO外部中断
  */
 void IRAM_ATTR check_car() {
     uint64_t chipId = get_chip_mac();
     int status = digitalRead(GROUND_FEELING_GPIO);
     if (status == HIGH) {
-        // Serial.println("地磁检测有车, 进入外部中断了");
+        // Serial.println("地感检测有车, 进入外部中断了");
         string jsonData =
                 "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
                 "\",\"parkingStatus\":\"" + to_string(status) +
                 "\"}";
         at_mqtt_publish(topic, jsonData.c_str());
     } else if (status == LOW) {
-        // Serial.println("地磁检测无车, 进入外部中断了");
+        // Serial.println("地感检测无车, 进入外部中断了");
         string jsonData =
                 "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +
                 "\",\"parkingStatus\":\"" + to_string(status) +
                 "\"}";
         at_mqtt_publish(topic, jsonData.c_str());
+        // 无外部自动化下发地锁抬起指令情况  需要地锁自己触发命令
+     /*  if (true) { // 变量控制
+            set_motor_up();
+        }  */
     }
 }
 
@@ -68,7 +72,7 @@ void init_ground_feeling() {
 }
 
 /**
- * 地磁信号检测
+ * 地感信号检测
  */
 int ground_feeling_status() {
     int ground_feeling = digitalRead(GROUND_FEELING_GPIO);
@@ -97,7 +101,7 @@ void x_task_ground_feeling_status(void *pvParameters) {
         if (lastTimeStatus == 0 && status == 1) {
             // 车辆驶入
 #if IS_DEBUG
-            Serial.println("地磁检测有车");
+            Serial.println("地感检测有车");
 #endif
             string jsonData =
                     "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶入了\",\"deviceCode\":\"" + to_string(chipId) +
@@ -107,7 +111,7 @@ void x_task_ground_feeling_status(void *pvParameters) {
         } else if (lastTimeStatus == 1 && status == 0) {
             // 车辆驶出
 #if IS_DEBUG
-            Serial.println("地磁检测无车");
+            Serial.println("地感检测无车");
 #endif
             string jsonData =
                     "{\"command\":\"parkingstatus\",\"msg\":\"车辆驶出了\",\"deviceCode\":\"" + to_string(chipId) +

@@ -39,9 +39,9 @@ String atMqttName = "esp32-mcu-client"; // MQTT客户端前缀名称
 
 const char *at_mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *at_topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *at_mqtt_username = "admin";   // 设置MQTT服务器用户名
-const char *at_mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
-const int at_mqtt_port = 1883;
+const char *at_mqtt_username = STR(MQTT_USERNAME);   // 设置MQTT服务器用户名
+const char *at_mqtt_password = STR(MQTT_PASSWORD); // 设置MQTT服务器密码
+const int at_mqtt_port = 1883;    // 设置MQTT服务器端口号
 
 /**
  * 初始化MQTT客户端
