@@ -434,6 +434,9 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
     if (command == "raise") { // 电机升起指令
         set_motor_up();
     }
+    if (command == "simple_raise") { // 简单电机升起指令
+        set_simple_motor_up();
+    }
     if (command == "putdown") { // 电机下降指令
         set_motor_down();
     }

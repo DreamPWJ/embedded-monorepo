@@ -29,6 +29,7 @@ void check_car();
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 
-void motor_control(int Cnt_L, int Cnt_R);
+void set_simple_motor_up();
+
 
 #endif

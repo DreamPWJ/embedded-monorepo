@@ -4,6 +4,7 @@
 #include <nb_iot.h>
 #include <mcu_nvs.h>
 #include <ota.h>
+#include <pwm.h>
 
 /**
 * @author 潘维吉
@@ -20,6 +21,7 @@ using namespace std;
 
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
+#define PWM_EN 1   // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
 #define IS_DEBUG false  // 是否调试模式
 
 // This sets Arduino Stack Size - comment this line to use default 8K stack size
@@ -53,6 +55,11 @@ void setup() {
 #else
     // 初始化NB-IoT网络协议
     init_nb_iot();
+#endif
+
+#if PWM_EN
+    // 初始化电机马达
+    init_motor();
 #endif
 
 #if MQTT_EN
