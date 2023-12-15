@@ -5,6 +5,7 @@
 #include <mcu_nvs.h>
 #include <ota.h>
 #include <pwm.h>
+#include <ground_feeling.h>
 
 /**
 * @author 潘维吉
