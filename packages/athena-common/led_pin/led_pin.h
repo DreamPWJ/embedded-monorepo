@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_LED_PIN_H
-#define ESP32_DEMO_LED_PIN_H
+#ifndef EMBEDDED_MONOREPO_LED_PIN_H
+#define EMBEDDED_MONOREPO_LED_PIN_H
 
 /**
 * @author 潘维吉

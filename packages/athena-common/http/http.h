@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_HTTP_H
-#define ESP32_DEMO_HTTP_H
+#ifndef EMBEDDED_MONOREPO_HTTP_H
+#define EMBEDDED_MONOREPO_HTTP_H
 
 #include <HTTPClient.h>
 #include <WString.h>
