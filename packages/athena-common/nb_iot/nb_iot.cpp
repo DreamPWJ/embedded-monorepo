@@ -19,7 +19,7 @@ using namespace std;
 * @description NB-IoT 窄带宽低功耗物联网网络协议
 */
 
-#define IS_DEBUG false // 是否调试模式
+#define IS_DEBUG true // 是否调试模式
 #define USE_MULTI_CORE 1 // 是否使用多核 根据芯片决定
 #define MODEM_RST  8  // NB-IoT控制GPIO
 
