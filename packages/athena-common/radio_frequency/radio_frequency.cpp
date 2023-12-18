@@ -21,8 +21,8 @@
 RCSwitch mySwitch = RCSwitch();
 
 // Replace with your remote TriState values
-char *triStateOn = "5933330";
-char *triStateOff = "5933336";
+const char *triStateOn = "5933330";
+const char *triStateOff = "5933336";
 
 
 /**
