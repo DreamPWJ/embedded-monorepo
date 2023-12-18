@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_OTA_H
-#define ESP32_DEMO_OTA_H
+#ifndef EMBEDDED_MONOREPO_OTA_H
+#define EMBEDDED_MONOREPO_OTA_H
 
 #include <Arduino.h>
 

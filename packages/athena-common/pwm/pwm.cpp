@@ -264,6 +264,18 @@ int get_pwm_status() {
     return -1;
 }
 
+/**
+ * 简易电机控制
+ */
+void set_simple_motor_up() {
+    Serial.println("开始控制电机简易正向运动");
+    digitalWrite(PWM_PinA, HIGH);
+    digitalWrite(PWM_PinB, LOW);
+    delay(500);  // 给完信号  再恢复IO状态
+    digitalWrite(PWM_PinA, HIGH);
+    digitalWrite(PWM_PinB, HIGH);
+}
+
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
     ledcWrite(channel_PWMA, DutyA);
     delay(1000);

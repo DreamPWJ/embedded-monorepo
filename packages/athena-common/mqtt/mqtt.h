@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_MQTT_H
-#define ESP32_DEMO_MQTT_H
+#ifndef EMBEDDED_MONOREPO_MQTT_H
+#define EMBEDDED_MONOREPO_MQTT_H
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
