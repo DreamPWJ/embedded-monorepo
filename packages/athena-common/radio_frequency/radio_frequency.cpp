@@ -34,6 +34,12 @@ void rf_init(void) {
     mySwitch.enableReceive(RF_PIN);  // Receiver on inerrupt 0 => that is pin
 
     // 建议使用GPIO外部中断监听引脚变化
+    /*  pinMode(RF_PIN, INPUT_PULLUP);
+    // 开启外部中断
+    attachInterrupt(digitalPinToInterrupt(RF_PIN), isr, FALLING);
+    // 取消外部中断监
+    // detachInterrupt(digitalPinToInterrupt(RF_PIN));
+    */
 
 #if !USE_MULTI_CORE
     const char *params = NULL;
@@ -56,12 +62,6 @@ xTaskCreatePinnedToCore(rf_accept_data, "rf_accept_data", 1024 * 2, NULL, 5, NUL
  * 接收RF射频数据 使用GPIO外部中断接收更优
  */
 void rf_accept_data(void *pvParameters) {
-    /*  pinMode(RF_PIN, INPUT_PULLUP);
-    // 开启外部中断
-    attachInterrupt(digitalPinToInterrupt(RF_PIN), isr, FALLING);
-    // 取消外部中断监听
-    // detachInterrupt(digitalPinToInterrupt(RF_PIN));
-    */
     while (1) {  // RTOS多任务条件： 1. 不断循环 2. 无return关键字
         if (mySwitch.available()) {
             Serial.print("接收RF无线射频数据: ");
