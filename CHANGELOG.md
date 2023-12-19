@@ -1,3 +1,11 @@
+## 2.7.5
+`2023-12-19 15:35`<br><br>
+#### 其它变更 
+- chore: 增强嵌入式C++代码的健壮性和可维护性 ([2cb4868](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/2cb48688ff09387acc30cb6c20a942f152234326)) @406798106 
+- chore: 增强嵌入式C++代码的健壮性和可维护性 ([b0f60a7](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/b0f60a71b5c51a6ba2f7b6081c14dbf193bc850b)) @406798106 
+- chore: 增强嵌入式C++代码的健壮性和可维护性 ([897f211](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/897f2111facffd685a6acd50f3999f5708f8340b)) @406798106 
+- chore: 增强嵌入式C++代码的健壮性和可维护性 ([45c8aea](https://git.pengbocloud.com/lanneng_develop/embedded-monorepo/commit/45c8aea109e1b97ed2d38b59b5acc35b75d235b1)) @406798106 
+
 ## 2.7.4
 `2023-12-15 17:36`<br><br>
 #### 其它变更 
