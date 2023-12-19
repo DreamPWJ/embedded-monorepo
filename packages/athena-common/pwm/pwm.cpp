@@ -280,6 +280,13 @@ void set_simple_motor_up() {
     delay(500);  // 给完信号  再恢复IO状态
     digitalWrite(PWM_PinA, HIGH);
     digitalWrite(PWM_PinB, HIGH);
+
+    // MQTT上报已落锁完成 可用于灯控或语音提醒等
+    string jsonDataUP =
+            "{\"command\":\"simple_lock_status\",\"msg\":\"开始控制电机简易正向运动完成\",\"deviceCode\":\"" + to_string(chipMacId) +
+            "\",\"deviceStatus\":\"" + to_string(1) +
+            "\"}";
+    at_mqtt_publish(common_topic, jsonDataUP.c_str());
 }
 
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB) {
