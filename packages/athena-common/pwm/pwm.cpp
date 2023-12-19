@@ -136,7 +136,7 @@ void set_motor_up(int delay_time) {
 
     if (get_pwm_status() == 1) { // 如果已经在上限位
         ledcWrite(channel_PWMA, 0); // 停止电机
-        // MQTT上报已落锁完成 可用于灯控或语音提醒等
+        // MQTT上报信息
         string jsonDataUp =
                 "{\"command\":\"lock_status\",\"msg\":\"车位锁已升锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
                 "\",\"deviceStatus\":\"" + to_string(1) +
@@ -201,7 +201,7 @@ void set_motor_down(int delay_time) {
 
     if (get_pwm_status() == 0) { // 已经在下限位
         ledcWrite(channel_PWMB, 0); // 停止电机
-        // MQTT上报已落锁完成 可用于灯控或语音提醒等
+        // MQTT上报信息
         string jsonDataDown =
                 "{\"command\":\"lock_status\",\"msg\":\"车位锁已落锁完成\",\"deviceCode\":\"" + to_string(chipMacId) +
                 "\",\"deviceStatus\":\"" + to_string(0) +
@@ -279,13 +279,14 @@ void set_simple_motor_up() {
     Serial.println("开始控制电机简易正向运动");
     digitalWrite(PWM_PinA, HIGH);
     digitalWrite(PWM_PinB, LOW);
-    delay(1000);  // 给完信号  再恢复IO状态
+    delay(1000);  // 输出IO信号  再恢复IO状态
     digitalWrite(PWM_PinA, HIGH);
     digitalWrite(PWM_PinB, HIGH);
 
-    // MQTT上报已落锁完成 可用于灯控或语音提醒等
+    // MQTT上报信息
     string jsonDataUP =
-            "{\"command\":\"simple_lock_status\",\"msg\":\"开始控制电机简易正向运动完成\",\"deviceCode\":\"" + to_string(chipMacId) +
+            "{\"command\":\"simple_lock_status\",\"msg\":\"开始控制电机简易正向运动完成\",\"deviceCode\":\"" +
+            to_string(chipMacId) +
             "\",\"deviceStatus\":\"" + to_string(1) +
             "\"}";
     at_mqtt_publish(common_topic, jsonDataUP.c_str());
