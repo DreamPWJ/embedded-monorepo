@@ -1,5 +1,6 @@
 #ifndef EMBEDDED_MONOREPO_PWM_H
 #define EMBEDDED_MONOREPO_PWM_H
+
 #include <Arduino.h>
 
 /**
@@ -10,6 +11,8 @@
 */
 
 void init_motor();
+
+void init_simple_motor();
 
 void set_motor_up(int delay_time = 2000);
 

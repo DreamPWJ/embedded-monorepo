@@ -60,7 +60,7 @@ void setup() {
 
 #if PWM_EN
     // 初始化电机马达
-    init_motor();
+    init_simple_motor();
 #endif
 
 #if MQTT_EN

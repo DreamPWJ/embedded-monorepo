@@ -58,6 +58,12 @@ void init_motor() {
     ledcAttachPin(PWM_PinB, channel_PWMB);
 }
 
+void init_simple_motor() {
+    // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
+    pinMode(PWM_PinA, PULLUP);
+    pinMode(PWM_PinB, PULLUP);
+}
+
 /**
  * 控制电机马达抬起
  */
