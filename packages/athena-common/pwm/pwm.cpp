@@ -60,8 +60,8 @@ void init_motor() {
 
 void init_simple_motor() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
-    pinMode(PWM_PinA, PULLUP);
-    pinMode(PWM_PinB, PULLUP);
+    pinMode(PWM_PinA, OUTPUT);
+    pinMode(PWM_PinB, OUTPUT);
 }
 
 /**
@@ -277,7 +277,7 @@ void set_simple_motor_up() {
     Serial.println("开始控制电机简易正向运动");
     digitalWrite(PWM_PinA, HIGH);
     digitalWrite(PWM_PinB, LOW);
-    delay(500);  // 给完信号  再恢复IO状态
+    delay(1000);  // 给完信号  再恢复IO状态
     digitalWrite(PWM_PinA, HIGH);
     digitalWrite(PWM_PinB, HIGH);
 
