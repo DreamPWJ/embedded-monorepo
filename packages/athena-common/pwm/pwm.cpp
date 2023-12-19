@@ -62,6 +62,8 @@ void init_simple_motor() {
     // GPIO接口使用前，必须初始化，设定引脚用于输入还是输出
     pinMode(PWM_PinA, OUTPUT);
     pinMode(PWM_PinB, OUTPUT);
+    digitalWrite(PWM_PinA, HIGH);
+    digitalWrite(PWM_PinB, HIGH);
 }
 
 /**
