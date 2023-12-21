@@ -67,6 +67,11 @@ void init_wifi_multi_thread(void *pvParameters) {
  * 扫码WiFi 选择开放Wifi直接连接
  */
 bool scan_wifi() {
+    if (WiFi.status() == WL_CONNECTED) { // 已连接Wifi直接返回
+        Serial.print("已连接的WiFi强度RSSI: ");
+        Serial.println(WiFi.RSSI());
+        return true;
+    }
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
     // WiFi.scanNetworks will return the number of networks found

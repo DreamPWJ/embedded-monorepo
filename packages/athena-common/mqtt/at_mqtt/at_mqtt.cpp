@@ -412,7 +412,7 @@ void do_at_mqtt_subscribe(DynamicJsonDocument json, String topic) {
                         "command": "upgrade",
                         "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/car-lock/envname/prod/firmware.bin",
                          "chipIds" : "",
-                         "projectName" : "",
+                         "projectName" : ""
                     } */
                 String firmwareUrl = json["firmwareUrl"].as<String>();
                 if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
