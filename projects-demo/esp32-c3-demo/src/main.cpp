@@ -24,8 +24,16 @@ void setup() {
     Serial.begin(115200);
 
     Serial.println("ESP32 C3 MCU");
+    String project_name = STR(PROJECT_NAME);
+    Serial.println(project_name);
+    String projectName = "esp32-c3-demo";
+    if (project_name == projectName) {
+        Serial.println("单片机工程匹配成功");
+    }
+
     const char *env_name = STR(ENV_NAME);
     Serial.println(env_name);
+
     if (env_name == "app1") {
         Serial.println("App1环境工程");
     } else if (env_name == "app2") {
