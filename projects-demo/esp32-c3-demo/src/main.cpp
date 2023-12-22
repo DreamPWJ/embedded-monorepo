@@ -63,9 +63,9 @@ void setup() {
     const char *firmware_update_json_url = ota_temp_json.c_str();
     Serial.println(firmware_update_json_url);
     // WIFI要供电稳定 保证电压足够 才能正常工作
-    do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
+    // do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
 
-    delay(3000);
+    delay(1000);
     // 初始化日志云上报
 //    init_insights();
 //    ESP_LOGI(TAG, "初始化insights日志云上报");
@@ -75,5 +75,15 @@ void setup() {
 
 void loop() {
 // write your code here
+
+// 定时检测重新连接WiFi
+    reconnect_wifi();
+
+// MQTT重连
+    mqtt_reconnect();
+// MQTT监听
+    mqtt_loop();
+
+    delay(1000);
 
 }
