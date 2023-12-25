@@ -1,4 +1,4 @@
-###  车位道闸嵌入式控制
+### 车位道闸嵌入式控制
 
 ### PlatformIO新一代嵌入式平台开发esp32单片机和Arduino框架
 
@@ -39,4 +39,5 @@ https://github.com/platformio/platform-espressif32
 获取自定义多环境变量宏定义
 #define XSTR(x) #x
 #define STR(x) XSTR(x)
+
 const char *env_app_version = STR(ENV_APP_VERSION);
