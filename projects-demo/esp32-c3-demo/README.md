@@ -38,4 +38,5 @@ https://github.com/platformio/platform-espressif32
 获取自定义多环境变量宏定义
 #define XSTR(x) #x
 #define STR(x) XSTR(x)
+
 const char *env_app_version = STR(ENV_APP_VERSION);

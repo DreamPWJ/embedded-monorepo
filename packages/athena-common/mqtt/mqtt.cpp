@@ -257,6 +257,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     if (command == "heartbeat") { // 心跳指令
         do_mqtt_heart_beat();
     }
+    // 应该抽离出业务指令 单独维护代码 保证代码的通用性和易维护性
     if (command == "raise") {
         set_motor_up();
     }
