@@ -2,6 +2,7 @@
 #include <wifi_network.h>
 #include <mqtt.h>
 #include <bluetooth_connect.h>
+#include <LibDemo.h>
 #include <ota.h>
 // #include <log_insight.h>
 
@@ -28,6 +29,10 @@ void setup() {
     Serial.begin(115200);
 
     Serial.println("ESP32 C3 MCU");
+
+    // PlatformIO自定义库 用于项目应用示例
+    init_demo();
+
     String project_name = STR(PROJECT_NAME);
     Serial.println(project_name);
     String projectName = "esp32-c3-demo";
