@@ -39,6 +39,7 @@ using namespace std;
 
 #define FIRMWARE_VERSION              "CI_OTA_FIRMWARE_VERSION"  // 版本号用于OTA升级和远程升级文件对比 判断是否有新版本 每次需要OTA的时候更改设置 CI_OTA_FIRMWARE_VERSION关键字用于CI替换版本号
 
+#define OTA_EN 1  // 是否开启OTA空中升级 0 关闭  1 开启
 #define WIFI_EN 0  // 是否开启WIFI网络功能 0 关闭  1 开启
 #define MQTT_EN 1  // 是否开启MQTT消息协议 0 关闭  1 开启
 #define PWM_EN 1   // 是否开启PWM脉冲宽度调制功能 0 关闭  1 开启
@@ -95,6 +96,18 @@ void setup() {
     // const BizConstants bizConstants;
     // Serial.println(bizConstants.NAME.c_str());
 
+#if OTA_EN
+    // 单片机启动后首先执行OTA升级检测
+    // OTA升级配置文件  如果https证书有问题 可以使用http协议
+    std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
+    const char *firmware_update_json_url = ota_temp_json.c_str();
+
+    // WiFi网络版本执行OTA空中升级
+    // exec_ota(FIRMWARE_VERSION, firmware_update_json_url);
+    // WIFI要供电稳定 保证电压足够 才能正常工作
+    do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
+#endif
+
 #if WIFI_EN
     // 初始化WiFi无线网络
     init_wifi();
@@ -142,15 +155,6 @@ void setup() {
 
     // 初始化无线射频RF 用于遥控器控制
     // rf_init();
-
-    // OTA升级配置文件  如果https证书有问题 可以使用http协议
-    std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
-    const char *firmware_update_json_url = ota_temp_json.c_str();
-
-    // WiFi网络版本执行OTA空中升级
-    // exec_ota(FIRMWARE_VERSION, firmware_update_json_url);
-    // WIFI要供电稳定 保证电压足够 才能正常工作
-    do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
 
 /*  pinMode(19, INPUT_PULLUP);
     // 开启外部中断

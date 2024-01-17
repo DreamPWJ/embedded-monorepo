@@ -61,14 +61,16 @@ void setup() {
     // init_bluetooth("panweiji");
     // 初始化WiFi无线网络
     init_wifi();
-    // WiFi网络版本初始化MQTT消息协议
-    init_mqtt();
 
+    // 单片机启动后首先执行OTA升级检测
     std::string const &ota_temp_json = std::string("http://") + std::string(STR(FIRMWARE_UPDATE_JSON_URL));
     const char *firmware_update_json_url = ota_temp_json.c_str();
     Serial.println(firmware_update_json_url);
     // WIFI要供电稳定 保证电压足够 才能正常工作
     // do_firmware_upgrade(FIRMWARE_VERSION, firmware_update_json_url, "");
+
+    // WiFi网络版本初始化MQTT消息协议
+    init_mqtt();
 
     delay(1000);
     // 初始化日志云上报
