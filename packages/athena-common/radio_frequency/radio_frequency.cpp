@@ -21,8 +21,8 @@
 RCSwitch mySwitch = RCSwitch();
 
 // Replace with your remote TriState values
-char *triStateOn = "5933330";
-char *triStateOff = "5933336";
+const char *triStateOn = "5933330";
+const char *triStateOff = "5933336";
 
 
 /**
@@ -34,6 +34,12 @@ void rf_init(void) {
     mySwitch.enableReceive(RF_PIN);  // Receiver on inerrupt 0 => that is pin
 
     // 建议使用GPIO外部中断监听引脚变化
+    /*  pinMode(RF_PIN, INPUT_PULLUP);
+    // 开启外部中断
+    attachInterrupt(digitalPinToInterrupt(RF_PIN), isr, FALLING);
+    // 取消外部中断监
+    // detachInterrupt(digitalPinToInterrupt(RF_PIN));
+    */
 
 #if !USE_MULTI_CORE
     const char *params = NULL;

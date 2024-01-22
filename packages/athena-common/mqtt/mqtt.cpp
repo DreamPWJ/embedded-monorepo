@@ -41,9 +41,9 @@ String mqttName = "esp32-mcu-client"; // mqtt客户端名称
 // MQTT Broker  EMQX服务器
 const char *mqtt_broker = STR(MQTT_BROKER); // 设置MQTT的IP或域名
 const char *topics = "ESP32/common"; // 设置MQTT的订阅主题
-const char *mqtt_username = "admin";   // 设置MQTT服务器用户名
-const char *mqtt_password = "emqx@2022"; // 设置MQTT服务器密码
-const int mqtt_port = 1883;
+const char *mqtt_username = STR(MQTT_USERNAME);   // 设置MQTT服务器用户名
+const char *mqtt_password = STR(MQTT_PASSWORD); // 设置MQTT服务器密码
+const int mqtt_port = 1883;    // 设置MQTT服务器端口号
 
 // NB-IoT参考：https://github.com/radhyahmad/NB-IoT-SIM700-MQTT/blob/main/NB-IOT/src/main.cpp
 /*#define SerialAT Serial1
@@ -69,7 +69,7 @@ void init_mqtt() {
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
             Serial.println("MQTT Broker 连接成功: " + client_id);
         } else {
-            Serial.print("MQTT Broker连接失败 ");
+            Serial.print("MQTT Broker连接失败: ");
             Serial.print(client.state());
             delay(2000);
         }
@@ -221,28 +221,34 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     if (String(topic) == "ESP32/system") { // 针对主题做逻辑处理
         String chipIds = json["chipIds"].as<String>();  // 根据设备标识进行指定设备升级 为空全部升级 逗号分割
         vector<string> array = split(chipIds.c_str(), ",");
-        bool isUpdateByDevice = false;
-        if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
-            Serial.print("根据设备标识进行指定设备命令控制: ");
-            Serial.println(chipId);
-            isUpdateByDevice = true;
-        }
-
-        if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
-            /*    {
-                    "command": "upgrade",
-                    "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/envname/prod/firmware.bin",
-                     "chipIds" : ""
-                }*/
-            String firmwareUrl = json["firmwareUrl"].as<String>();
-            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
-                Serial.println("MQTT通讯立刻执行OTA升级");
-                do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+        String projectName = json["projectName"].as<String>();  // 相同MQTT服务的不通项目固件区分升级
+        String project_name = STR(PROJECT_NAME); // 环境配置定义 项目名称
+        if (projectName == "null" || projectName.isEmpty() || projectName == project_name) {  // 符合特定工程 用于区分工程控制
+            bool isUpdateByDevice = false;
+            if (std::find(array.begin(), array.end(), to_string(chipId)) != array.end()) {
+                Serial.print("根据设备标识进行指定设备命令控制: ");
+                Serial.println(chipId);
+                isUpdateByDevice = true;
             }
-        } else if (command == "restart") {  // 远程重启设备
-            if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
-                Serial.println("远程重启单片机设备...");
-                esp_restart();
+
+            if (command == "upgrade") { // MQTT通讯立刻执行OTA升级
+                // 注意相同MQTT服务不通的固件升级会导致升错版本  chipIds芯片id默认是全部, 多个可用逗号分隔
+                /*    {
+                        "command": "upgrade",
+                        "firmwareUrl" : "http://archive-artifacts-pipeline.oss-cn-shanghai.aliyuncs.com/iot/ground-lock/envname/prod/firmware.bin",
+                         "chipIds" : "",
+                         "projectName" : ""
+                    }*/
+                String firmwareUrl = json["firmwareUrl"].as<String>();
+                if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                    Serial.println("MQTT通讯立刻执行OTA升级");
+                    do_firmware_upgrade("", "", firmwareUrl); // 主动触发升级
+                }
+            } else if (command == "restart") {  // 远程重启设备
+                if (chipIds == "null" || chipIds.isEmpty() || isUpdateByDevice) {
+                    Serial.println("远程重启单片机设备...");
+                    esp_restart();
+                }
             }
         }
         return;
@@ -251,6 +257,7 @@ void do_mqtt_subscribe(DynamicJsonDocument json, char *topic) {
     if (command == "heartbeat") { // 心跳指令
         do_mqtt_heart_beat();
     }
+    // 应该抽离出业务指令 单独维护代码 保证代码的通用性和易维护性
     if (command == "raise") {
         set_motor_up();
     }

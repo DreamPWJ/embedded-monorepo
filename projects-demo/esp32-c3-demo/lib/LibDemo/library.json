@@ -1,0 +1,10 @@
+{
+  "name": "lib_demo",
+  "version": "1.0.0",
+  "description": "PlatformIO自定义库 用于项目应用示例",
+  "authors": {
+    "name": "潘维吉",
+    "email": "406798106@qq.com",
+    "url": "https://github.com/DreamPWJ"
+  }
+}

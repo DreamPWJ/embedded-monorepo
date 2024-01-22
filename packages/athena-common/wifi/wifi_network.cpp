@@ -14,11 +14,14 @@ using namespace std;
 * 参考文档: https://randomnerdtutorials.com/esp32-useful-wi-fi-functions-arduino/
 */
 
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+
 WiFiMulti wifiMulti;
 
 // WiFiMulti方式支持多个账号同时设置 连接到多个网络中的最强的 Wi-Fi 网络, 也可以扫描公开网络实现自动联网无需配网
-const char *ssid = "TP-LINK_A6B2_4G";  // WiFi用户名  注意模组只支持2.4G
-const char *password = "rzgj0633";  // WiFi密码 最少 8 个字符
+const char *ssid = STR(ENV_WIFI_SSID);  // WiFi用户名  注意模组只支持2.4G
+const char *password = STR(ENV_WIFI_PASSWORD);  // WiFi密码 最少 8 个字符
 
 unsigned long previousMillis = 0;
 unsigned long interval = 60000; // 检测wifi状态间隔 毫秒
@@ -67,6 +70,11 @@ void init_wifi_multi_thread(void *pvParameters) {
  * 扫码WiFi 选择开放Wifi直接连接
  */
 bool scan_wifi() {
+    if (WiFi.status() == WL_CONNECTED) { // 已连接Wifi直接返回
+        Serial.print("已连接的WiFi强度RSSI: ");
+        Serial.println(WiFi.RSSI());
+        return true;
+    }
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
     // WiFi.scanNetworks will return the number of networks found
@@ -90,7 +98,7 @@ bool scan_wifi() {
             Serial.print(" (");
             Serial.print(WiFi.RSSI(i));
             Serial.print(")");
-            Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");*/
+            Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");  */
             if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) { // 开放网络 无密码
                 Serial.println("扫描发现有开放WiFi网络");
                 String openSSID = WiFi.SSID(i);

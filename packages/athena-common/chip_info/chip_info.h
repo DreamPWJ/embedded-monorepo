@@ -1,5 +1,5 @@
-#ifndef ESP32_DEMO_CHIP_INFO_H
-#define ESP32_DEMO_CHIP_INFO_H
+#ifndef EMBEDDED_MONOREPO_CHIP_INFO_H
+#define EMBEDDED_MONOREPO_CHIP_INFO_H
 #include <Arduino.h>
 /**
 * @author 潘维吉

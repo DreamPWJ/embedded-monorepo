@@ -13,9 +13,9 @@ class infrared_signals {
 
 public:
 
-    void init(void);
+    void init_ir(void);
 
-    void get_data(void);
+    void get_ir_data(void *pvParameters);
 
 };
 

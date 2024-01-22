@@ -26,8 +26,8 @@
 
 ### 开发平台：PlatformIO
 
-- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案 
-- 安装执行 python  get-platformio.py
+- 用于嵌入式 C/C++ 开发的新一代工具集PlatformIO 世界上第一个用于嵌入式开发的包和项目依赖管理解决方案
+- 安装执行 python get-platformio.py
 
 ### 跨芯片嵌入式框架: Arduino (不同芯片代码复用)
 
@@ -39,19 +39,17 @@
 
 ### 硬件调试烧录工具: EspTool、DapLink、ST-Link/J-Link
 
+### Clion中集成PlatformIO平台
+
+- https://www.jetbrains.com/help/clion/platformio.html
+
 ### WokWi在浏览器中模拟调试 IoT 嵌入式单片机项目
 
 - https://wokwi.com
 
-### Logic 2借助让您爱不释手的逻辑分析仪
-
-- https://www.jetbrains.com/help/clion/platformio.html
-
 #### 参考文章
 
 https://randomnerdtutorials.com
-https://blog.jetbrains.com/clion/2019/02/clion-2019-1-eap-clion-for-embedded-development-part-iii/
-https://zhuanlan.zhihu.com/p/63672432
 https://zhuanlan.zhihu.com/p/145801160
 
 #### MinGW 是最小的C、C++编译环境 gcc、g++。 验证命令 gcc -v
