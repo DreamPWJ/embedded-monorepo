@@ -39,7 +39,7 @@ DynamicJsonDocument at_http_get(String url, bool isResponseData) {
     if (isResponseData) {
         return get_http_uart_data();
     } else {
-        return (const JsonDocument &) "";
+        return (DynamicJsonDocument &&) (const JsonDocument &) "";
     }
 }
 
@@ -114,7 +114,7 @@ DynamicJsonDocument get_http_uart_data() {
         return json;
         // }
     }
-    return (const JsonDocument &) "";
+    return (DynamicJsonDocument &&) (const JsonDocument &) "";
 }
 
 /**
