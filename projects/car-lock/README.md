@@ -16,7 +16,7 @@ https://www.mingw-w64.org/ 与 https://sourceforge.net/projects/mingw-w64/files/
 
 - curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -o
 - get-platformio.py
-- python3 get-platformio.py
+- python get-platformio.py
 - Windows用户, 把C:\Users\用户名\.platformio\penv\Scripts; 加到Path环境变量里才能生效 注意用户名不能有特殊符号
 - 初始化项目命令 pio -c clion init --ide clion 并且自动生成CMakeListsPrivate.txt文件和下载项目依赖
 - 在CLion中MinGW 和 CMake中配置编译与构建相关信息 指定C和C++编译器的exe文件
