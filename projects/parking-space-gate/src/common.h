@@ -1,5 +1,5 @@
-#ifndef GROUND_LOCK_COMMON_H
-#define GROUND_LOCK_COMMON_H
+#ifndef PARKING_SPACE_GATE_COMMON_H
+#define PARKING_SPACE_GATE_COMMON_H
 
 /**
 * @author 潘维吉
@@ -13,4 +13,4 @@
 #define PIN_RX_2 19
 #define PIN_TX_2 20
 
-#endif //GROUND_LOCK_COMMON_H
+#endif
