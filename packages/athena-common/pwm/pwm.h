@@ -1,6 +1,5 @@
 #ifndef EMBEDDED_MONOREPO_PWM_H
 #define EMBEDDED_MONOREPO_PWM_H
-
 #include <Arduino.h>
 
 /**
@@ -14,9 +13,9 @@ void init_motor();
 
 void init_simple_motor();
 
-void set_motor_up(int delay_time = 2000);
+void set_motor_up(int delay_time = 800);
 
-void set_motor_down(int delay_time = 2000);
+void set_motor_down(int delay_time = 800);
 
 void stop_motor();
 
@@ -28,11 +27,12 @@ void set_pwm();
 
 int get_pwm_status();
 
-void check_car();
-
 void pwm_set_duty(uint16_t DutyA, uint16_t DutyB);
 
-void set_simple_motor_up();
+void x_task_pwm_status(void *pvParameters);
 
+void check_pwm_status();
+
+void set_simple_motor_up();
 
 #endif
